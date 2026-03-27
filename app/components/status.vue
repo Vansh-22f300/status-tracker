@@ -78,9 +78,6 @@
         clearInterval(interval)
     })
 
-    // setInterval(()=>{
-    //     counter.value++;
-    // }, 1000000);
 </script>
 
 <style scoped>
