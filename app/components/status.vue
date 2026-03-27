@@ -97,9 +97,10 @@
 }
 .card{
     /* margin:20px; x */
-    background-color:white;
+    background-color:#fdfcfa;
     border-radius:15px ;
-    width:430px;
+    flex:1;
+    /* width:430px; */
     /* height:200px; */
     padding:30px;
         border:1px solid rgb(73, 72, 72);
@@ -125,7 +126,7 @@
 
 .submit{
     padding:20px;
-    background-color:rgb(255, 255, 255);
+    background-color:#fdfcfa;
     margin-top:20px;
     display:flex;
     align-items:center;
