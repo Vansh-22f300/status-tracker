@@ -109,7 +109,7 @@ export default {};
   width: 220px;
   background-color: #1a1918;
   padding: 30px;
-  min-height:100vh;
+  height:100%;
 }
 .sidebar-title {
   color: #f7f4ef;

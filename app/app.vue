@@ -31,15 +31,13 @@ body {
   background-color: rgb(238, 238, 227)
 
 }
+
 .layout {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
 }
 .main-content{
   width: 100%;
-}
-.cards{
-
 }
 
 
