@@ -9,8 +9,9 @@
     <div class="sidebar-member">
       <span class="profile-pic">AB</span>
       <div class="sidebar-member-info">
-      <span class="sidebar-member-name">You(Dev)</span>
+      <span class="sidebar-member-name">You (Dev)</span>
       <span class="user-role">Member . Team C</span>
+      
       </div>
     </div>
     <div class="navigation">
@@ -236,7 +237,7 @@ export default {};
     border: 1px solid #4caf50;
     color: #4caf50;
     border-radius: 15px;
-    padding: 5px 10px;
+    padding: 0px 5px;
     font-size: 12px;
 }
 .sidebar-bottom-name {
