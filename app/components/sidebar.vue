@@ -36,63 +36,14 @@
 
       <div class="sidebar-bottom-list">
 
-        <div class="sidebar-bottom-item">
-          <span class="profile-pic">AB</span>
+        <div class="sidebar-bottom-item" v-for="user in teamData" :key=user.name>
+          <span class="profile-pic">{{getInitials(user.name)}}</span>
           <div class="sidebar-bottom-item-info">
-            <span class="sidebar-bottom-name">AB XZ</span>
-            <span class="sidebar-bottom-time">9:00 AM</span>
+            <span class="sidebar-bottom-name">{{user.name}}</span>
+            <span class="sidebar-bottom-time">{{user.time}}</span>
           </div>
 
-          <span class="sidebar-bottom-status">WFO</span>
-        </div>
-
-        <div class="sidebar-bottom-item">
-          <span class="profile-pic">CD</span>
-          <div class="sidebar-bottom-item-info">
-            <span class="sidebar-bottom-name">AB XZ</span>
-            <span class="sidebar-bottom-time">9:00 AM</span>
-          </div>
-          <span class="sidebar-bottom-status">WFO</span>
-        </div>
-        <div class="sidebar-bottom-item">
-          <span class="profile-pic">EF</span>
-          <div class="sidebar-bottom-item-info">
-            <span class="sidebar-bottom-name">AB XZ</span>
-            <span class="sidebar-bottom-time">9:00 AM</span>
-          </div>
-          <span class="sidebar-bottom-status">WFO</span>
-        </div>
-
-        <div class="sidebar-bottom-item">
-          <span class="profile-pic">EF</span>
-          <div class="sidebar-bottom-item-info">
-            <span class="sidebar-bottom-name">AB XZ</span>
-            <span class="sidebar-bottom-time">9:00 AM</span>
-          </div>
-          <span class="sidebar-bottom-status">WFO</span>
-        </div>
-        <div class="sidebar-bottom-item">
-          <span class="profile-pic">EF</span>
-          <div class="sidebar-bottom-item-info">
-            <span class="sidebar-bottom-name">AB XZ</span>
-            <span class="sidebar-bottom-time">9:00 AM</span>
-          </div>
-          <span class="sidebar-bottom-status">WFO</span>
-        </div><div class="sidebar-bottom-item">
-          <span class="profile-pic">EF</span>
-          <div class="sidebar-bottom-item-info">
-            <span class="sidebar-bottom-name">AB XZ</span>
-            <span class="sidebar-bottom-time">9:00 AM</span>
-          </div>
-          <span class="sidebar-bottom-status">WFO</span>
-        </div>
-        <div class="sidebar-bottom-item">
-          <span class="profile-pic">EF</span>
-          <div class="sidebar-bottom-item-info">
-            <span class="sidebar-bottom-name">AB XZ</span>
-            <span class="sidebar-bottom-time">9:00 AM</span>
-          </div>
-          <span class="sidebar-bottom-status">WFO</span>
+          <span class="sidebar-bottom-status">{{user.statusCode}}</span>
         </div>
 
       </div>
@@ -100,8 +51,12 @@
   </div>
 </template>
 
-<script>
-export default {};
+<script setup>
+
+const { teamData } = useData();
+
+const { getInitials } = useInitials();
+
 </script>
 
 <style scoped>

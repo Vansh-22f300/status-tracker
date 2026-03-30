@@ -10,10 +10,13 @@
         
         <div class="cards">
           <status></status>
+          <checkin></checkin>
         </div>
         </div>
         <!-- <card></card> -->
       <!-- </main> -->
+           <Nuxtpage />
+
        
     </div>
   
