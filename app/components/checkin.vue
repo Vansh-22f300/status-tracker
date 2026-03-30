@@ -15,8 +15,7 @@
           <div class="checkin-time">{{ user.time }}</div>
           <div
             class="status-badge"
-            :class="`tag-${user.statusCode.toLowerCase()}`"
-          >
+            :class="`tag-${user.statusCode.toLowerCase()}`">
             {{ user.status }}
           </div>
         </div>

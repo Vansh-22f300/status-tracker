@@ -23,20 +23,19 @@ const teamData = ref([
     time: "9:15 AM",
   },
   {
-    name: "Jeev Moahn",
+    name: "Jeev Mohan",
     msg: "Available at Office",
     status: "🏢 Office",
     statusCode: "wfo",
     time: "8:45 AM",
   },
   {
-    name: "Jee",
+    name: "Jeet",
     msg: "Available Work from Home",
     status: "🏠 WFH",
     statusCode: "wfh",
     time: "8:45 AM",
   },
-  
 ]);
 
 export function useData() {
