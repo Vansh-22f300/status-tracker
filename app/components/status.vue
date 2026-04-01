@@ -170,6 +170,7 @@ onUnmounted(() => {
   
 }
 .card-icon {
+  width:45px;
   font-size: 32px;
   margin-bottom: 20px;
 }
