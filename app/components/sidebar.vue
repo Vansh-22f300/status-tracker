@@ -17,8 +17,7 @@
     <div class="navigation">
       <span class="navigation-title">Navigation</span><br />
       <NuxtLink to="/" class="navigation-tile">
-        <span class="navigation-icon">◷</span>
-        Today</NuxtLink
+        <span class="navigation-icon">◷</span>Today</NuxtLink
       >
       <NuxtLink to="/team" class="navigation-tile"
         ><span class="navigation-icon">◷</span>Team view</NuxtLink
@@ -36,28 +35,104 @@
 
       <div class="sidebar-bottom-list">
 
-        <div class="sidebar-bottom-item" v-for="user in teamData" :key=user.name>
+        <div class="sidebar-bottom-item" v-for="user in users" :key=user.id>
           <span class="profile-pic">{{getInitials(user.name)}}</span>
           <div class="sidebar-bottom-item-info">
             <span class="sidebar-bottom-name">{{user.name}}</span>
             <span class="sidebar-bottom-time">{{user.time}}</span>
           </div>
 
-          <span class="sidebar-bottom-status">{{user.statusCode}}</span>
+          <span class="sidebar-bottom-status"
+          :class="`tag-${user.status.toLowerCase()}`"
+          >{{user.status}}</span>
         </div>
 
       </div>
     </div>
   </div>
 </template>
-
 <script setup>
 
-const { teamData } = useData();
-
+import { ref, onMounted } from "vue";
+import { db } from "../../firebase/config";
+import { collection } from "firebase/firestore";
+import { onSnapshot } from "firebase/firestore";
+// const { teamData } = useData();
+const users = ref([]);
 const { getInitials } = useInitials();
+  
+function formatTime(timestamp,status) {
+  if(status==="leave") return "N/A";
+  return new Date(timestamp).toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "numeric",
+  });
+}
+// function formatMessage(status) {
+//   if (status === "wfo") return "Available Office";
+//   else if (status === "wfh") return "Available WFH";
+//   else if (status === "leave") return "On Leave";
+// }
+function formatStatus(status) {
+  if(status==="wfh") return "WFH";
+  else if(status==="wfo") return "Office";
+  return "Leave";
+  // return status === "wfh" ? "WFH" : "Office";
+}
+
+function isToday(timestamp) {
+  const today = new Date().toDateString();
+  return new Date(timestamp).toDateString() === today;
+}
+
+function fetchUsers() {
+  const querySnapshot = onSnapshot(collection(db, "users"),(snapshot)=>{
+    users.value=snapshot.docs
+    .map(doc=>({
+      id:doc.id,
+      ...doc.data()
+    }))
+    .filter(user=>isToday(user.timestamp))
+    .map(user=>({
+      ...user,
+      time:formatTime(user.timestamp),
+      status:formatStatus(user.status),
+    }))
+  });
+}
+
+onMounted(() => {
+  fetchUsers();
+});
+onUnmounted(()=>{
+  fetchUsers();
+})
 
 </script>
+<!-- <script setup>
+
+import { ref, onMounted } from "vue";
+import { db } from "../../firebase/config";
+import { collection, getDocs } from "firebase/firestore";
+import { onSnapshot } from "firebase/firestore";
+// const { teamData } = useData();
+const users = ref([]);
+const { getInitials } = useInitials();
+  
+async function fetchUsers() {
+  const querySnapshot = await getDocs(collection(db, "users"));
+
+  users.value = querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+}
+
+onMounted(() => {
+  fetchUsers();
+});
+
+</script> -->
 
 <style scoped>
 .sidebar {
@@ -68,13 +143,13 @@ const { getInitials } = useInitials();
 }
 .sidebar-title {
   color: #f7f4ef;
-  font-size: 21px;
+  font-size: 31px;
   font-weight: bold;
   margin-bottom: 5px;
 }
 .sidebar-title-team{
   font-style:italic;
-  color:#b6b6b6;
+  color: #a09a90;
 }
 .sidebar-top {
   /* margin-left: 40px; */
@@ -82,14 +157,18 @@ const { getInitials } = useInitials();
   color: #b6b5b5;
 }
 .sidebar-subtitle{
-  color: #b6b5b5;
-  font-size: 12px;
+  color:  #5c5750;
+  font-size: 11px;
+  margin-bottom:40px;
+  letter-spacing:1.5px;
 }
 .sidebar-member {
   background-color: rgba(255, 255, 255, 0.05);
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 36px;
+  gap:12px;
+  height:40px;
   display: flex;
   align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -106,7 +185,7 @@ const { getInitials } = useInitials();
     font-size: 14px;
 }
 .user-role{
-  color:#424242;
+  color: #5c5750;
   font-size:11px;
 }
 .profile-pic {
@@ -119,7 +198,7 @@ const { getInitials } = useInitials();
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  margin-right: 10px;
+  /* margin-right: 10px; */
 }
 .navigation {
   display: flex;
@@ -127,23 +206,24 @@ const { getInitials } = useInitials();
   cursor:pointer;
 }
 .navigation a {
-  height: 15px;
-  color: #b6b5b5;
+  height: 10px;
+color: #c4c4c4;
   text-decoration: none;
   margin-bottom: 2px;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 14px;
   align-items: center;
-  padding: 10px;
+  padding: 15px;
 }
-.navigation a:hover {
-   color: #fefefe;
-  background-color:rgba(255, 255, 255, 0.05);
+
+.navigation a:hover{
+  background: rgba(255,255,255,0.05);
+  color: #c9c3b8;
 }
-.navigation a:active{
-  /* color: rgba(255, 255, 255, 0.05); */
-  color:white;
-  background-color: #4caf50;
+.router-link-exact-active {
+  background: rgba(255,255,255,0.08);
+  color: #f0ece6;
+  /* padding:15px; */
 }
 
 .navigation-tile {
@@ -152,17 +232,25 @@ const { getInitials } = useInitials();
   gap: 10px;
 }
 .navigation-title {
-  color: #b6b5b5;
-  font-size: 14px;
+    color:#5e564a;
+
+  /* color: #5e564a; */
+  font-size: 10px;
   margin-bottom: 10px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+
 }
 .sidebar-bottom {
   margin-top: 30px;
 }
 
 .sidebar-bottom-title {
-  color: #767474;
-  font-size: 12px;
+  /* color: #3d3830; */
+  color:#5e564a;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  font-size: 10px;
   margin-bottom: 15px;
 }
 .sidebar-bottom-list {
@@ -175,7 +263,8 @@ const { getInitials } = useInitials();
   align-items: center;
   gap: 12px;
   padding: 8px;
-    border-bottom: 1px solid #d2cbcb8c;
+    border-bottom: 1px solid #6a67678c;
+      border-bottom: 1px solid #3d3830;
 
   /* background-color:rgb(203, 203, 11); */
 
@@ -188,13 +277,22 @@ const { getInitials } = useInitials();
 }
 
 .sidebar-bottom-status {
-  margin-left: 12px;
-    background-color: #e8f5e9;
-    border: 1px solid #4caf50;
-    color: #4caf50;
-    border-radius: 15px;
-    padding: 0px 5px;
-    font-size: 12px;
+    margin-left: 12px;
+    border-radius: 22px;
+    padding: 3px 8px;
+    font-size: 10px;
+}
+.sidebar-bottom-status.tag-wfh {
+  background: rgba(60,100,200,0.2);
+  color: #7aabf7;
+}
+.sidebar-bottom-status.tag-office {
+  background: rgba(30,107,64,0.25);
+  color: #4fca78;
+}
+.sidebar-bottom-status.tag-leave{
+  background: rgba(107, 30, 30, 0.25);
+  color: rgb(202, 79, 79);
 }
 .sidebar-bottom-name {
   color: #f7f4ef;

@@ -1,6 +1,6 @@
 <template>
   <div class="section">
-    <p class="label">YOUR STATUS TODAY</p>
+    <p class="label">Your status today</p>
     <div class="list">
       <div
         class="card"
@@ -24,14 +24,25 @@
         <div class="card-name">Work From Home</div>
         <div class="card-status">Remote Today</div>
       </div>
+      <div
+        class="card"
+        :class="{
+          selected_leave: selectedstatus == 'leave',
+        }"
+        @click="selectstatus('leave')"
+      >
+        <div class="card-icon">🏝️</div>
+        <div class="card-name">On Leave</div>
+        <div class="card-status">Leave</div>
+      </div>
     </div>
     <div class="submit" v-if="selectedstatus">
       <div class="submit-info">
         <div>
-          Available {{ selectedstatus === "wfo" ? "Office" : "WFH" }}— will
+          {{ message() }}— will
           notify MAP Team C
         </div>
-        <div class="submit-time">Posting as You {{ time }}</div>
+        <div class="submit-time" v-if="selectedstatus !== 'leave'">Posting as You {{ time }}</div>
       </div>
 
       <div class="notify-btn" @click="notified">Notify Group ➡️</div>
@@ -43,36 +54,61 @@
 
 <script setup>
 import { ref } from "vue";
+const { teamData } = useData();
+
 const selectedstatus = ref(null);
 const time = ref("");
-let interval = null;
 
+let interval = null;
+import { db } from "../../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
+
+const message=()=>{
+  if (selectedstatus.value ==="wfo")return " Available Office";
+  else if (selectedstatus.value ==="wfh")return " Available WFH";
+  else if (selectedstatus.value ==="leave")return "On Leave";
+}
 function selectstatus(status) {
   selectedstatus.value = status;
 }
 
+// async function submitStatus() {
+//   if (!selectedstatus.value) return;
+
+//   const webhookUrl = "https://chat.googleapis.com/v1/spaces/AAQA5SVddx8/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=Rw8He354lPvzFMGlDuBzj58ZDbfpzI9-mwuA0e4-iZU"
+//   if (!webhookUrl) {
+//     return;
+//   }
+
+//   const message = {
+//     text: `${teamData.name} is available ${selectedstatus.value} at ${time.value}`,
+//   };
+
+//   try {
+//     await fetch(webhookUrl, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(message),
+//     });
+
+//     console.log("Message sent to Google Chat");
+//   } catch (err) {
+//     console.error("Error:", err);
+//   }
+// }
 async function submitStatus() {
   if (!selectedstatus.value) return;
 
-  const webhookUrl = ""
-  if (!webhookUrl) {
-    return;
-  }
-
-  const message = {
-    text: `Vansh is available ${selectedstatus.value} at ${time.value}`,
-  };
-
   try {
-    await fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(message),
+    await addDoc(collection(db, "users"), {
+      name: "Rohan Mohan",
+      status: selectedstatus.value,
+      timestamp: Date.now()
     });
 
-    console.log("Message sent to Google Chat");
+    console.log("Saved to Firestore ✅");
   } catch (err) {
     console.error("Error:", err);
   }
@@ -108,7 +144,9 @@ onUnmounted(() => {
 }
 .label {
   color: #868584;
-  font-size: 12px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 .list {
   /* background-color:pink; */
@@ -124,16 +162,16 @@ onUnmounted(() => {
   /* width:430px; */
   /* height:200px; */
   padding: 30px;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   cursor: pointer;
 }
 .card:hover {
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  
 }
 .card-icon {
   font-size: 32px;
   margin-bottom: 20px;
-
 }
 .card-name {
   font-size: 24px;
@@ -179,6 +217,10 @@ onUnmounted(() => {
 .selected_home {
   border: 1px solid blue;
   background-color: #d0dfed;
+}
+.selected_leave{
+  border:1px solid red;
+  background-color:#f9d0d0;
 }
 /*  
 

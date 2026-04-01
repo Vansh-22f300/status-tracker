@@ -2,21 +2,21 @@
   <div class="checkin">
     <div class="header">
       <div class="header-label">Today's check-ins</div>
-      <div class="header-count">4 of 7</div>
+      <div class="header-count">{{users.length }} of 7</div>
     </div>
     <div class="feed">
-      <div class="feed-item" v-for="user in teamData" :key="user.name">
+      <div class="feed-item" v-for="user in users" :key="user.name">
         <div class="profile-pic">{{ getInitials(user.name) }}</div>
         <div class="feed-item-info">
           <div class="feed-item-name">{{ user.name }}</div>
           <div class="feed-item-msg">{{ user.msg }}</div>
         </div>
         <div class="feed-item-right">
-          <div class="checkin-time">{{ user.time }}</div>
+          <div class="checkin-time" v-if="selec">{{ user.time }}</div>
           <div
             class="status-badge"
-            :class="`tag-${user.statusCode.toLowerCase()}`">
-            {{ user.status }}
+            :class="`tag-${user.status.toLowerCase()}`">
+            {{ user.statusCode }}
           </div>
         </div>
       </div>
@@ -26,11 +26,65 @@
 
 <script setup>
 
-
-const { teamData } = useData();
-
+import { ref, onMounted } from "vue";
+import { db } from "../../firebase/config";
+import { collection, getDocs } from "firebase/firestore";
+import { onSnapshot } from "firebase/firestore";
+// const { teamData } = useData();
+const users = ref([]);
 const { getInitials } = useInitials();
 
+function formatTime(timestamp) {
+  return new Date(timestamp).toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "numeric",
+  });
+}
+
+function formatStatus(status) {
+  if(status==="wfh") return "🏠 WFH";
+  else if(status==="wfo") return "🏢 Office";
+  return "🏝️ Leave";
+}
+function formatMessage(status) {
+  if(status==="wfh") return "Available Work from Home";
+  else if(status==="wfo") return" Available at Office";
+  return "On Leave";
+}
+
+function isToday(timestamp) {
+  const today = new Date().toDateString();
+  return new Date(timestamp).toDateString() === today;
+}
+
+function fetchUsers() {
+  const querySnapshot = onSnapshot(collection(db, "users"),(snapshot)=>{
+    users.value=snapshot.docs
+    .map(doc=>({
+      id:doc.id,
+      ...doc.data()
+    }))
+    .filter(user=>isToday(user.timestamp))
+    .map(user=>({
+      ...user,
+      time:formatTime(user.timestamp),
+      msg:formatMessage(user.status),
+      statusCode:formatStatus(user.status),
+    }))
+  });
+}
+
+onMounted(() => {
+  fetchUsers();
+});
+
+
+// const { teamData } = useData();
+
+// const { getInitials } = useInitials();
+// const msg = teamData.statusCode === "wfh"
+//   ? "Available Work from Home"
+//   : "Available at Office" ;
 
 
 </script>
@@ -75,12 +129,18 @@ const { getInitials } = useInitials();
   padding: 15px;
   border-radius: 12px 12px 5px 5px;
   border: 1px solid rgb(220, 220, 220);
+
+}
+.feed-item:hover{
+  /* background-color:red; */
+    transform: translateY(5px);
+  transition: transform 0.2s ease;
 }
 
 .profile-pic {
   width: 30px;
   height: 30px;
-  color: #1a1918;
+  color: #5a5450;
   background-color: #e8e4dc;
   font-size: 11px;
   border-radius: 50%;
@@ -119,9 +179,15 @@ const { getInitials } = useInitials();
 }
 .status-badge.tag-wfh {
   background-color: #e8eef9;
+  color:#1a3b7a;
 }
 .status-badge.tag-wfo {
   background-color: #e8f4ed;
+  color:#1a6b40;
+}
+.status-badge.tag-leave {
+  background-color: #fbeaea;
+  color: #7a1a1a;
 }
 
 .checkin-time {
