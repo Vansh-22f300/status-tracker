@@ -2,12 +2,12 @@
   <h1>  History page</h1>
 </template>
 
-<script>
-
-</script>
+<script setup>
 definePageMeta({
   middleware: ['auth'],
 })
+</script >
+
 <style scoped>
 h1{
     font-size:24px;

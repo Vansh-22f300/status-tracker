@@ -79,7 +79,7 @@ async function submitStatus() {
   
   }  try {
     await addDoc(collection(db, "users"), {
-      name: "user.value.name",
+      name: user.value.name || user.value.displayName || "Unknown User",
       email: user.value.email,
       status: selectedstatus.value,
       timestamp: Date.now(),
