@@ -2,7 +2,7 @@
   <div class="checkin">
     <div class="header">
       <div class="header-label">Today's check-ins</div>
-      <div class="header-count">{{users.length }} of 7</div>
+      <div class="header-count">{{users.length }} </div>
     </div>
     <div class="feed">
       <div class="feed-item" v-for="user in users" :key="user.name">
@@ -80,13 +80,6 @@ onMounted(() => {
 
 
 // const { teamData } = useData();
-
-// const { getInitials } = useInitials();
-// const msg = teamData.statusCode === "wfh"
-//   ? "Available Work from Home"
-//   : "Available at Office" ;
-
-
 </script>
 
 <style scoped>

@@ -23,6 +23,6 @@ logs
 .env.*
 !.env.example
 
-server
-api
+# server
+# api
 config.txt

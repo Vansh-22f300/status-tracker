@@ -5,7 +5,9 @@
 <script>
 
 </script>
-
+definePageMeta({
+  middleware: ['auth'],
+})
 <style scoped>
 h1{
     font-size:24px;

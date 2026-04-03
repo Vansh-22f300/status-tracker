@@ -3,56 +3,64 @@
         <div class="login-card">
             <h1>Status Tracker</h1>
             <p>Sign in to continue.</p>
-            <button :disabled="loading" @click="signInWithGoogle">
-                {{ loading ? 'Signing in...' : 'Continue with Google' }}
+            <button type="submit" class="google-btn" @click="handleGoogleLogin" >
+                Continue with Google
             </button>
-            <p v-if="error" class="error">{{ error }}</p>
+            <form class="form-fields" @submit.prevent="handleEmailLogin">
+                <input id="form-email" v-model="email" type="email" placeholder="Email" required />
+                <input id="form-pass" v-model="password" type="password" placeholder="Password" required />
+                <button type="button" class="reset-pass">Reset Password</button>
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            <p v-if="error" class="error-text">{{ error }}</p>
+            <NuxtLink to="/signup" class="signup-link">
+                Don't have an account yet?
+            </NuxtLink>
         </div>
         <div></div>
     </div>
 </template>
-
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from 'firebase/auth'
+definePageMeta({
+  layout: 'auth',
+})
+import { ref } from 'vue'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../firebase/config'
+import { useRouter } from 'vue-router'
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
-const router = useRouter()
-const loading = ref(false)
+
+const email = ref('')
+const password = ref('')
 const error = ref('')
 
-onMounted(() => {
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            router.push('/')
-        }
-    })
-})
-
-const signInWithGoogle = async () => {
-    loading.value = true
+const handleEmailLogin = async () => {
     error.value = ''
-
     try {
-        const provider = new GoogleAuthProvider()
-        await signInWithPopup(auth, provider)
-        router.push('/')
+        const userCreds = await signInWithEmailAndPassword(auth, email.value.trim(), password.value);
+        navigateTo('/')
+        console.log("login succesfull", userCreds.user)
+        
+    } catch (err) {
+        error.value = err.message
+        console.error("login failed", err)
     } 
-    catch (err) {
-        error.value = err?.message || 'Unable to sign in. Please try again.'
-    }
-     finally {
-        loading.value = false
-    }
 }
-signOut(auth).then(() => {
-  // Sign-out successful.
-}).catch((error) => {
-  // An error happened.
-});
-</script>
+const handleGoogleLogin= async()=>{
+   try {
+        const provider = new GoogleAuthProvider();
+        const googleCreds = await signInWithPopup(auth, provider)
+        navigateTo('/')
+        console.log("Google login succesfull", googleCreds.user)
+        
+    } catch (err) {
+        error.value = err.message
+        console.error("login failed", err)
+    } 
 
+}
+</script>
 <style scoped>
 .login-page {
     min-height: 100vh;
@@ -60,45 +68,56 @@ signOut(auth).then(() => {
     align-items:center;
     justify-items:center;
     left:50%;
-    /* place-items: center; */
     background: linear-gradient(135deg, #f6f4e9 0%, #e9f1e5 100%);
 }
 
 .login-card {
-    width: min(420px, 92vw);
-    padding: 2rem;
+    width: 420px;
+    padding: 32px;
     border-radius: 16px;
-    background: #ffffff;
+    /* background: #ffffff; */
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
     text-align: center;
 }
 
-h1 {
-    margin: 0;
-}
 
-p {
-    color: #4f4f4f;
-}
-
-button {
-    width: 100%;
-    border: none;
+.login-btn {
+    /* width: 100%; */
     border-radius: 10px;
-    padding: 0.85rem 1rem;
-    background: #235b37;
-    color: #fff;
-    font-size: 1rem;
+    padding: 15px;
+    background: #019323;
+    color: #4f4f4f;
+    font-size: 16px;
     cursor: pointer;
 }
-
-button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+.google-btn {
+    border-radius: 10px;
+    padding: 15px;
+    background: #c59889;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    border: 1px solid #e8e4dc;
+    cursor:pointer;
+}
+.form-fields{
+    /* background-color:pink; */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
 }
 
-.error {
-    margin-top: 0.75rem;
+.error-text {
+    margin-top: 12px;
     color: #b00020;
+}
+
+.success-text {
+    margin-top: 12px;
+    color: #1c8434;
 }
 </style>

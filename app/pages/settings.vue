@@ -2,8 +2,8 @@
   <h1>  Settings page</h1>
 </template>
 
-<script>
-export default {
-
-}
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+})
 </script>

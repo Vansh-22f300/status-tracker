@@ -38,11 +38,10 @@
     </div>
     <div class="submit" v-if="selectedstatus">
       <div class="submit-info">
-        <div>
-          {{ message() }}— will
-          notify MAP Team C
+        <div>{{ message() }}— will notify MAP Team C</div>
+        <div class="submit-time" v-if="selectedstatus !== 'leave'">
+          Posting as You {{ time }}
         </div>
-        <div class="submit-time" v-if="selectedstatus !== 'leave'">Posting as You {{ time }}</div>
       </div>
 
       <div class="notify-btn" @click="notified">Notify Group ➡️</div>
@@ -55,7 +54,7 @@
 <script setup>
 import { ref } from "vue";
 const { teamData } = useData();
-
+const {user} = useUser();
 const selectedstatus = ref(null);
 const time = ref("");
 
@@ -63,59 +62,61 @@ let interval = null;
 import { db } from "../../firebase/config";
 import { collection, addDoc } from "firebase/firestore";
 
-const message=()=>{
-  if (selectedstatus.value ==="wfo")return " Available Office";
-  else if (selectedstatus.value ==="wfh")return " Available WFH";
-  else if (selectedstatus.value ==="leave")return "On Leave";
-}
+const message = () => {
+  if (selectedstatus.value === "wfo") return " Available Office";
+  else if (selectedstatus.value === "wfh") return " Available WFH";
+  else if (selectedstatus.value === "leave") return "On Leave";
+};
 function selectstatus(status) {
   selectedstatus.value = status;
 }
 
-// async function submitStatus() {
-//   if (!selectedstatus.value) return;
-
-//   const webhookUrl = "https://chat.googleapis.com/v1/spaces/AAQA5SVddx8/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=Rw8He354lPvzFMGlDuBzj58ZDbfpzI9-mwuA0e4-iZU"
-//   if (!webhookUrl) {
-//     return;
-//   }
-
-//   const message = {
-//     text: `${teamData.name} is available ${selectedstatus.value} at ${time.value}`,
-//   };
-
-//   try {
-//     await fetch(webhookUrl, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(message),
-//     });
-
-//     console.log("Message sent to Google Chat");
-//   } catch (err) {
-//     console.error("Error:", err);
-//   }
-// }
 async function submitStatus() {
   if (!selectedstatus.value) return;
-
-  try {
+  if(!user.value || !user.value.email) {
+    console.log("data not ready");
+    return;
+  
+  }  try {
     await addDoc(collection(db, "users"), {
-      name: "Rohan Mohan",
+      name: "user.value.name",
+      email: user.value.email,
       status: selectedstatus.value,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-
+    // console.log(user.value?.email);
     console.log("Saved to Firestore ✅");
   } catch (err) {
     console.error("Error:", err);
   }
 }
+async function handlewebhook(){
+  const statusValue={
+    wfo:"In Office",
+    wfh:"Work From Home",
+    leave:"On Leave"
+  }
+  try{
+    await $fetch("/api/notify", {
+      method:"POST",
+      body:{
+        status:statusValue[selectedstatus.value],
+        name: user.value?.displayName || user.value?.name || user.value?.email || "Unknown User",
+        time: time.value,
+      }
+    });
+    console.log("sent to google chat space")
+  }
+  catch(err){
+    console.log("webhook failed",err);
+  }
+
+}
 
 function notified() {
   submitStatus();
+  handlewebhook();
+  // console.log(user.value);
   console.log("Posted", selectedstatus.value);
   console.log(time);
 }
@@ -166,11 +167,10 @@ onUnmounted(() => {
 }
 .card:hover {
   /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 .card-icon {
-  width:45px;
+  width: 45px;
   font-size: 32px;
   margin-bottom: 20px;
 }
@@ -219,9 +219,9 @@ onUnmounted(() => {
   border: 1px solid blue;
   background-color: #d0dfed;
 }
-.selected_leave{
-  border:1px solid red;
-  background-color:#f9d0d0;
+.selected_leave {
+  border: 1px solid red;
+  background-color: #f9d0d0;
 }
 /*  
 

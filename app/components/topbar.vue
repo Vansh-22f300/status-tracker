@@ -7,15 +7,26 @@
     </div>
 
     <div class="topbar-right">
-      <span class="live">Live {{ liveCount }} Members</span>
+      <span class="logout" @click="handleLogout">Logout</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
+import { auth } from '../../firebase/config'
+import { signOut } from "firebase/auth"; 
 
-const liveCount = ref(7);
+async function handleLogout(){
+  try{
+    await signOut(auth);
+    navigateTo('/login')
+    console.log("User Logout successful")
+  }
+  catch(err){
+    console.error("Logout fail", err)
+}
+}
 
 const currentDate=new Date().toLocaleDateString(
   'en-IN',
@@ -50,12 +61,17 @@ const currentDate=new Date().toLocaleDateString(
   font-size: 12px;
   font-weight: normal;
 }
-.live {
+.logout {
   background-color: #e8f5e9;
   color: #4caf50;
   border-radius: 15px;
-    padding: 5px 10px;
-    border: 1px solid #4caf50;
-    font-size:12px;
+  padding: 6px 12px;
+  border: 1px solid #4caf50;
+  font-size: 12px;
+  cursor: pointer;
+}
+.logout:hover{
+  background-color: #4caf50;
+  color: white;
 }
 </style>
