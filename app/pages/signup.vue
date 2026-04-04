@@ -32,8 +32,10 @@ definePageMeta({
   layout: "auth",
 });
 import { ref } from "vue";
-import { auth } from "../../firebase/config";
+import { auth,db } from "../../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+
 
 const name = ref("");
 const email = ref("");
@@ -48,6 +50,17 @@ const handleSignup = async () => {
       email.value.trim(),
       password.value,
     );
+
+    const user = userCreds.user;
+
+    // 🔥 Step 2: Store name in Firestore (profiles)
+    await setDoc(doc(db, "profiles", user.uid), {
+      name: name.value,
+      email: user.email,
+    });
+
+    console.log("User + Profile created ✅");
+
     navigateTo("/");
     console.log("signup succesfull", userCreds.user);
   } catch (err) {

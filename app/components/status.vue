@@ -54,7 +54,7 @@
 <script setup>
 import { ref } from "vue";
 const { teamData } = useData();
-const {user} = useUser();
+const {user ,profile} = useUser();
 const selectedstatus = ref(null);
 const time = ref("");
 
@@ -79,7 +79,7 @@ async function submitStatus() {
   
   }  try {
     await addDoc(collection(db, "users"), {
-      name: user.value.name || user.value.displayName || "Unknown User",
+      name: profile.value?.name || user.value?.displayName || "Unknown User",
       email: user.value.email,
       status: selectedstatus.value,
       timestamp: Date.now(),
@@ -101,7 +101,7 @@ async function handlewebhook(){
       method:"POST",
       body:{
         status:statusValue[selectedstatus.value],
-        name: user.value?.displayName || user.value?.name || user.value?.email || "Unknown User",
+        name: profile.value?.name || user.value?.displayName || "Unknown User",
         time: time.value,
       }
     });

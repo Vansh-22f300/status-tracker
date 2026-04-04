@@ -1,17 +1,19 @@
 <template>
   <div class="sidebar">
     <div class="sidebar-top">
-      <span class="sidebar-title">MAP 
+      <div class="sidebar-title">
+        MAP
         <span class="sidebar-title-team">Team</span>
-      </span><br />
-      <span class="sidebar-subtitle">AVAILABILITY . TEAM C</span>
+      </div>
+      <div class="sidebar-subtitle">AVAILABILITY . TEAM C</div>
     </div>
     <div class="sidebar-member">
-      <span class="profile-pic">AB</span>
+      <span class="profile-pic">{{
+        getInitials(profile?.name || user.value?.displayName || "User")
+      }}</span>
       <div class="sidebar-member-info">
-      <span class="sidebar-member-name">You (Dev)</span>
-      <span class="user-role">Member . Team C</span>
-      
+        <span class="sidebar-member-name">{{ profile?.name ||user.value?.displayName || "User" }}</span>
+        <span class="user-role">Member . Team C</span>
       </div>
     </div>
     <div class="navigation">
@@ -25,44 +27,49 @@
       <NuxtLink to="/history" class="navigation-tile"
         ><span class="navigation-icon">◷</span>History</NuxtLink
       >
-      <NuxtLink to="/settings" class="navigation-tile"
+      <!-- <NuxtLink to="/settings" class="navigation-tile"
         ><span class="navigation-icon">◷</span>Settings</NuxtLink
-      >
+      > -->
     </div>
 
     <div class="sidebar-bottom">
       <div class="sidebar-bottom-title">Checked in today</div>
 
       <div class="sidebar-bottom-list">
-
-        <div class="sidebar-bottom-item" v-for="user in users" :key=user.id>
-          <span class="profile-pic">{{getInitials(user.name)}}</span>
+        <div class="sidebar-bottom-item" v-for="user in users" :key="user.id">
+          <span class="profile-pic">{{ getInitials(user.name) }}</span>
           <div class="sidebar-bottom-item-info">
-            <span class="sidebar-bottom-name">{{user.name}}</span>
-            <span class="sidebar-bottom-time">{{user.time}}</span>
+            <span class="sidebar-bottom-name">{{ user.name }}</span>
+            <span class="sidebar-bottom-time">{{ user.time }}</span>
           </div>
 
-          <span class="sidebar-bottom-status"
-          :class="`tag-${user.status.toLowerCase()}`"
-          >{{user.status}}</span>
+          <span
+            class="sidebar-bottom-status"
+            :class="`tag-${user.status.toLowerCase()}`"
+            >{{ user.status }}</span
+          >
         </div>
-
+        <div v-if="!users.length" class="sidebar-empty">
+          No one checked in yet.
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { db } from "../../firebase/config";
 import { collection } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 // const { teamData } = useData();
 const users = ref([]);
+const { profile,user } = useUser();
+
 const { getInitials } = useInitials();
-  
-function formatTime(timestamp,status) {
-  if(status==="leave") return "N/A";
+let stopUsersListener = null;
+
+function formatTime(timestamp, status) {
+  if (status === "leave") return;
   return new Date(timestamp).toLocaleTimeString("en-IN", {
     hour: "numeric",
     minute: "numeric",
@@ -74,8 +81,8 @@ function formatTime(timestamp,status) {
 //   else if (status === "leave") return "On Leave";
 // }
 function formatStatus(status) {
-  if(status==="wfh") return "WFH";
-  else if(status==="wfo") return "Office";
+  if (status === "wfh") return "WFH";
+  else if (status === "wfo") return "Office";
   return "Leave";
   // return status === "wfh" ? "WFH" : "Office";
 }
@@ -86,28 +93,30 @@ function isToday(timestamp) {
 }
 
 function fetchUsers() {
-  const querySnapshot = onSnapshot(collection(db, "users"),(snapshot)=>{
-    users.value=snapshot.docs
-    .map(doc=>({
-      id:doc.id,
-      ...doc.data()
-    }))
-    .filter(user=>isToday(user.timestamp))
-    .map(user=>({
-      ...user,
-      time:formatTime(user.timestamp),
-      status:formatStatus(user.status),
-    }))
+  stopUsersListener = onSnapshot(collection(db, "users"), (snapshot) => {
+    users.value = snapshot.docs
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      .filter((user) => isToday(user.timestamp))
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .map((user) => ({
+        ...user,
+        time: formatTime(user.timestamp, user.status),
+        status: formatStatus(user.status),
+      }));
   });
 }
 
 onMounted(() => {
   fetchUsers();
 });
-onUnmounted(()=>{
-  fetchUsers();
-})
-
+onUnmounted(() => {
+  if (typeof stopUsersListener === "function") {
+    stopUsersListener();
+  }
+});
 </script>
 <!-- <script setup>
 
@@ -139,7 +148,7 @@ onMounted(() => {
   width: 220px;
   background-color: #1a1918;
   padding: 30px;
-  height:100%;
+  height: 100%;
 }
 .sidebar-title {
   color: #f7f4ef;
@@ -147,8 +156,8 @@ onMounted(() => {
   font-weight: bold;
   margin-bottom: 5px;
 }
-.sidebar-title-team{
-  font-style:italic;
+.sidebar-title-team {
+  font-style: italic;
   color: #a09a90;
 }
 .sidebar-top {
@@ -156,37 +165,35 @@ onMounted(() => {
   margin-bottom: 40px;
   color: #b6b5b5;
 }
-.sidebar-subtitle{
-  color:  #5c5750;
+.sidebar-subtitle {
+  color: #5c5750;
   font-size: 11px;
-  margin-bottom:40px;
-  letter-spacing:1.5px;
+  margin-bottom: 40px;
+  letter-spacing: 1.5px;
 }
 .sidebar-member {
   background-color: rgba(255, 255, 255, 0.05);
   padding: 14px 16px;
   border-radius: 12px;
   margin-bottom: 36px;
-  gap:12px;
-  height:40px;
+  gap: 12px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  cursor:pointer;
-  
+  cursor: pointer;
 }
-.sidebar-member-info{
-    display: flex;
-    flex-direction: column;
-  
+.sidebar-member-info {
+  display: flex;
+  flex-direction: column;
 }
-.sidebar-member-name{
-    color: #f7f4ef;
-    font-size: 14px;
+.sidebar-member-name {
+  color: #f7f4ef;
+  font-size: 14px;
 }
-.user-role{
+.user-role {
   color: #5c5750;
-  font-size:11px;
+  font-size: 11px;
 }
 .profile-pic {
   width: 30px;
@@ -203,25 +210,24 @@ onMounted(() => {
 .navigation {
   display: flex;
   flex-direction: column;
-  cursor:pointer;
+  cursor: pointer;
 }
 .navigation a {
-  height: 10px;
-color: #c4c4c4;
+  color: #c4c4c4;
   text-decoration: none;
   margin-bottom: 2px;
   border-radius: 5px;
   font-size: 14px;
   align-items: center;
-  padding: 15px;
+  padding: 12px 15px;
 }
 
-.navigation a:hover{
-  background: rgba(255,255,255,0.05);
+.navigation a:hover {
+  background: rgba(255, 255, 255, 0.05);
   color: #c9c3b8;
 }
 .router-link-exact-active {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   color: #f0ece6;
   /* padding:15px; */
 }
@@ -232,14 +238,13 @@ color: #c4c4c4;
   gap: 10px;
 }
 .navigation-title {
-    color:#5e564a;
+  color: #5e564a;
 
   /* color: #5e564a; */
   font-size: 10px;
   margin-bottom: 10px;
-    text-transform:uppercase;
-    letter-spacing:1.5px;
-
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
 }
 .sidebar-bottom {
   margin-top: 30px;
@@ -247,9 +252,9 @@ color: #c4c4c4;
 
 .sidebar-bottom-title {
   /* color: #3d3830; */
-  color:#5e564a;
-  text-transform:uppercase;
-  letter-spacing:1.5px;
+  color: #5e564a;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
   font-size: 10px;
   margin-bottom: 15px;
 }
@@ -263,34 +268,32 @@ color: #c4c4c4;
   align-items: center;
   gap: 12px;
   padding: 8px;
-    border-bottom: 1px solid #6a67678c;
-      border-bottom: 1px solid #3d3830;
+  border-bottom: 1px solid #3d3830;
 
   /* background-color:rgb(203, 203, 11); */
-
 }
 
 .sidebar-bottom-item-info {
   display: flex;
   flex-direction: column;
-  margin-right:auto;
+  margin-right: auto;
 }
 
 .sidebar-bottom-status {
-    margin-left: 12px;
-    border-radius: 22px;
-    padding: 3px 8px;
-    font-size: 10px;
+  margin-left: 12px;
+  border-radius: 22px;
+  padding: 3px 8px;
+  font-size: 10px;
 }
 .sidebar-bottom-status.tag-wfh {
-  background: rgba(60,100,200,0.2);
+  background: rgba(60, 100, 200, 0.2);
   color: #7aabf7;
 }
 .sidebar-bottom-status.tag-office {
-  background: rgba(30,107,64,0.25);
+  background: rgba(30, 107, 64, 0.25);
   color: #4fca78;
 }
-.sidebar-bottom-status.tag-leave{
+.sidebar-bottom-status.tag-leave {
   background: rgba(107, 30, 30, 0.25);
   color: rgb(202, 79, 79);
 }
@@ -302,5 +305,9 @@ color: #c4c4c4;
   color: #767474;
   font-size: 12px;
 }
-
+.sidebar-empty {
+  color: #767474;
+  font-size: 12px;
+  padding: 8px;
+}
 </style>
