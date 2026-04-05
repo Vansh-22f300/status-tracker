@@ -1,25 +1,26 @@
 <template>
-  <div class="Signup-page">
+  <div class="signup-page">
     <div class="signup-card">
       <div class="header">
-      <h1>Join Status Tracker</h1>
-      <p>Create an account to get started.</p>
+        <h1>Join Status Tracker</h1>
+        <p>Create an account to get started.</p>
       </div>
       <form class="form-fields" @submit.prevent="handleSignup">
-        <label>Name:<input id="form-name" v-model="name" type="text" placeholder="Full Name" required />
-        </label>
-        <label>Email:
-          <input id="form-email" v-model="email" type="email" placeholder="Email" required />
-        </label>
+        <label for="form-name" class="field-label">Name</label>
+        <input id="form-name" v-model="name" type="text" placeholder="Full Name" required />
 
-       <label>Password:
-          <input id="form-pass" v-model="password" type="password" placeholder="Password" required />
-        </label> 
-              <button type="submit" class="signup-btn">Sign Up</button>
+        <label for="form-email" class="field-label">Email</label>
+        <input id="form-email" v-model="email" type="email" placeholder="Email" required />
 
+        <label for="form-pass" class="field-label">Password</label>
+        <input id="form-pass" v-model="password" type="password" placeholder="Password" required />
+
+        <button type="submit" class="signup-btn" :disabled="isLoading">
+          {{ isLoading ? 'Creating account...' : 'Sign Up' }}
+        </button>
       </form>
 
-      <p class="error-text">{{ error }}</p>
+      <p v-if="error" class="error-text">{{ error }}</p>
       <NuxtLink to="/login" class="login-link">
         Already have an account? Log in
       </NuxtLink>
@@ -41,8 +42,11 @@ const name = ref("");
 const email = ref("");
 const password = ref("");
 const error = ref("");
+const isLoading = ref(false);
 
 const handleSignup = async () => {
+  if (isLoading.value) return;
+  isLoading.value = true;
   error.value = "";
   try {
     const userCreds = await createUserWithEmailAndPassword(
@@ -53,77 +57,109 @@ const handleSignup = async () => {
 
     const user = userCreds.user;
 
-    // 🔥 Step 2: Store name in Firestore (profiles)
     await setDoc(doc(db, "profiles", user.uid), {
       name: name.value,
       email: user.email,
     });
 
-    console.log("User + Profile created ✅");
+    console.log("User + Profile created successfully", userCreds.user);
 
     navigateTo("/");
     console.log("signup succesfull", userCreds.user);
   } catch (err) {
     error.value = err.message;
     console.error("signup failed", err);
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
 
 <style scoped>
-.Signup-page {
-  display: flex;
-  justify-content: center;
+.signup-page {
+  min-height: 100vh;
+  display: grid;
   align-items: center;
-  height: 100vh;
+  justify-items: center;
 }
-.header{
+
+.header {
   text-align: center;
   margin-bottom: 20px;
 }
+
 .signup-card {
-  background-color: white;
+  width: 420px;
   padding: 32px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  width: 350px;
-  /* text-align: center; */
+  border-radius: 16px;
+  background: #fff8ef;
+  border: 1px solid rgba(145, 96, 42, 0.18);
+  box-shadow: 0 24px 45px rgba(81, 55, 27, 0.16);
 }
 
 .form-fields {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.field-label {
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444444;
+  margin-bottom: -8px;
+}
+
+.form-fields input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #b9aa96;
+  background: #ffffff;
+}
+
+.form-fields input::placeholder {
+  color: #6b6b6b;
 }
 
 .signup-btn {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding: 10px;
-  background-color: #4caf50;
-  color: white;
+  width: 60%;
+  align-self: center;
+  border-radius: 10px;
+  padding: 15px;
+  background: #019323;
+  color: #ffffff;
+  font-size: 16px;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
 }
 
 .signup-btn:hover {
-  background-color: #30a936;
+  background: #019323;
+  opacity: 0.7;
+}
+
+.signup-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .error-text {
-  color: red;
-  margin-top: 1rem;
+  margin-top: 12px;
+  color: #b00020;
 }
 
 .login-link {
-  margin-top: 10px;
-  color: #555;
-  cursor: pointer;
+  display: block;
+  margin-top: 14px;
+  color: #3c3c3c;
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
 }
 
 .login-link:hover {
-  color: rgb(81, 73, 58);
+ text-decoration: underline;
 }
 </style>

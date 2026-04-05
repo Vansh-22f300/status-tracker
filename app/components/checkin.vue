@@ -65,6 +65,7 @@ function fetchUsers() {
       ...doc.data()
     }))
     .filter(user=>isToday(user.timestamp))
+    .sort((a, b) => b.timestamp - a.timestamp)  
     .map(user=>({
       ...user,
       time:formatTime(user.timestamp),
