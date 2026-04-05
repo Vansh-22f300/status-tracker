@@ -151,7 +151,9 @@ const handleGoogleLogin= async()=>{
     position: relative;
     overflow: hidden;
 }
-
+.gsi-material-button:hover{
+    transform: translateY(1px);
+}
 .gsi-material-button:disabled {
     opacity: 0.7;
     cursor: not-allowed;
