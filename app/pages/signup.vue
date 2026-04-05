@@ -7,16 +7,39 @@
       </div>
       <form class="form-fields" @submit.prevent="handleSignup">
         <label for="form-name" class="field-label">Name</label>
-        <input id="form-name" v-model="name" type="text" placeholder="Full Name" required />
+        <input
+          id="form-name"
+          v-model="name"
+          type="text"
+          placeholder="Full Name"
+          required
+        />
 
         <label for="form-email" class="field-label">Email</label>
-        <input id="form-email" v-model="email" type="email" placeholder="Email" required />
+        <input
+          id="form-email"
+          v-model="email"
+          type="email"
+          placeholder="Email"
+          required
+        />
 
         <label for="form-pass" class="field-label">Password</label>
-        <input id="form-pass" v-model="password" type="password" placeholder="Password" required />
+        <input
+          id="form-pass"
+          v-model="password"
+          type="password"
+          placeholder="Password"
+          required
+        />
+
+        <label for="form-confirm-pass" class="field-label"
+          >Confirm Password</label
+        >
+        <input id="form-confirm-pass" v-model="confirmPassword" type="password" placeholder="Confirm Password" required />
 
         <button type="submit" class="signup-btn" :disabled="isLoading">
-          {{ isLoading ? 'Creating account...' : 'Sign Up' }}
+          {{ isLoading ? "Creating account..." : "Sign Up" }}
         </button>
       </form>
 
@@ -33,19 +56,24 @@ definePageMeta({
   layout: "auth",
 });
 import { ref } from "vue";
-import { auth,db } from "../../firebase/config";
+import { auth, db } from "../../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-
 
 const name = ref("");
 const email = ref("");
 const password = ref("");
+const confirmPassword = ref("");
 const error = ref("");
 const isLoading = ref(false);
 
 const handleSignup = async () => {
   if (isLoading.value) return;
+  if (password.value !== confirmPassword.value) {
+    error.value = "Passwords do not match";
+    return;
+  }
+
   isLoading.value = true;
   error.value = "";
   try {
@@ -160,6 +188,6 @@ const handleSignup = async () => {
 }
 
 .login-link:hover {
- text-decoration: underline;
+  text-decoration: underline;
 }
 </style>
