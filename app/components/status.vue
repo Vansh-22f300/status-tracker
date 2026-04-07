@@ -60,8 +60,7 @@ const time = ref("");
 
 let interval = null;
 import { db } from "../../firebase/config";
-import { collection, addDoc } from "firebase/firestore";
-
+import { collection, addDoc, query, where, getDoc, updateDoc, setDoc, doc } from "firebase/firestore";
 const message = () => {
   if (selectedstatus.value === "wfo") return " Available Office";
   else if (selectedstatus.value === "wfh") return " Available WFH";
@@ -70,26 +69,39 @@ const message = () => {
 function selectstatus(status) {
   selectedstatus.value = status;
 }
-
 async function submitStatus() {
   if (!selectedstatus.value) return;
-  if(!user.value || !user.value.email) {
+
+  if (!user.value || !user.value.email) {
     console.log("data not ready");
     return;
-  
-  }  try {
-    await addDoc(collection(db, "users"), {
+  }
+
+  try {
+    const today = new Date().toLocaleDateString("en-CA");
+    console.log(today);
+    const docId = `${user.value.uid}_${today}`;
+    console.log(docId);
+    const existing = await getDoc(doc(db,"status",docId));
+
+    if (existing.exists()) {
+      alert("Already checked in today ");
+      return;
+    }
+    await setDoc(doc(db, "status", docId), {
+      uid: user.value.uid,
       name: profile.value?.name || user.value?.displayName || "Unknown User",
       email: user.value.email,
       status: selectedstatus.value,
       timestamp: Date.now(),
     });
-    // console.log(user.value?.email);
-    console.log("Saved to Firestore ✅");
+
+    console.log("Saved or Updated ");
   } catch (err) {
     console.error("Error:", err);
   }
 }
+
 async function handlewebhook(){
   const statusValue={
     wfo:"In Office",

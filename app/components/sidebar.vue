@@ -9,10 +9,12 @@
     </div>
     <div class="sidebar-member">
       <span class="profile-pic">{{
-        getInitials(profile?.name || user.value?.displayName || "User")
+        getInitials(profile?.name || user?.displayName || "User")
       }}</span>
       <div class="sidebar-member-info">
-        <span class="sidebar-member-name">{{ profile?.name ||user.value?.displayName || "User" }}</span>
+        <span class="sidebar-member-name">{{
+          profile?.name || user?.displayName || "User"
+        }}</span>
         <span class="user-role">Member . Team C</span>
       </div>
     </div>
@@ -63,7 +65,7 @@ import { collection } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 // const { teamData } = useData();
 const users = ref([]);
-const { profile,user } = useUser();
+const { profile, user } = useUser();
 
 const { getInitials } = useInitials();
 let stopUsersListener = null;
@@ -93,7 +95,7 @@ function isToday(timestamp) {
 }
 
 function fetchUsers() {
-  stopUsersListener = onSnapshot(collection(db, "users"), (snapshot) => {
+  stopUsersListener = onSnapshot(collection(db, "status"), (snapshot) => {
     users.value = snapshot.docs
       .map((doc) => ({
         id: doc.id,

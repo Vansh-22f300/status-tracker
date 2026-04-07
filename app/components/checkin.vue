@@ -58,7 +58,7 @@ function isToday(timestamp) {
 }
 
 function fetchUsers() {
-  const querySnapshot = onSnapshot(collection(db, "users"),(snapshot)=>{
+  const querySnapshot = onSnapshot(collection(db, "status"),(snapshot)=>{
     users.value=snapshot.docs
     .map(doc=>({
       id:doc.id,

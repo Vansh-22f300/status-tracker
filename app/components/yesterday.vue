@@ -23,7 +23,6 @@ import { ref, onMounted } from "vue";
 import { db } from "../../firebase/config";
 import { collection, getDocs } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
-// const { teamData } = useData();
 const users = ref([]);
 
 function formatStatus(status) {
@@ -39,7 +38,7 @@ function yesterday(timestamp) {
 }
 
 function fetchUsers() {
-  const querySnapshot = onSnapshot(collection(db, "users"), (snapshot) => {
+  const querySnapshot = onSnapshot(collection(db, "status"), (snapshot) => {
     users.value = snapshot.docs
       .map((doc) => ({
         id: doc.id,

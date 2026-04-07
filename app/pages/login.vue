@@ -25,12 +25,24 @@
                 <label for="form-pass" class="field-label">Password</label>
                 <input id="form-pass" v-model="password" type="password" placeholder="Enter your Password..." required />
                 <div class="reset-row">
-                    <button type="button" class="reset-pass">Reset Password</button>
+                    <button type="button" class="reset-pass" @click="showReset=true">Reset Password</button>
                 </div>
                 <button type="submit" class="login-btn" :disabled="isLoading">
                     {{ isLoading ? 'Logging in...' : 'Login' }}
                 </button>
             </form>
+            <div v-if="showReset">
+                <div class="reset-page">
+                    <h3>Reset your Password</h3>
+                    <input v-model="resetEmail" type="email" placeholder="Enter Your Email" />
+                    <div class="actions">
+                        <button @click="handleResetPassword">Send</button>
+                        <button @click="showReset=false">Cancel</button>
+                    </div>
+
+                </div>
+            </div>
+
             <p v-if="error" class="error-text">{{ error }}</p>
             <p v-if="successMessage" class="success-text">{{ successMessage }}</p>
             <NuxtLink to="/signup" class="signup-link">
@@ -45,7 +57,7 @@ definePageMeta({
   layout: 'auth',
 })
 import { ref } from 'vue'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword ,sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../../firebase/config'
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
@@ -54,6 +66,8 @@ const email = ref('')
 const password = ref('')
 const error = ref('')
 const successMessage = ref('')
+const resetEmail=ref('');
+const showReset=ref(false);
 const isLoading = ref(false)
 
 const handleEmailLogin = async () => {
@@ -95,6 +109,24 @@ const handleGoogleLogin= async()=>{
         isLoading.value = false
     }
 
+}
+
+const handleResetPassword=async()=>{
+    if(!resetEmail.value){
+        error.value="Please enter your email address";
+        return ;
+    }
+    error.value="";
+    successMessage.value="";
+    try{    
+        await sendPasswordResetEmail(auth, resetEmail.value.trim());
+        showReset.value=false;
+        successMessage.value="Reset Password Mail sent";
+    }
+    catch(err){
+        error.value=err.message;
+        console.log("Reset error",err)
+    }
 }
 </script>
 <style scoped>
@@ -272,5 +304,9 @@ const handleGoogleLogin= async()=>{
     margin-top: 12px;
     color: #1c8434;
     font-weight:600;
+}
+
+.reset-page{
+    background-color:rgba(145, 96, 42, 0.18);
 }
 </style>
