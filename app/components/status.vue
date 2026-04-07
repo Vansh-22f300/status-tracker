@@ -82,12 +82,12 @@ async function submitStatus() {
     console.log(today);
     const docId = `${user.value.uid}_${today}`;
     console.log(docId);
-    const existing = await getDoc(doc(db,"status",docId));
+    // const existing = await getDoc(doc(db,"status",docId));
 
-    if (existing.exists()) {
-      alert("Already checked in today ");
-      return;
-    }
+    // if (existing.exists()) {
+    //   alert("Already checked in today ");
+    //   return;
+    // }
     await setDoc(doc(db, "status", docId), {
       uid: user.value.uid,
       name: profile.value?.name || user.value?.displayName || "Unknown User",
