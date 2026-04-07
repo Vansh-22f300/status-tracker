@@ -23,15 +23,9 @@
       <NuxtLink to="/" class="navigation-tile">
         <span class="navigation-icon">◷</span>Today</NuxtLink
       >
-      <NuxtLink to="/team" class="navigation-tile"
-        ><span class="navigation-icon">◷</span>Team view</NuxtLink
-      >
       <NuxtLink to="/history" class="navigation-tile"
         ><span class="navigation-icon">◷</span>History</NuxtLink
       >
-      <!-- <NuxtLink to="/settings" class="navigation-tile"
-        ><span class="navigation-icon">◷</span>Settings</NuxtLink
-      > -->
     </div>
 
     <div class="sidebar-bottom">
