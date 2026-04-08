@@ -1,13 +1,9 @@
 <template>
   <div class="topbar">
     <div class="topbar-left">
-      <span
-        >Welcome ,<span class="name">{{
-          profile?.name || user?.displayName || "User"
-        }}</span></span
-      ><br />
+      <span>Good Morning</span><br />
 
-      <span class="topbar-left-date">{{ currentDate }}</span>
+      <span class="topbar-left-date">{{ currentDate}}</span>
     </div>
 
     <div class="topbar-right">
@@ -17,27 +13,27 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { auth } from "../../firebase/config";
-import { signOut } from "firebase/auth";
-const { profile, user } = useUser();
+import { ref } from 'vue'
+import { auth } from '../../firebase/config'
+import { signOut } from "firebase/auth"; 
 
-async function handleLogout() {
-  try {
+async function handleLogout(){
+  try{
     await signOut(auth);
-    navigateTo("/login");
-    console.log("User Logout successful");
-  } catch (err) {
-    console.error("Logout fail", err);
+    navigateTo('/login')
+    console.log("User Logout successful")
   }
+  catch(err){
+    console.error("Logout fail", err)
+}
 }
 
-const currentDate = new Date().toLocaleDateString("en-IN", {
-  weekday: "long",
-  day: "numeric",
-  year: "numeric",
-  month: "long",
-});
+const currentDate=new Date().toLocaleDateString(
+  'en-IN',
+  { weekday: 'long', day: 'numeric', year: 'numeric', month: 'long' }
+);
+
+
 </script>
 
 <style scoped>
@@ -50,7 +46,7 @@ const currentDate = new Date().toLocaleDateString("en-IN", {
   background-color: #fdfcfa;
   /* background-color:blue; */
   padding: 0 30px;
-  border-bottom: 1px solid rgb(207, 205, 205);
+  border-bottom:1px solid rgb(207, 205, 205);
 }
 .topbar-left {
   color: #1a1918;
@@ -58,12 +54,12 @@ const currentDate = new Date().toLocaleDateString("en-IN", {
 
   font-size: 20px;
   font-weight: bold;
-  letter-spacing: 0.3px;
+  letter-spacing:0.3px;
 }
 .topbar-left-date {
   color: #868584;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: normal;
 }
 .logout {
   background-color: #e8f5e9;
@@ -74,12 +70,8 @@ const currentDate = new Date().toLocaleDateString("en-IN", {
   font-size: 12px;
   cursor: pointer;
 }
-.logout:hover {
+.logout:hover{
   background-color: #4caf50;
   color: white;
-}
-.name {
-  color: #4caf50;
-  font-weight: bold;
 }
 </style>
