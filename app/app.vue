@@ -9,8 +9,8 @@
 </template>
 
 <script setup>
-const { isLoaded } = useUser()
-
+const { isLoaded } = useUser();
+import { ClipLoader } from "vue-spinner";
 </script>
 
 <style>
@@ -22,18 +22,15 @@ body {
 
 .loader-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(204, 206, 197, 0.4);
-  z-index: 999;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 999999; 
   pointer-events: none;
-}
+  isolation: isolate; 
+  animation: loader 1.5s ease-in-out infinite;
 
+}
 .loader-clip {
   animation: loader 1.5s ease-in-out infinite;
 }
