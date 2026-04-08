@@ -2,7 +2,7 @@
   <div class="sidebar">
     <div class="sidebar-top">
       <div class="sidebar-title">
-        DEV
+        MAP
         <span class="sidebar-title-team">Team</span>
       </div>
       <div class="sidebar-subtitle">AVAILABILITY . TEAM C</div>
