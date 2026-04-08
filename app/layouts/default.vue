@@ -1,31 +1,28 @@
 <template>
-  <div>
-    <div class="layout">
-      <nav>
-        <sidebar></sidebar>
-      </nav>
+  <div class="layout">
+    <nav>
+      <sidebar />
+    </nav>
 
-      <div class="main-content">
-        <topbar></topbar>
-        <NuxtPage />
-      </div>
+    <div class="main-content">
+      <topbar />
+      <slot />  
     </div>
   </div>
 </template>
 
 
+  <script setup>
 
-<script setup>
+  </script>
 
-</script>
+  <style scoped>
 
-<style scoped>
-
-.layout {
-  display: flex;
-  min-height: 100vh;
-}
-.main-content {
-  width: 100%;
-}
-</style>
+  .layout {
+    display: flex;
+    min-height: 100vh;
+  }
+  .main-content {
+    width: 100%;
+  }
+  </style>
