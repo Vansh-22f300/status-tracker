@@ -1,15 +1,11 @@
 <template>
-  <div v-if="isLoaded">
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
+  <div v-if="!isLoaded" class="loader-container">
+    <ClipLoader :loading="true" color="#5dc596" size="85px" />
   </div>
 
-  <div v-else class="loader-container">
-    <div class="loader-clip">
-      <ClipLoader :loading="true" color="green" size="68px" />
-    </div>
-  </div>
+  <NuxtLayout v-if="isLoaded">
+    <NuxtPage />
+  </NuxtLayout>
 </template>
 
 <script setup>
@@ -26,18 +22,15 @@ body {
 
 .loader-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(204, 206, 197, 0.4);
-  z-index: 999;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 999999; 
   pointer-events: none;
-}
+  isolation: isolate; 
+  animation: loader 1.5s ease-in-out infinite;
 
+}
 .loader-clip {
   animation: loader 1.5s ease-in-out infinite;
 }

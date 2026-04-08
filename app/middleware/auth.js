@@ -6,9 +6,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     console.log("data loaded?", isLoaded.value);    
     
     if(!isLoaded.value)return;
-    // while (!isLoaded.value) {
-    // await new Promise(resolve => setTimeout(resolve, 1))
-  // }
+
 
     if (!user.value && to.path !== "/login") {
     return navigateTo("/login");
