@@ -64,10 +64,10 @@ const handleSignup = async () => {
       email: user.email,
     });
 
-    console.log("User + Profile created successfully", userCreds.user);
+    // console.log("User + Profile created successfully", userCreds.user);
 
     navigateTo("/");
-    console.log("signup succesfull", userCreds.user);
+    // console.log("signup succesfull", userCreds.user);
   } catch (err) {
     error.value = err.message;
     console.error("signup failed", err);

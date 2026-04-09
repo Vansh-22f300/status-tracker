@@ -1,7 +1,7 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
     const {user , isLoaded}= useUser();
 
-    console.log("Current user in middleware:", user.value);
+    // console.log("Current user in middleware:", user.value);
 
     console.log("data loaded?", isLoaded.value);    
     

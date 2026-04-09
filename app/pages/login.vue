@@ -124,7 +124,7 @@ const handleGoogleLogin = async () => {
     const googleCreds = await signInWithPopup(auth, provider);
     successMessage.value = "Login Successful...";
     navigateTo("/");
-    console.log("Google login succesfull", googleCreds.user);
+    // console.log("Google login succesfull", googleCreds.user);
   } catch (err) {
     successMessage.value = "";
     error.value = err.message;
