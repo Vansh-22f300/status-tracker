@@ -12,7 +12,7 @@
           <div class="feed-item-msg">{{ user.msg }}</div>
         </div>
         <div class="feed-item-right">
-          <div class="checkin-time" v-if="selec">{{ user.time }}</div>
+          <div class="checkin-time" >{{ user.time }}</div>
           <div
             class="status-badge"
             :class="`tag-${user.status.toLowerCase()}`">
@@ -34,7 +34,9 @@ import { onSnapshot } from "firebase/firestore";
 const users = ref([]);
 const { getInitials } = useInitials();
 
-function formatTime(timestamp) {
+function formatTime(timestamp,status) {
+    if (status === "leave") return;
+
   return new Date(timestamp).toLocaleTimeString("en-IN", {
     hour: "numeric",
     minute: "numeric",
@@ -68,7 +70,7 @@ function fetchUsers() {
     .sort((a, b) => b.timestamp - a.timestamp)  
     .map(user=>({
       ...user,
-      time:formatTime(user.timestamp),
+      time:formatTime(user.timestamp,user.status),
       msg:formatMessage(user.status),
       statusCode:formatStatus(user.status),
     }))

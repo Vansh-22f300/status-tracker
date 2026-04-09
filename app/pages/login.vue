@@ -78,6 +78,7 @@
 </template>
 <script setup>
 definePageMeta({
+  middleware: ["auth"],
   layout: "auth",
 });
 import { ref } from "vue";
@@ -104,7 +105,7 @@ const handleEmailLogin = async () => {
     );
     successMessage.value = "Login Successful...";
     navigateTo("/");
-    console.log("login succesfull", userCreds.user);
+    // console.log("login succesfull", userCreds.user);
   } catch (err) {
     successMessage.value = "";
     error.value = err.message;

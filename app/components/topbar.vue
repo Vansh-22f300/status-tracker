@@ -2,7 +2,7 @@
   <div class="topbar">
     <div class="topbar-left">
       <span
-        >Welcome ,<span class="name">{{
+        >Welcome, <span class="name">{{
           profile?.name || user?.displayName || "User"
         }}</span></span
       ><br />

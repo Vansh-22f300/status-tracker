@@ -53,7 +53,7 @@
 
 <script setup>
 import { ref } from "vue";
-const { teamData } = useData();
+// const { teamData } = useData();
 const {user ,profile} = useUser();
 const selectedstatus = ref(null);
 const time = ref("");
