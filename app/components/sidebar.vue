@@ -5,7 +5,7 @@
         DEV
         <span class="sidebar-title-team">Team</span>
       </div>
-      <div class="sidebar-subtitle">AVAILABILITY . TEAM C</div>
+      <div class="sidebar-subtitle">AVAILABILITY . {{profile?.teamName}}</div>
     </div>
     <div class="sidebar-member">
       <span class="profile-pic">{{
@@ -15,7 +15,7 @@
         <span class="sidebar-member-name">{{
           profile?.name || user?.displayName || "User"
         }}</span>
-        <span class="user-role">Member . Team C</span>
+        <span class="user-role">{{profile?.role}} . {{profile?.teamName}}</span>
       </div>
     </div>
     <div class="navigation">
@@ -55,7 +55,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { db } from "../../firebase/config";
-import { collection } from "firebase/firestore";
+import { collection ,query, where} from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 // const { teamData } = useData();
 const users = ref([]);
@@ -89,7 +89,14 @@ function isToday(timestamp) {
 }
 
 function fetchUsers() {
-  stopUsersListener = onSnapshot(collection(db, "status"), (snapshot) => {
+  console.log(status.value?.teamId);
+  console.log(profile.value?.teamId)
+  stopUsersListener = onSnapshot(
+  query(
+    collection(db, "status"),
+    where("teamId", "==", profile.value?.teamId) 
+  ),
+  (snapshot) => {
     users.value = snapshot.docs
       .map((doc) => ({
         id: doc.id,
@@ -105,9 +112,21 @@ function fetchUsers() {
   });
 }
 
+import { watch } from "vue"  
+
 onMounted(() => {
-  fetchUsers();
-});
+  if (profile.value?.teamId) {
+    fetchUsers()  
+  } 
+  else {
+    const stop = watch(() => profile.value?.teamId, (teamId) => {
+      if (teamId) {
+        fetchUsers()
+        stop() 
+      }
+    })
+  }
+})
 onUnmounted(() => {
   if (typeof stopUsersListener === "function") {
     stopUsersListener();

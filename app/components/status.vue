@@ -93,8 +93,9 @@ async function submitStatus() {
       name: profile.value?.name || user.value?.displayName || "Unknown User",
       email: user.value.email,
       status: selectedstatus.value,
+      teamId: profile.value?.teamId || null,
       timestamp: Date.now(),
-    });
+    }, { merge: true });
 
     console.log("Saved or Updated ");
   } catch (err) {

@@ -21,9 +21,10 @@
 const { getInitials } = useInitials();
 import { ref, onMounted } from "vue";
 import { db } from "../../firebase/config";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs,query,where } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 const users = ref([]);
+const { profile, user } = useUser();
 
 function formatStatus(status) {
   if (status === "wfh") return "🏠 WFH";
@@ -38,12 +39,17 @@ function yesterday(timestamp) {
 }
 
 function fetchUsers() {
-  const querySnapshot = onSnapshot(collection(db, "status"), (snapshot) => {
-    users.value = snapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
+  const querySnapshot = onSnapshot(
+    query(
+      collection(db, "status"),
+      where("teamId", "==", profile.value.teamId)
+    ),
+    (snapshot) => {
+      users.value = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
       .filter((user) => yesterday(user.timestamp))
       .map((user) => ({
         ...user,
@@ -52,9 +58,21 @@ function fetchUsers() {
   });
 }
 
+import { watch } from "vue"  
+
 onMounted(() => {
-  fetchUsers();
-});
+  if (profile.value?.teamId) {
+    fetchUsers()  
+  } 
+  else {
+    const stop = watch(() => profile.value?.teamId, (teamId) => {
+      if (teamId) {
+        fetchUsers()
+        stop() 
+      }
+    })
+  }
+})
 </script>
 <style scoped>
 .yesterday-section {
@@ -112,8 +130,8 @@ onMounted(() => {
   color: #afaca7;
 }
 .empty-title {
-  font-size: 22px;
-  color: red;
+  font-size: 16px;
+  color: grey;
   text-align: center;
 }
 </style>

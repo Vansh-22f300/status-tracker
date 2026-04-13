@@ -15,6 +15,9 @@ export default defineNuxtPlugin(() => {
 
         if (docSnap.exists()) {
           profile.value = docSnap.data()
+          if (!profile.value.teamId) {
+        navigateTo("/welcome")
+  }
         } 
         else {
           const newProfile = {

@@ -28,10 +28,12 @@
 
 import { ref, onMounted } from "vue";
 import { db } from "../../firebase/config";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs,query,where } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 // const { teamData } = useData();
 const users = ref([]);
+const { profile, user } = useUser();
+
 const { getInitials } = useInitials();
 
 function formatTime(timestamp,status) {
@@ -60,12 +62,17 @@ function isToday(timestamp) {
 }
 
 function fetchUsers() {
-  const querySnapshot = onSnapshot(collection(db, "status"),(snapshot)=>{
-    users.value=snapshot.docs
-    .map(doc=>({
-      id:doc.id,
-      ...doc.data()
-    }))
+  const querySnapshot = onSnapshot(
+    query(
+      collection(db, "status"),
+      where("teamId", "==", profile.value.teamId)
+    ),
+    (snapshot) => {
+      users.value = snapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
     .filter(user=>isToday(user.timestamp))
     .sort((a, b) => b.timestamp - a.timestamp)  
     .map(user=>({
@@ -77,9 +84,22 @@ function fetchUsers() {
   });
 }
 
+
+import { watch } from "vue"  
+
 onMounted(() => {
-  fetchUsers();
-});
+  if (profile.value?.teamId) {
+    fetchUsers()  
+  } 
+  else {
+    const stop = watch(() => profile.value?.teamId, (teamId) => {
+      if (teamId) {
+        fetchUsers()
+        stop() 
+      }
+    })
+  }
+})
 
 
 // const { teamData } = useData();
