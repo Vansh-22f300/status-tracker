@@ -82,7 +82,7 @@ onMounted(() => {
 }
 .card {
   background-color: #fdfcfa;
-  border: 1px solid #eeeeed;
+  border: 1px solid #f88a8a;
   text-align: center;
   border-radius: 25px;
   flex: 1;
