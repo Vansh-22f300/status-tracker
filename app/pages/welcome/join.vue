@@ -1,16 +1,16 @@
 <template>
   <div class="welcome-page">
     <div class="welcome-grid">
-      <div class="back-btn" @click="navigateTo('/welcome')">Back</div>
-      <h2>Join a Team</h2>
-      <p>Enter your team's join code:</p>
+      <div class="back-btn" @click="navigateTo('/welcome')">← Back</div>
+      <h2 class="field-label">Join a Team</h2>
+      <p class="field-sub">Enter your team's join code:</p>
       <input
         type="text"
         class="field-input"
         v-model="joinCode"
         placeholder="Enter join code"
       />
-      <p v-if="error" class="error-text">{{ error }}</p>
+      <p v-if="error" class="error">{{ error }}</p>
       <button @click="handleJoinTeam" class="join-btn" :disabled="isLoading">
         {{ isLoading ? "Joining..." : "Join Team" }}
       </button>
@@ -98,24 +98,6 @@ async function handleJoinTeam() {
   }
 }
 
-// async function handleJoin()
-// {
-//     isLoading.value=true;
-//     try{
-//         const snapshot=await getDocs(collection(db,"teams"))
-//         avlTeams.value=snapshot.docs.map(t=>({
-//             id:t.id,
-//             name:t.data().name,
-//         }))
-//     }
-//     catch(err){
-//         error.value=err.message;
-//         console.error("Fail to Fetch teams",err);
-//     }
-//     finally{
-//         isLoading.value=false;
-//     }
-// }
 </script>
 
 <style scoped>
@@ -186,5 +168,51 @@ async function handleJoinTeam() {
   font-weight: 700;
   color: rgb(93, 93, 93);
   text-decoration: underline;
+}
+
+.field-input{
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #b9aa96;
+    background: #ffffff;
+    font-size: 14px;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+
+}
+.field-label{
+  font-size:18px;
+  font-weight:700;
+  color: #1a1918;
+}
+.field-sub{
+  font-size:14px;
+  color:#868585
+}
+.join-btn{
+  width:100%;
+  border-radius:12px;
+  padding:12px;
+  background-color:#019323;
+  font-size:16px;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+.join-btn:hover{
+  opacity:0.80;
+}
+
+.join-btn:disabled{
+  opacity:0.40;
+  cursor:not-allowed;
+}
+
+.error{
+  color: #b00020;
+  font-size: 14px;
+  margin-top: 8px;
 }
 </style>

@@ -104,7 +104,7 @@ const handleEmailLogin = async () => {
       password.value,
     );
     successMessage.value = "Login Successful...";
-    navigateTo("/");
+    // <!-- navigateTo("/"); -->
     // console.log("login succesfull", userCreds.user);
   } catch (err) {
     successMessage.value = "";
@@ -123,7 +123,7 @@ const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     const googleCreds = await signInWithPopup(auth, provider);
     successMessage.value = "Login Successful...";
-    navigateTo("/");
+    // navigateTo("/");
     // console.log("Google login succesfull", googleCreds.user);
   } catch (err) {
     successMessage.value = "";

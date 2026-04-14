@@ -1,15 +1,15 @@
 <template>
   <div class="welcome-page">
     <div class="welcome-grid">
-      <div class="back-btn" @click="navigateTo('/welcome')">Back</div>
-      <p>Name your Team</p>
+      <div class="back-btn" @click="navigateTo('/welcome')">← Back</div>
+      <p class="field-label">Name your Team</p>
       <input
         type="text"
         v-model="teamName"
         placeholder="Enter your Team Name"
         class="field-input"
       />
-      <p v-if="error">{{ error }}</p>
+      <p v-if="error" class="error">{{ error }}</p>
 
       <button
         @click="handleCreateTeam"
@@ -127,5 +127,48 @@ onMounted(() => {
   font-weight: 700;
   color: rgb(93, 93, 93);
   text-decoration: underline;
+}
+
+.field-input{
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #b9aa96;
+    background: #ffffff;
+    font-size: 14px;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+
+}
+.field-label{
+  font-size:16px;
+  font-weight:700;
+  color: #1a1918;
+  margin-bottom:16px;
+}
+.create-btn{
+  width:100%;
+  border-radius:12px;
+  padding:12px;
+  background-color:#019323;
+  font-size:16px;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+.create-btn:hover{
+  opacity:0.80;
+}
+
+.create-btn:disabled{
+  opacity:0.40;
+  cursor:not-allowed;
+}
+
+.error{
+  color: #b00020;
+  font-size: 14px;
+  margin-top: 8px;
 }
 </style>

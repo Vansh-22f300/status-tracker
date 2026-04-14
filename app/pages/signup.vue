@@ -96,6 +96,7 @@ const handleSignup = async () => {
       email: user.email,
       role: null,
       teamId: null,
+      teamName:null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

@@ -1,3 +1,4 @@
+// plugins/auth.client.js
 import { onAuthStateChanged } from "firebase/auth"
 import { auth, db } from "../../firebase/config"
 import { doc, getDoc, setDoc } from "firebase/firestore"
@@ -14,26 +15,44 @@ export default defineNuxtPlugin(() => {
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
-          profile.value = docSnap.data()
-          if (!profile.value.teamId) {
-        navigateTo("/welcome")
-  }
-        } 
-        else {
+          // Existing user
+          profile.value = {
+            role:   null,
+            teamId: null,
+            teamName:null,
+            ...docSnap.data(),
+          }
+        } else {
+          // New user
           const newProfile = {
-            name:  firebaseUser.displayName || "User",
-            email: firebaseUser.email,
+            name:      firebaseUser.displayName,
+            email:     firebaseUser.email,
+            role:      null,
+            teamId:    null,
+            teamName:  null,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
           }
           await setDoc(docRef, newProfile)
           profile.value = newProfile
         }
-      } 
-      else 
-      {
+
+        const currentPath = window.location.pathname
+        const authPages   = ["/login", "/signup"]
+
+        if (authPages.includes(currentPath)) {
+          if (profile.value?.teamId) {
+            navigateTo("/")           // has team 
+          } else {
+            navigateTo("/welcome") // no team 
+          }
+        }
+
+      } else {
         profile.value = null
       }
 
-      isLoaded.value = true  
+      isLoaded.value = true
       resolve()
     })
   })

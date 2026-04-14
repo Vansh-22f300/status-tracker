@@ -1,18 +1,19 @@
-export default defineNuxtRouteMiddleware(async (to, from) => {
-    const {user , isLoaded}= useUser();
+export default defineNuxtRouteMiddleware((to) => {
+  const { user, profile, isLoaded } = useUser();
 
-    // console.log("Current user in middleware:", user.value);
+  if (!isLoaded.value) return;
 
-    console.log("data loaded?", isLoaded.value);    
-    
-    if(!isLoaded.value)return;
+  const publicPaths = ["/login", "/signup", "/reset", "/welcome"];
 
-
-    if (!user.value && to.path !== "/login") {
+  if (!user.value && !publicPaths.includes(to.path)) {
     return navigateTo("/login");
   }
 
-  if (user.value && to.path === "/login") {
+  if (user.value && !profile.value?.teamId && to.path !== "/welcome") {
+    return navigateTo("/welcome");
+  }
+
+  if (user.value && profile.value?.teamId && (to.path === "/login" || to.path === "/signup")) {
     return navigateTo("/");
   }
 });

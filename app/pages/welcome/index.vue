@@ -2,7 +2,7 @@
   <div class="welcome-page">
     <div class="welcome-grid">
       <div class="header">
-        <h1>Welcome, {{ profile?.name || user?.displayName || "abcd" }} 🤝</h1>
+        <h1>Welcome, {{ profile?.name || user?.displayName || "User" }} </h1>
         <p>Let's get you set up.</p>
       </div>
 
@@ -15,7 +15,7 @@
         </div>
         <!-- join team -->
         <div class="card" @click="navigateTo('/welcome/join')">
-          <div class="card-icon">👥</div>
+          <div class="card-icon">🤝</div>
           <div class="card-title">Join a Team</div>
           <div class="card-subtitle">Enter Join code to join Team</div>
         </div>
@@ -38,7 +38,6 @@ const { user, profile } = useUser();
 
 const teamName = ref("");
 const error = ref("");
-// const isLoading=ref(false);
 const avlTeams = ref([]);
 
 onMounted(() => {
@@ -47,25 +46,6 @@ onMounted(() => {
   }
 });
 
-// async function handleJoin()
-// {
-//     isLoading.value=true;
-//     try{
-//         const snapshot=await getDocs(collection(db,"teams"))
-//         avlTeams.value=snapshot.docs.map(t=>({
-//             id:t.id,
-//             name:t.data().name,
-//         }))
-//     }
-//     catch(err){
-//         error.value=err.message;
-//         console.error("Fail to Fetch teams",err);
-//     }
-//     finally{
-//         isLoading.value=false;
-//     }
-
-// }
 </script>
 
 <style scoped>
@@ -119,7 +99,7 @@ onMounted(() => {
 }
 .card-title {
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 10px;
 }
 .card-subtitle {

@@ -23,10 +23,11 @@
       <NuxtLink to="/" class="navigation-tile">
         <span class="navigation-icon">◷</span>Today</NuxtLink
       >
-      <NuxtLink to="/history" class="navigation-tile"
-        ><span class="navigation-icon">◷</span>History</NuxtLink
+      <NuxtLink to="/team" class="navigation-tile" >
+        <span class="navigation-icon">◷</span>History</NuxtLink
       >
     </div>
+    
 
     <div class="sidebar-bottom">
       <div class="sidebar-bottom-title">Checked in today</div>
@@ -71,11 +72,7 @@ function formatTime(timestamp, status) {
     minute: "numeric",
   });
 }
-// function formatMessage(status) {
-//   if (status === "wfo") return "Available Office";
-//   else if (status === "wfh") return "Available WFH";
-//   else if (status === "leave") return "On Leave";
-// }
+
 function formatStatus(status) {
   if (status === "wfh") return "WFH";
   else if (status === "wfo") return "Office";
@@ -133,30 +130,6 @@ onUnmounted(() => {
   }
 });
 </script>
-<!-- <script setup>
-
-import { ref, onMounted } from "vue";
-import { db } from "../../firebase/config";
-import { collection, getDocs } from "firebase/firestore";
-import { onSnapshot } from "firebase/firestore";
-// const { teamData } = useData();
-const users = ref([]);
-const { getInitials } = useInitials();
-  
-async function fetchUsers() {
-  const querySnapshot = await getDocs(collection(db, "users"));
-
-  users.value = querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
-}
-
-onMounted(() => {
-  fetchUsers();
-});
-
-</script> -->
 
 <style scoped>
 .sidebar {

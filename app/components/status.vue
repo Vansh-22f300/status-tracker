@@ -47,8 +47,6 @@
       <div class="notify-btn" @click="notified">Notify Group ➡️</div>
     </div>
   </div>
-
-  <!-- test -->
 </template>
 
 <script setup>
@@ -82,12 +80,7 @@ async function submitStatus() {
     console.log(today);
     const docId = `${user.value.uid}_${today}`;
     console.log(docId);
-    // const existing = await getDoc(doc(db,"status",docId));
-
-    // if (existing.exists()) {
-    //   alert("Already checked in today ");
-    //   return;
-    // }
+    
     await setDoc(doc(db, "status", docId), {
       uid: user.value.uid,
       name: profile.value?.name || user.value?.displayName || "Unknown User",
@@ -179,7 +172,6 @@ onUnmounted(() => {
   cursor: pointer;
 }
 .card:hover {
-  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 .card-icon {
@@ -236,9 +228,5 @@ onUnmounted(() => {
   border: 1px solid red;
   background-color: #f9d0d0;
 }
-/*  
 
-    768- mobile
-    1024 tab
-*/
 </style>
