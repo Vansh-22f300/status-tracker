@@ -23,9 +23,13 @@
       <NuxtLink to="/" class="navigation-tile">
         <span class="navigation-icon">◷</span>Today</NuxtLink
       >
-      <NuxtLink to="/team" class="navigation-tile" >
+      <NuxtLink to="/history" class="navigation-tile" >
         <span class="navigation-icon">◷</span>History</NuxtLink
       >
+      <NuxtLink to="/team" class="navigation-tile"  v-if="profile.role=='Manager'">
+        <span class="navigation-icon">◷</span>Manage Team</NuxtLink
+      >
+
     </div>
     
 
