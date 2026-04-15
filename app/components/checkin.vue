@@ -124,8 +124,8 @@ onMounted(() => {
   color: #9c968c;
   margin-right: 20px;
 }
+
 .header-count {
-  letter-spacing: 1px;
   font-size: 11px;
   color: #9c968c;
   background-color: rgb(231, 229, 225);

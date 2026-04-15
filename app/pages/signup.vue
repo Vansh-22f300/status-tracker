@@ -104,7 +104,7 @@ const handleSignup = async () => {
     console.log("User + Profile created successfully", userCreds.user);
 
     navigateTo("/welcome");
-    console.log("signup succesfull", userCreds.user);
+    // console.log("signup succesfull", userCreds.user);
   } catch (err) {
     error.value = err.message;
     console.error("signup failed", err);
