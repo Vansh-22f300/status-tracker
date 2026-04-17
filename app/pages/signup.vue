@@ -68,9 +68,18 @@ const password = ref("");
 const confirmPassword = ref("");
 const error = ref("");
 const isLoading = ref(false);
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  EmailAuthProvider,
+  linkWithCredential
+} from "firebase/auth";
+
+const provider = new GoogleAuthProvider();
 
 const handleSignup = async () => {
   if (isLoading.value) return;
+
   if (password.value !== confirmPassword.value) {
     error.value = "Passwords do not match";
     return;
@@ -78,11 +87,14 @@ const handleSignup = async () => {
 
   isLoading.value = true;
   error.value = "";
+
   try {
+    const emailTrimmed = email.value.trim();
+
     const userCreds = await createUserWithEmailAndPassword(
       auth,
-      email.value.trim(),
-      password.value,
+      emailTrimmed,
+      password.value
     );
 
     const user = userCreds.user;
@@ -96,19 +108,46 @@ const handleSignup = async () => {
       email: user.email,
       role: null,
       teamId: null,
-      teamName:null,
+      teamName: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
 
-    console.log("User + Profile created successfully", userCreds.user);
+    console.log("User + Profile created successfully", user);
 
     navigateTo("/welcome");
-    // console.log("signup succesfull", userCreds.user);
-  } catch (err) {
-    error.value = err.message;
+
+  } 
+  catch (err) {
     console.error("signup failed", err);
-  } finally {
+
+    if (err.code === "auth/email-already-in-use") {
+      try {
+        const result = await signInWithPopup(auth, provider);
+
+        const credential = EmailAuthProvider.credential(
+          email.value.trim(),
+          password.value
+        );
+
+        await linkWithCredential(result.user, credential);
+
+        console.log("Google + Email linked");
+
+        navigateTo("/welcome");
+
+      } catch (linkErr) {
+        console.error("Link failed:", linkErr);
+        error.value = "This email is linked with Google. Please login with Google.";
+      }
+
+      return;
+    }
+
+    error.value = err.message;
+
+  } 
+  finally {
     isLoading.value = false;
   }
 };

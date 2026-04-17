@@ -5,7 +5,7 @@
         DEV
         <span class="sidebar-title-team">Team</span>
       </div>
-      <div class="sidebar-subtitle">AVAILABILITY . {{profile?.teamName}}</div>
+      <div class="sidebar-subtitle">AVAILABILITY • {{profile?.teamName}}</div>
     </div>
     <div class="sidebar-member">
       <span class="profile-pic">{{
@@ -15,16 +15,13 @@
         <span class="sidebar-member-name">{{
           profile?.name || user?.displayName || "User"
         }}</span>
-        <span class="user-role">{{profile?.role}} . {{profile?.teamName}}</span>
+        <span class="user-role">{{profile?.role}} • {{profile?.teamName}}</span>
       </div>
     </div>
     <div class="navigation">
       <span class="navigation-title">Navigation</span><br />
       <NuxtLink to="/" class="navigation-tile">
         <span class="navigation-icon">◷</span>Today</NuxtLink
-      >
-      <NuxtLink to="/history" class="navigation-tile" >
-        <span class="navigation-icon">◷</span>History</NuxtLink
       >
       <NuxtLink to="/team" class="navigation-tile"  v-if="profile.role=='Manager'">
         <span class="navigation-icon">◷</span>Manage Team</NuxtLink
