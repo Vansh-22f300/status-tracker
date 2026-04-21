@@ -4,7 +4,7 @@
       <div class="header-label">Today's check-ins</div>
       <div class="header-count">{{users.length }} </div>
     </div>
-    <div class="feed">
+    <div class="feed" v-if="users.length">
       <div class="feed-item" v-for="user in users" :key="user.name">
         <div class="profile-pic">{{ getInitials(user.name) }}</div>
         <div class="feed-item-info">
@@ -21,6 +21,8 @@
         </div>
       </div>
     </div>
+        <div class="empty-title" v-else>No check-in recorded for Today.</div>
+
   </div>
 </template>
 
@@ -209,5 +211,11 @@ onMounted(() => {
 .checkin-time {
   color: #868584;
   font-size: 11px;
+}
+
+.empty-title{
+  font-size: 16px;
+  color: grey;
+  text-align: center;
 }
 </style>

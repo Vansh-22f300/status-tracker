@@ -155,7 +155,7 @@ onUnmounted(() => {
   color: #b6b5b5;
 }
 .sidebar-subtitle {
-  color: #5c5750;
+  color: #80786d;
   font-size: 11px;
   margin-bottom: 40px;
   letter-spacing: 1.5px;
@@ -181,7 +181,7 @@ onUnmounted(() => {
   font-size: 14px;
 }
 .user-role {
-  color: #5c5750;
+  color: #80786d;
   font-size: 11px;
 }
 .profile-pic {

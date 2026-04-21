@@ -2,7 +2,8 @@
   <div class="welcome-page">
     <div class="welcome-grid">
       <div class="header">
-        <h1>Welcome, {{ profile?.name || user?.displayName || "User" }} </h1>
+        <h1 v-if="isLoaded">Welcome, {{ profile?.name || user?.displayName }}</h1>
+        <h1 v-else>Loading...</h1>
         <p>Let's get you set up.</p>
       </div>
 
@@ -34,7 +35,7 @@ import { collection, getDocs } from "firebase/firestore";
 
 const { getInitials } = useInitials();
 
-const { user, profile } = useUser();
+const { user, profile , isLoaded } = useUser();
 
 const teamName = ref("");
 const error = ref("");
