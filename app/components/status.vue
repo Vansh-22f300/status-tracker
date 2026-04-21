@@ -211,7 +211,7 @@ onUnmounted(() => {
   border-radius: 8px;
 }
 .notify-btn:hover {
-  background-color: rgb(46, 46, 46);
+  opacity:0.7;
   color: white;
   transform: translateY(2px);
 }
@@ -228,5 +228,43 @@ onUnmounted(() => {
   border: 1px solid red;
   background-color: #f9d0d0;
 }
+@media(max-width:768px){
+  .list{
+    flex-direction:column;
+  }
+  .card{
+    width:100%;
+      text-align:center;
+  }
+  .card-icon{
+    margin-bottom:10px;
+    margin-left: auto;
+    margin-right: auto;
 
+  }
+  .card-name{
+    font-size:20px;
+  }
+
+  .submit{
+    width:100%;
+    flex-direction:column;
+    gap:10px;
+  }
+  .submit-info{
+    /* text-align:center; */
+     margin-right:auto;
+     margin-left: auto;
+  }
+  .notify-btn{
+    width:50%;
+    font-size:14px;
+    text-align:center;
+  }
+  .notify-btn:hover{
+    transform: translateY(0);
+    opacity:0.7;
+  }
+
+}
 </style>

@@ -218,4 +218,39 @@ onMounted(() => {
   color: grey;
   text-align: center;
 }
+@media(max-width:768px){
+  .checkin {
+    padding: 20px;
+  }
+  .feed-item{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    width:100%;
+
+  }
+  .feed-item-info{
+    align-items:center;
+
+  }
+  .feed-item-right{
+    flex-direction:row;
+    gap:10px;
+  }
+  .profile-pic{
+    width:25px;
+    height:25px;
+    font-size:9px;
+  }
+  .status-badge{
+    font-size:10px;
+    padding:3px 7px;
+  }
+  .checkin-time{
+    font-size:10px;
+  }
+  .empty-title{
+    font-size: 14px;
+  }
+}
 </style>
