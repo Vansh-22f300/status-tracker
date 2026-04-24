@@ -492,20 +492,20 @@ onUnmounted(() => {
   transform: translateY(2px);
 }
 .modal {
-  position: fixed;
-  display: flex;
-  inset: 0;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  background: rgba(240, 239, 239, 0.5);
+  position:fixed;
+  display:flex;
+  inset:0;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+  background:rgba(240, 239, 239, 0.5);
 }
 .modal-content {
   background-color: rgb(255, 245, 245);
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid rgb(206, 200, 200);
-  text-align: center;
+  border-radius:16px;
+  padding:24px;
+  border:1px solid rgb(206, 200, 200);
+  text-align:center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 .modal-title {
@@ -586,14 +586,13 @@ onUnmounted(() => {
     gap: 8px;
     padding: 12px;
   }
-
+/* 
   .profile-pic {
     order: 1;
   }
 
   .member-info {
     order: 2;
-    /* flex: 1; */
   }
 
   .remove {
@@ -613,7 +612,7 @@ onUnmounted(() => {
 
   .status {
     order:5;
-  }
+  } */
   .member-email {
     display:none;
   }

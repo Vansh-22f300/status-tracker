@@ -137,7 +137,6 @@ const handleGoogleLogin = async () => {
   align-items: center;
   justify-items: center;
   left: 50%;
-  /* background-color:green; */
 }
 
 .login-card {
@@ -323,7 +322,6 @@ const handleGoogleLogin = async () => {
   }
   .gsi-material-button .gsi-material-button-content-wrapper {
     padding:0 12px;
-    border-radius:16px;
     height:40px;    
   }
   .gsi-material-button .gsi-material-button-icon {
