@@ -37,9 +37,7 @@ const { getInitials } = useInitials();
 
 const { user, profile , isLoaded } = useUser();
 
-const teamName = ref("");
 const error = ref("");
-const avlTeams = ref([]);
 
 onMounted(() => {
   if (profile.value?.teamId) {
@@ -106,5 +104,46 @@ onMounted(() => {
 .card-subtitle {
   color: #868584;
   font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .welcome-page {
+    padding:20px;
+  }
+  .welcome-grid {
+    width:100%;
+    padding:25px;
+    border-radius:15px;
+  }
+  .header {
+    margin-bottom: 25px;
+  }
+  .header h1 {
+    font-size:24px;
+    margin-bottom:8px;
+  }
+  .header p {
+    font-size:14px;
+  }
+  .list {
+    flex-direction:column;
+
+    gap:15px;
+  }
+  .card {
+    padding:20px;
+    border-radius:15px;
+  }
+  .card-icon {
+    font-size:28px;
+     margin-bottom:15px;
+  }
+  .card-title {
+  font-size:18px;
+    margin-bottom:8px;
+  }
+  .card-subtitle {
+    font-size:12px;
+  }
 }
 </style>

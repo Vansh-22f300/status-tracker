@@ -168,7 +168,7 @@ async function fetchData() {
       members.value = snapshot.docs.map((d) => ({
         id: d.id,
         ...d.data(),
-        status: existingStatuses[d.id] || null, 
+        status: existingStatuses[d.id] || null,
       }));
     },
   );
@@ -225,6 +225,7 @@ function handleRemove(member) {
 
 async function confirmRemove() {
   const member = removeMember.value;
+  const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
 
   await updateDoc(doc(db, "profiles", member.id), {
     teamId: null,
@@ -235,9 +236,14 @@ async function confirmRemove() {
   await updateDoc(doc(db, "teams", profile.value.teamId), {
     count: increment(-1),
   });
-  await updateDoc(doc(db, "status", `${member.id}_${todayKey()}`), {
-    teamId: null,
-  });
+
+  const statusSnap = await getDoc(statusRef);
+  if (statusSnap.exists()) {
+    await updateDoc(statusRef, {
+      teamId: null,
+    });
+  }
+
   members.value = members.value.filter((m) => m.id !== member.id);
   removeMember.value = null;
 }
@@ -280,7 +286,6 @@ onUnmounted(() => {
   if (typeof stopMembersListener === "function") stopMembersListener();
   if (typeof stopTeamListener === "function") stopTeamListener();
 });
-
 </script>
 
 <style scoped>
@@ -289,7 +294,6 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 32px;
-  /* background-color:red; */
 }
 .section {
   display: flex;
@@ -372,13 +376,11 @@ onUnmounted(() => {
   font-weight: bold;
   color: #1a1918;
 
-  /* color:rgb(46, 40, 40); */
 }
 
 .team-length-label {
   font-size: 12px;
   color: grey;
-  margin-top: 4px;
 }
 
 .members-list {
@@ -546,5 +548,86 @@ onUnmounted(() => {
 .modal-cancel:hover {
   background-color: #cbc9c5;
   transform: translateY(2px);
+}
+
+@media (max-width: 768px) {
+  .team-page {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .team-card {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .team-name {
+    font-size: 22px;
+  }
+
+  .join-code {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  .card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .team-length {
+    font-size: 28px;
+  }
+
+  .member-item {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .profile-pic {
+    order: 1;
+  }
+
+  .member-info {
+    order: 2;
+    /* flex: 1; */
+  }
+
+  .remove {
+    order: 6;
+    margin-left: auto;
+  }
+
+  .member-role {
+    order: 3;
+  }
+
+  .status-text {
+    order: 4;
+    min-width: auto;
+    flex: 1;
+  }
+
+  .status {
+    order:5;
+  }
+  .member-email {
+    display:none;
+  }
+  .modal-content {
+    margin:16px;
+    padding:20px;
+  }
+
+  .modal-title {
+    font-size:22px;
+  }
+
+  .modal-sub {
+    font-size:14px;
+  }
 }
 </style>

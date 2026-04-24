@@ -72,7 +72,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   EmailAuthProvider,
-  linkWithCredential
+  linkWithCredential,
 } from "firebase/auth";
 
 const provider = new GoogleAuthProvider();
@@ -94,7 +94,7 @@ const handleSignup = async () => {
     const userCreds = await createUserWithEmailAndPassword(
       auth,
       emailTrimmed,
-      password.value
+      password.value,
     );
 
     const user = userCreds.user;
@@ -113,12 +113,9 @@ const handleSignup = async () => {
       updatedAt: new Date(),
     });
 
-    console.log("User + Profile created successfully", user);
 
     navigateTo("/welcome");
-
-  } 
-  catch (err) {
+  } catch (err) {
     console.error("signup failed", err);
 
     if (err.code === "auth/email-already-in-use") {
@@ -127,7 +124,7 @@ const handleSignup = async () => {
 
         const credential = EmailAuthProvider.credential(
           email.value.trim(),
-          password.value
+          password.value,
         );
 
         await linkWithCredential(result.user, credential);
@@ -135,19 +132,17 @@ const handleSignup = async () => {
         console.log("Google + Email linked");
 
         navigateTo("/welcome");
-
       } catch (linkErr) {
         console.error("Link failed:", linkErr);
-        error.value = "This email is linked with Google. Please login with Google.";
+        error.value =
+          "This email is linked with Google. Please login with Google.";
       }
 
       return;
     }
 
     error.value = err.message;
-
-  } 
-  finally {
+  } finally {
     isLoading.value = false;
   }
 };
@@ -239,5 +234,45 @@ const handleSignup = async () => {
 
 .login-link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .signup-page {
+    padding: 20px;
+  }
+  .signup-card {
+    width: 100%;
+    padding: 24px;
+    border-radius: 12px;
+  }
+  .header {
+    margin-bottom: 16px;
+  }
+  .form-fields {
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .field-label {
+    font-size: 13px;
+    margin-bottom: -6px;
+  }
+  .form-fields input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .signup-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+  .error-text {
+    font-size: 12px;
+    margin-top: 10px;
+  }
+
+  .login-link {
+    font-size: 13px;
+    margin-top: 10px;
+  }
 }
 </style>

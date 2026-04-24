@@ -134,4 +134,20 @@ onMounted(() => {
   color: grey;
   text-align: center;
 }
+
+@media(max-width: 768px) {
+  .yesterday-section{
+    margin:15px;
+    padding:12px;
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-item{
+    gap:10px;
+  }
+  .grid-name{
+    font-size:13px;
+  }
+}
 </style>

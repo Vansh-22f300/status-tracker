@@ -229,42 +229,47 @@ onUnmounted(() => {
   background-color: #f9d0d0;
 }
 @media(max-width:768px){
-  .list{
-    flex-direction:column;
+  .section {
+    padding: 20px 15px;
   }
-  .card{
-    width:100%;
-      text-align:center;
+  .list {
+    flex-direction: column;
   }
-  .card-icon{
-    margin-bottom:10px;
+
+  .card {
+    padding: 20px;
+    text-align: center;
+  }
+  .card-icon {
+    margin-bottom: 10px;
     margin-left: auto;
     margin-right: auto;
-
-  }
-  .card-name{
-    font-size:20px;
   }
 
-  .submit{
-    width:100%;
-    flex-direction:column;
-    gap:10px;
+  .card-name {
+    font-size:18px;
   }
-  .submit-info{
-    /* text-align:center; */
-     margin-right:auto;
-     margin-left: auto;
+
+  .card-status {
+    font-size:13px;
   }
-  .notify-btn{
-    width:50%;
+  .submit {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  .submit-info {
+    margin: 0 auto;
+    text-align: center;
+  }
+  .notify-btn {
+    width: 100%;
     font-size:14px;
     text-align:center;
   }
-  .notify-btn:hover{
+  .notify-btn:hover {
     transform: translateY(0);
-    opacity:0.7;
+    opacity: 0.7;
   }
-
 }
 </style>

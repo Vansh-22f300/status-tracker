@@ -104,8 +104,6 @@ const handleEmailLogin = async () => {
       password.value,
     );
     successMessage.value = "Login Successful...";
-    // <!-- navigateTo("/"); -->
-    // console.log("login succesfull", userCreds.user);
   } catch (err) {
     successMessage.value = "";
     error.value = err.message;
@@ -123,8 +121,6 @@ const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     const googleCreds = await signInWithPopup(auth, provider);
     successMessage.value = "Login Successful...";
-    // navigateTo("/");
-    // console.log("Google login succesfull", googleCreds.user);
   } catch (err) {
     successMessage.value = "";
     error.value = err.message;
@@ -310,4 +306,68 @@ const handleGoogleLogin = async () => {
   color: #1c8434;
   font-weight: 600;
 }
+
+@media (max-width: 768px) {
+  .login-page {
+    padding:20px;
+  }
+  
+  .login-card {
+    width:100%;
+    padding:24px;
+    border-radius:12px;
+  }
+  
+  .gsi-material-button {
+    width: 100%;
+  }
+  .gsi-material-button .gsi-material-button-content-wrapper {
+    padding:0 12px;
+    border-radius:16px;
+    height:40px;    
+  }
+  .gsi-material-button .gsi-material-button-icon {
+    height:18px;
+    width:18px;
+    margin-right:10px;
+    min-width:18px;
+  }
+  .form-fields {
+    gap: 12px;
+    margin-top:16px;
+  }
+  
+  .field-label {
+    font-size:13px;
+    margin-bottom:-6px;
+  }
+  
+  .form-fields input {
+    padding:10px 12px;
+    font-size:14px;
+  }
+  
+  .reset-pass {
+    font-size:12px;
+  }
+  
+  .login-btn {
+    width:100%;
+    padding:12px;
+    font-size: 14px;
+  }
+  
+  .signup-link {
+    font-size: 13px;
+    margin-top:10px;
+  }
+  
+  .error-text,
+  .success-text {
+    font-size:12px;
+  }
+
+}
+
+
 </style>

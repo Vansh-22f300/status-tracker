@@ -1,10 +1,16 @@
 <template>
   <div class="topbar">
+    <div class="hamburger" @click="toggleSidebar">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
     <div class="topbar-left">
       <span
-        >Welcome, <span class="name">{{
-          profile?.name || user?.displayName || "User"
-        }}</span></span
+        >Welcome,
+        <span class="name"
+          >{{ profile?.name || user?.displayName || "User" }}
+        </span> </span
       ><br />
 
       <span class="topbar-left-date">{{ currentDate }}</span>
@@ -21,7 +27,7 @@ import { ref } from "vue";
 import { auth } from "../../firebase/config";
 import { signOut } from "firebase/auth";
 const { profile, user } = useUser();
-
+const{ toggleSidebar } = useSidebar();
 async function handleLogout() {
   try {
     await signOut(auth);
@@ -42,7 +48,7 @@ const currentDate = new Date().toLocaleDateString("en-IN", {
 
 <style scoped>
 .topbar {
-  /* width: 100%; */
+  max-width: 100%;
   height: 80px;
   display: flex;
   justify-content: space-between;
@@ -81,5 +87,37 @@ const currentDate = new Date().toLocaleDateString("en-IN", {
 .name {
   color: #4caf50;
   font-weight: bold;
+}
+.hamburger{
+  display: none;
+  
+}
+
+@media(max-width:768px){
+   .topbar {
+    padding: 0 16px;
+    height: 60px;
+  }
+  .hamburger{
+    display: flex;
+    flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+  }
+  .line{
+    width: 25px;
+    height:2px;
+    background-color: #474644;
+    gap: 5px;
+  }
+  .topbar-left{
+    font-size:14px;
+    margin-left: 10%;
+    margin-right: auto;
+  }
+  .topbar-left-date{
+    font-size:11px;
+  }
+  
 }
 </style>

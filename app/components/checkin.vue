@@ -220,37 +220,35 @@ onMounted(() => {
 }
 @media(max-width:768px){
   .checkin {
-    padding: 20px;
+    padding: 20px 15px;
   }
-  .feed-item{
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-    width:100%;
 
+  .feed-item {
+    padding: 12px;
   }
-  .feed-item-info{
-    align-items:center;
 
+  .feed-item-name {
+    font-size: 13px;
   }
-  .feed-item-right{
-    flex-direction:row;
-    gap:10px;
+
+  .feed-item-msg {
+    font-size: 12px;
   }
-  .profile-pic{
-    width:25px;
-    height:25px;
-    font-size:9px;
+
+  .profile-pic {
+    width: 26px;
+    height: 26px;
+    font-size: 10px;
+    margin-right: 8px;
   }
-  .status-badge{
-    font-size:10px;
-    padding:3px 7px;
+
+  .status-badge {
+    font-size: 10px;
+    padding: 4px 8px;
   }
-  .checkin-time{
-    font-size:10px;
-  }
-  .empty-title{
-    font-size: 14px;
+
+  .checkin-time {
+    font-size: 10px;
   }
 }
 </style>

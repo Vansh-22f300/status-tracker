@@ -26,7 +26,6 @@ import { ref, onMounted } from "vue";
 import { db } from "../../../firebase/config";
 import {
   collection,
-  addDoc,
   query,
   where,
   getDocs,
@@ -36,14 +35,12 @@ import {
   increment,
 } from "firebase/firestore";
 
-const { getInitials } = useInitials();
 
 const { user, profile } = useUser();
 
 const teamName = ref("");
 const error = ref("");
 const isLoading = ref(false);
-const avlTeams = ref([]);
 const joinCode = ref("");
 onMounted(() => {
   if (profile.value?.teamId) {
@@ -214,5 +211,37 @@ async function handleJoinTeam() {
   color: #b00020;
   font-size: 14px;
   margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .welcome-page {
+    padding:20px;
+  }
+  .welcome-grid {
+    width:100%;
+    max-width:100%;
+    padding:20px;
+    border-radius:15px;
+  }
+  .back-btn {
+    font-size:14px;
+    margin-bottom:15px;
+  }
+  .field-label {
+    font-size:16px;
+    margin-bottom:12px;
+  }
+  .field-input {
+    padding:10px;
+    font-size:14px;
+    margin-bottom:12px;
+  }
+  .join-btn {
+    padding:10px;
+    font-size:14px;
+  }
+  .error {
+    font-size:12px;
+  }
 }
 </style>
