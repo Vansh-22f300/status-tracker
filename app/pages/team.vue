@@ -145,50 +145,50 @@ const copied = ref(false);
 const statusConfirm = ref(null);
 const removeMember = ref(null);
 
-let stopStatusListener = null;
-let stopMembersListener = null;
-let stopTeamListener = null;
+const statusMap     = ref({})     
+
+let stopStatusListener  = null
+let stopMembersListener = null
+let stopTeamListener    = null
 
 async function fetchData() {
-  const teamId = profile.value.teamId;
-  const today = todayKey();
+  const teamId = profile.value.teamId
+  const today  = todayKey()
 
   stopTeamListener = onSnapshot(doc(db, "teams", teamId), (snap) => {
-    teamsData.value = snap.data();
-  });
-
-  stopMembersListener = onSnapshot(
-    query(collection(db, "profiles"), where("teamId", "==", teamId)),
-    (snapshot) => {
-      const existingStatuses = {};
-      members.value.forEach((m) => {
-        existingStatuses[m.id] = m.status;
-      });
-
-      members.value = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-        status: existingStatuses[d.id] || null,
-      }));
-    },
-  );
+    teamsData.value = snap.data()
+  })
 
   stopStatusListener = onSnapshot(
     query(collection(db, "status"), where("teamId", "==", teamId)),
     (snapshot) => {
-      const map = {};
-      snapshot.docs.forEach((d) => {
-        const data = d.data();
-        const date = new Date(data.timestamp).toLocaleDateString("en-CA");
-        if (date === today) map[data.uid] = data.status;
-      });
+      const map = {}
+      snapshot.docs.forEach(d => {
+        const data = d.data()
+        const date = new Date(data.timestamp).toLocaleDateString("en-CA")
+        if (date === today) map[data.uid] = data.status
+      })
+      statusMap.value = map
 
-      members.value = members.value.map((m) => ({
-        ...m,
-        status: map[m.id] || null,
-      }));
-    },
-  );
+      if (members.value.length) {
+        members.value = members.value.map(m => ({
+          ...m,
+          status: map[m.id] || null
+        }))
+      }
+    }
+  )
+
+  stopMembersListener = onSnapshot(
+    query(collection(db, "profiles"), where("teamId", "==", teamId)),
+    (snapshot) => {
+      members.value = snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data(),
+        status: statusMap.value[d.id] || null
+      }))
+    }
+  )
 }
 
 
