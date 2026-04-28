@@ -109,7 +109,7 @@ const handleEmailLogin = async () => {
   } catch (err) {
     successMessage.value = "";
     error.value = err.message;
-    console.error("login failed", err);
+    // console.error("login failed", err);
   } finally {
     isLoading.value = false;
   }
@@ -123,12 +123,11 @@ const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     const googleCreds = await signInWithPopup(auth, provider);
     successMessage.value = "Login Successful...";
-    // navigateTo("/");
     // console.log("Google login succesfull", googleCreds.user);
   } catch (err) {
     successMessage.value = "";
     error.value = err.message;
-    console.error("login failed", err);
+    // console.error("login failed", err);
   } finally {
     isLoading.value = false;
   }
@@ -141,7 +140,6 @@ const handleGoogleLogin = async () => {
   align-items: center;
   justify-items: center;
   left: 50%;
-  /* background-color:green; */
 }
 
 .login-card {

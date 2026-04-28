@@ -113,13 +113,13 @@ const handleSignup = async () => {
       updatedAt: new Date(),
     });
 
-    console.log("User + Profile created successfully", user);
+    // console.log("User + Profile created successfully", user);
 
     navigateTo("/welcome");
 
   } 
   catch (err) {
-    console.error("signup failed", err);
+    console.log("signup failed", err);
 
     if (err.code === "auth/email-already-in-use") {
       try {
@@ -132,12 +132,12 @@ const handleSignup = async () => {
 
         await linkWithCredential(result.user, credential);
 
-        console.log("Google + Email linked");
+        // console.log("Google + Email linked");
 
         navigateTo("/welcome");
 
       } catch (linkErr) {
-        console.error("Link failed:", linkErr);
+        // console.error("Link failed:", linkErr);
         error.value = "This email is linked with Google. Please login with Google.";
       }
 
