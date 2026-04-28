@@ -1,7 +1,7 @@
 <template>
   <div class="section">
     <p class="label">Your status today</p>
-    <div class="list">
+    <div class="list" >
       <div
         class="card"
         :class="{
@@ -38,7 +38,7 @@
     </div>
     <div class="submit" v-if="selectedstatus">
       <div class="submit-info">
-        <div>{{ message() }}— will notify MAP Team C</div>
+        <div>{{ message() }}— will notify {{ profile?.teamName ||"your team"}}</div>
         <div class="submit-time" v-if="selectedstatus !== 'leave'">
           Posting as You {{ time }}
         </div>
@@ -51,7 +51,6 @@
 
 <script setup>
 import { ref } from "vue";
-// const { teamData } = useData();
 const {user ,profile} = useUser();
 const selectedstatus = ref(null);
 const time = ref("");

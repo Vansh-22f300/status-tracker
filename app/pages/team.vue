@@ -256,7 +256,11 @@ function formatStatus(status) {
   else if (status === "wfo") return "🏢 Office";
   return "🏝️ Leave";
 }
-
+function formatStatusflow(status){
+  if (status === "wfh") return "Work From Home";
+  else if (status === "wfo") return "In Office";
+  return "On Leave";
+}
 function copyCode() {
   navigator.clipboard.writeText(teamsData.value.joinCode);
   copied.value = true;
@@ -266,7 +270,7 @@ async function handlewebhook() {
     await $fetch("/api/update", {
       method: "POST",
       body: {
-        status: formatStatus(statusConfirm.value.newStatus),
+        status: formatStatusflow(statusConfirm.value.newStatus),
         name: statusConfirm.value.member.name,
         time: new Date().toLocaleTimeString([], {
           hour: "2-digit",

@@ -44,7 +44,7 @@ const teamName = ref("");
 const error = ref("");
 const isLoading = ref(false);
 function generateTeamCode() {
-  const numbers = Math.floor(1000 + Math.random() * 9000);
+  const numbers = Math.floor(100000 + Math.random() * 900000);
   return `${numbers}`;
 }
 async function handleCreateTeam() {
@@ -55,10 +55,20 @@ async function handleCreateTeam() {
   }
 
   isLoading.value = true;
-  console.log("handle check create");
 
   try {
     const teamRef = doc(collection(db, "teams"));
+    const existingTeamQuery = query(
+      collection(db, "teams"),
+      where("name", "==", teamName.value.trim())
+    );
+    const existingTeamSnapshot = await getDocs(existingTeamQuery);
+    if (!existingTeamSnapshot.empty) {
+      console.log("Team already exist");
+      error.value = "Team name already exists, try another name.";
+      return;
+    }
+    console.log("Creating Team...");
     const code = generateTeamCode();
     await setDoc(teamRef, {
       name: teamName.value.trim(),
@@ -82,7 +92,6 @@ async function handleCreateTeam() {
       teamName: teamName.value.trim(),
     };
     console.log("Team Created");
-    console.log("join code", code);
     navigateTo("/");
   } catch (err) {
     console.error("Failed to create Team", err);

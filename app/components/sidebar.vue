@@ -23,7 +23,7 @@
     </div>
     <div class="navigation">
       <span class="navigation-title">Navigation</span><br />
-      <NuxtLink to="/" class="navigation-tile">
+      <NuxtLink to="/" class="navigation-tile" @click="sidebarClose()">
         <span class="navigation-icon">◈</span>Today</NuxtLink
       >
       <NuxtLink
