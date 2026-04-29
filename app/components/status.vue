@@ -40,7 +40,7 @@
       <div class="submit-info">
         <div>{{ message() }}— will notify {{ profile?.teamName ||"your team"}}</div>
         <div class="submit-time" v-if="selectedstatus !== 'leave'">
-          Posting as You {{ time }}
+          Posting at {{ time }}
         </div>
       </div>
 
@@ -70,15 +70,13 @@ async function submitStatus() {
   if (!selectedstatus.value) return;
 
   if (!user.value || !user.value.email) {
-    console.log("data not ready");
+    // console.log("data not ready");
     return;
   }
 
   try {
     const today = new Date().toLocaleDateString("en-CA");
-    console.log(today);
     const docId = `${user.value.uid}_${today}`;
-    console.log(docId);
     
     await setDoc(doc(db, "status", docId), {
       uid: user.value.uid,
@@ -89,7 +87,7 @@ async function submitStatus() {
       timestamp: Date.now(),
     }, { merge: true });
 
-    console.log("Saved or Updated ");
+    // console.log("Saved or Updated ");
   } catch (err) {
     console.error("Error:", err);
   }
@@ -121,9 +119,7 @@ async function handlewebhook(){
 function notified() {
   submitStatus();
   handlewebhook();
-  // console.log(user.value);
-  console.log("Posted", selectedstatus.value);
-  console.log(time);
+
 }
 
 const updateTime = () => {
@@ -145,7 +141,6 @@ onUnmounted(() => {
 
 <style scoped>
 .section {
-  /* margin-top:30px; */
   padding: 30px;
 }
 .label {
@@ -155,18 +150,13 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 .list {
-  /* background-color:pink; */
   display: flex;
   gap: 20px;
-  /* border-radius:10px; */
 }
 .card {
-  /* margin:20px; x */
   background-color: #fdfcfa;
   border-radius: 15px;
   flex: 1;
-  /* width:430px; */
-  /* height:200px; */
   padding: 30px;
   cursor: pointer;
 }

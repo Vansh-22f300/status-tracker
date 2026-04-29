@@ -9,7 +9,7 @@
       <span
         >Welcome,
         <span class="name"
-          >{{ profile?.name || user?.displayName || "User" }}
+          >{{ mounted ? profile?.name || user?.displayName : "" }}
         </span> </span
       ><br />
 
@@ -28,6 +28,7 @@ import { auth } from "../../firebase/config";
 import { signOut } from "firebase/auth";
 const { profile, user } = useUser();
 const{ toggleSidebar } = useSidebar();
+const mounted=ref(false);
 async function handleLogout() {
   try {
     await signOut(auth);
@@ -44,6 +45,9 @@ const currentDate = new Date().toLocaleDateString("en-IN", {
   year: "numeric",
   month: "long",
 });
+onMounted(() => {
+  mounted.value = true;
+});
 </script>
 
 <style scoped>
@@ -54,7 +58,6 @@ const currentDate = new Date().toLocaleDateString("en-IN", {
   justify-content: space-between;
   align-items: center;
   background-color: #fdfcfa;
-  /* background-color:blue; */
   padding: 0 30px;
   border-bottom: 1px solid rgb(207, 205, 205);
 }

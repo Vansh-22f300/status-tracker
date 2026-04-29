@@ -6,7 +6,7 @@
         DEV
         <span class="sidebar-title-team">Team</span>
       </div>
-      <div class="sidebar-subtitle">AVAILABILITY • {{ profile?.teamName }}</div>
+      <div class="sidebar-subtitle">AVAILABILITY • {{mounted ? profile?.teamName :"" }}</div>
     </div>
     <div class="sidebar-member">
       <span class="profile-pic">{{
@@ -14,10 +14,10 @@
       }}</span>
       <div class="sidebar-member-info">
         <span class="sidebar-member-name">{{
-          profile?.name || user?.displayName || "User"
+         mounted ? profile?.name || user?.displayName :""
         }}</span>
         <span class="user-role"
-          >{{ profile?.role }} • {{ profile?.teamName }}</span
+          >{{ mounted ? profile?.role : "" }} • {{ mounted ? profile?.teamName : "" }}</span
         >
       </div>
     </div>
@@ -29,7 +29,7 @@
       <NuxtLink
         to="/team"
         class="navigation-tile"
-        v-if="profile.role == 'Manager'"
+        v-if="mounted && profile?.role == 'Manager'"
         @click="sidebarClose()"
       >
         <span class="navigation-icon">⚙</span>Manage Team</NuxtLink
@@ -69,7 +69,7 @@ import { onSnapshot } from "firebase/firestore";
 const users = ref([]);
 const { profile, user } = useUser();
 const { sidebarClose } = useSidebar();
-
+const mounted=ref(false);
 const { getInitials } = useInitials();
 let stopUsersListener = null;
 
@@ -118,6 +118,7 @@ function fetchUsers() {
 import { watch } from "vue";
 
 onMounted(() => {
+   mounted.value = true;
   if (profile.value?.teamId) {
     fetchUsers();
   } else {

@@ -106,7 +106,9 @@ const handleEmailLogin = async () => {
     successMessage.value = "Login Successful...";
   } catch (err) {
     successMessage.value = "";
-    error.value = err.message;
+    if(err.code==="auth/invalid-credential"){
+      error.value="Invalid email or password";
+    }
     console.error("login failed", err);
   } finally {
     isLoading.value = false;
