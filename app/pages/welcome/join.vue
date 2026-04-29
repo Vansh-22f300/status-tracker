@@ -35,7 +35,8 @@ import {
   increment,
 } from "firebase/firestore";
 
-
+import {useToast} from "vue-toastification";
+const toast = useToast();
 const { user, profile } = useUser();
 
 const teamName = ref("");
@@ -64,7 +65,8 @@ async function handleJoinTeam() {
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
-      error.value = "Invalid Join Code";
+      // error.value = "Invalid Join Code";
+      toast.error("Invalid Join Code");
       isLoading.value = false;
       return;
     }
@@ -86,10 +88,12 @@ async function handleJoinTeam() {
       teamId: teamId,
       teamName: teamName,
     };
+    toast.success(`Joined team ${teamName} successfully ✅`);
     navigateTo("/");
   } catch (err) {
     console.error("fail to join team", err);
     error.value = err.message;
+    toast.error("Failed to join team. Please try again.")
   } finally {
     isLoading.value = false;
   }

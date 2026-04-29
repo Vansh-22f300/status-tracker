@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <div class="notify-btn" @click="notified">Notify Group ➡️</div>
+      <div class="notify-btn" @click="notified" :class="{ 'disabled': isPosting }">{{ isPosting ? 'Notifying...' : 'Notify Group ➡️' }}</div>
     </div>
   </div>
 </template>
@@ -54,7 +54,9 @@ import { ref } from "vue";
 const {user ,profile} = useUser();
 const selectedstatus = ref(null);
 const time = ref("");
-
+const isPosting = ref(false);
+import {useToast} from "vue-toastification";
+const toast = useToast();
 let interval = null;
 import { db } from "../../firebase/config";
 import { collection, addDoc, query, where, getDoc, updateDoc, setDoc, doc } from "firebase/firestore";
@@ -116,10 +118,24 @@ async function handlewebhook(){
 
 }
 
-function notified() {
-  submitStatus();
-  handlewebhook();
+async function notified() {
+  if (!selectedstatus.value) {
+    toast.warning("Please select a status first.")
+    return
+  }
+  if (isPosting.value) return   
+  isPosting.value = true
 
+  try {
+    await submitStatus()
+    await handlewebhook()
+    toast.success("Status posted successfully! 🎉")
+  } catch (err) {
+    toast.error("Something went wrong. Please try again.")
+    console.error(err)
+  } finally {
+    isPosting.value = false     
+  }
 }
 
 const updateTime = () => {
@@ -204,6 +220,11 @@ onUnmounted(() => {
   color: white;
   transform: translateY(2px);
 }
+.notify-btn.disabled {
+  cursor: not-allowed;
+  transform: translateY(0);
+  opacity: 0.4;
+}
 .selected_office {
   border: 1px solid green;
   background-color: #d0eddc;
@@ -259,6 +280,10 @@ onUnmounted(() => {
   .notify-btn:hover {
     transform: translateY(0);
     opacity: 0.7;
+  }
+  .notify-btn.disabled{
+    transform: translateY(0);
+    opacity: 0.4;
   }
 }
 </style>

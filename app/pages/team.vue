@@ -135,7 +135,8 @@ import {
 } from "firebase/firestore";
 
 definePageMeta({ middleware: ["auth", "manager"] });
-
+import {useToast} from "vue-toastification";
+const toast = useToast();
 const { user, profile } = useUser();
 const { getInitials } = useInitials();
 
@@ -211,6 +212,7 @@ async function confirmStatusChange() {
   console.log("Status updated");
   member.status = newStatus;
   handlewebhook();
+  toast.success(`${member.name}'s status updated ✅`)
 
   statusConfirm.value = null;
 }
@@ -245,6 +247,7 @@ async function confirmRemove() {
   }
 
   members.value = members.value.filter((m) => m.id !== member.id);
+  toast.success(`${member.name} removed from team ✅`);
   removeMember.value = null;
 }
 
