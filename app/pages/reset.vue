@@ -54,7 +54,7 @@ const handleResetPassword=async () => {
     successMessage.value = "Reset password email sent.";
   } catch (err) {
     error.value = err.message;
-    console.log("Reset error", err);
+    // console.log("Reset error", err);
   } finally {
     isLoading.value = false;
   }

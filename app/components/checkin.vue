@@ -32,7 +32,6 @@ import { ref, onMounted } from "vue";
 import { db } from "../../firebase/config";
 import { collection, getDocs,query,where } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
-// const { teamData } = useData();
 const users = ref([]);
 const { profile, user } = useUser();
 

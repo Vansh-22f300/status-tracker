@@ -33,7 +33,7 @@ async function handleLogout() {
   try {
     await signOut(auth);
     navigateTo("/login");
-    console.log("User Logout successful");
+    // console.log("User Logout successful");
   } catch (err) {
     console.error("Logout fail", err);
   }

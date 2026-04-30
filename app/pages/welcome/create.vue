@@ -65,7 +65,7 @@ async function handleCreateTeam() {
     );
     const existingTeamSnapshot = await getDocs(existingTeamQuery);
     if (!existingTeamSnapshot.empty) {
-      console.log("Team already exist");
+      // console.log("Team already exist");
       error.value = "Team name already exists, try another name.";
       return;
     }
@@ -92,7 +92,7 @@ async function handleCreateTeam() {
       teamId: teamRef.id,
       teamName: teamName.value.trim(),
     };
-    console.log("Team Created");
+    // console.log("Team Created");
     toast.success(`Team ${teamName.value.trim()} created successfully ✅`);
     navigateTo("/");
   } catch (err) {

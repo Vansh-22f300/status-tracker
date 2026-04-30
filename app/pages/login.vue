@@ -109,7 +109,7 @@ const handleEmailLogin = async () => {
     if(err.code==="auth/invalid-credential"){
       error.value="Invalid email or password";
     }
-    console.error("login failed", err);
+    // console.error("login failed", err);
   } finally {
     isLoading.value = false;
   }
@@ -126,7 +126,7 @@ const handleGoogleLogin = async () => {
   } catch (err) {
     successMessage.value = "";
     error.value = err.message;
-    console.error("login failed", err);
+    // console.error("login failed", err);
   } finally {
     isLoading.value = false;
   }

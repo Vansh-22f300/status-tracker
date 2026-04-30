@@ -91,7 +91,7 @@ async function handleJoinTeam() {
     toast.success(`Joined team ${teamName} successfully ✅`);
     navigateTo("/");
   } catch (err) {
-    console.error("fail to join team", err);
+    // console.error("fail to join team", err);
     error.value = err.message;
     toast.error("Failed to join team. Please try again.")
   } finally {

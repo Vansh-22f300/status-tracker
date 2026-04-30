@@ -72,7 +72,6 @@ async function submitStatus() {
   if (!selectedstatus.value) return;
 
   if (!user.value || !user.value.email) {
-    // console.log("data not ready");
     return;
   }
 
@@ -89,7 +88,6 @@ async function submitStatus() {
       timestamp: Date.now(),
     }, { merge: true });
 
-    // console.log("Saved or Updated ");
   } catch (err) {
     console.error("Error:", err);
   }

@@ -209,7 +209,7 @@ async function confirmStatusChange() {
     teamId: profile.value.teamId,
     timestamp: Date.now(),
   });
-  console.log("Status updated");
+  // console.log("Status updated");
   member.status = newStatus;
   handlewebhook();
   toast.success(`${member.name}'s status updated ✅`)
@@ -219,7 +219,6 @@ async function confirmStatusChange() {
 
 function handleRemove(member) {
   if (member.id === user.uid) {
-    console.log("cannot be removed");
     return;
   }
   removeMember.value = member;
@@ -281,7 +280,7 @@ async function handlewebhook() {
         }),
       },
     });
-    console.log("sent to google chat space");
+    // console.log("sent to google chat space");
   } catch (err) {
     console.log("webhook failed", err);
   }
