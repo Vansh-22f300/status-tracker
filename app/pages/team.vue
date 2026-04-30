@@ -592,33 +592,6 @@ onUnmounted(() => {
     gap: 8px;
     padding: 12px;
   }
-/* 
-  .profile-pic {
-    order: 1;
-  }
-
-  .member-info {
-    order: 2;
-  }
-
-  .remove {
-    order: 6;
-    margin-left: auto;
-  }
-
-  .member-role {
-    order: 3;
-  }
-
-  .status-text {
-    order: 4;
-    min-width: auto;
-    flex: 1;
-  }
-
-  .status {
-    order:5;
-  } */
   .member-email {
     display:none;
   }
