@@ -2,7 +2,9 @@
   <div class="welcome-page">
     <div class="welcome-grid">
       <div class="header">
-        <h1 v-if="isLoaded">Welcome, {{ profile?.name || user?.displayName }}</h1>
+        <h1 v-if="isLoaded">
+          Welcome, {{ profile?.name || user?.displayName }}
+        </h1>
         <h1 v-else>Loading...</h1>
         <p>Let's get you set up.</p>
       </div>
@@ -27,24 +29,23 @@
 
 <script setup>
 definePageMeta({
-  layout: "welcome",
+  layout: 'welcome'
 });
-import { ref, onMounted } from "vue";
-import { db } from "../../../firebase/config";
-import { collection, getDocs } from "firebase/firestore";
+import { ref, onMounted } from 'vue';
+import { db } from '../../../firebase/config';
+import { collection, getDocs } from 'firebase/firestore';
 
 const { getInitials } = useInitials();
 
-const { user, profile , isLoaded } = useUser();
+const { user, profile, isLoaded } = useUser();
 
-const error = ref("");
+const error = ref('');
 
 onMounted(() => {
   if (profile.value?.teamId) {
-    navigateTo("/");
+    navigateTo('/');
   }
 });
-
 </script>
 
 <style scoped>
@@ -89,7 +90,10 @@ onMounted(() => {
   flex: 1;
   padding: 30px;
   cursor: pointer;
-  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
 }
 .card:hover {
   border-color: rgba(24, 125, 83, 0.35);
@@ -113,42 +117,42 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .welcome-page {
-    padding:20px;
+    padding: 20px;
   }
   .welcome-grid {
-    width:100%;
-    padding:25px;
-    border-radius:15px;
+    width: 100%;
+    padding: 25px;
+    border-radius: 15px;
   }
   .header {
     margin-bottom: 25px;
   }
   .header h1 {
-    font-size:24px;
-    margin-bottom:8px;
+    font-size: 24px;
+    margin-bottom: 8px;
   }
   .header p {
-    font-size:14px;
+    font-size: 14px;
   }
   .list {
-    flex-direction:column;
+    flex-direction: column;
 
-    gap:15px;
+    gap: 15px;
   }
   .card {
-    padding:20px;
-    border-radius:15px;
+    padding: 20px;
+    border-radius: 15px;
   }
   .card-icon {
-    font-size:28px;
-     margin-bottom:15px;
+    font-size: 28px;
+    margin-bottom: 15px;
   }
   .card-title {
-  font-size:18px;
-    margin-bottom:8px;
+    font-size: 18px;
+    margin-bottom: 8px;
   }
   .card-subtitle {
-    font-size:12px;
+    font-size: 12px;
   }
 }
 </style>

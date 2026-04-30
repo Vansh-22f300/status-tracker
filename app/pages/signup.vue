@@ -41,7 +41,7 @@
           required
         />
         <button type="submit" class="signup-btn" :disabled="isLoading">
-          {{ isLoading ? "Creating account..." : "Sign Up" }}
+          {{ isLoading ? 'Creating account...' : 'Sign Up' }}
         </button>
       </form>
 
@@ -55,25 +55,25 @@
 
 <script setup>
 definePageMeta({
-  layout: "auth",
+  layout: 'auth'
 });
-import { ref } from "vue";
-import { auth, db } from "../../firebase/config";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { ref } from 'vue';
+import { auth, db } from '../../firebase/config';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
-const name = ref("");
-const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
-const error = ref("");
+const name = ref('');
+const email = ref('');
+const password = ref('');
+const confirmPassword = ref('');
+const error = ref('');
 const isLoading = ref(false);
 import {
   signInWithPopup,
   GoogleAuthProvider,
   EmailAuthProvider,
   linkWithCredential
-} from "firebase/auth";
+} from 'firebase/auth';
 
 const provider = new GoogleAuthProvider();
 
@@ -81,12 +81,12 @@ const handleSignup = async () => {
   if (isLoading.value) return;
 
   if (password.value !== confirmPassword.value) {
-    error.value = "Passwords do not match";
+    error.value = 'Passwords do not match';
     return;
   }
 
   isLoading.value = true;
-  error.value = "";
+  error.value = '';
 
   try {
     const emailTrimmed = email.value.trim();
@@ -100,28 +100,26 @@ const handleSignup = async () => {
     const user = userCreds.user;
 
     await updateProfile(user, {
-      displayName: name.value,
+      displayName: name.value
     });
 
-    await setDoc(doc(db, "profiles", user.uid), {
+    await setDoc(doc(db, 'profiles', user.uid), {
       name: name.value,
       email: user.email,
       role: null,
       teamId: null,
       teamName: null,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     });
 
     // console.log("User + Profile created successfully", user);
 
-    navigateTo("/welcome");
+    navigateTo('/welcome');
+  } catch (err) {
+    console.log('signup failed', err);
 
-  } 
-  catch (err) {
-    console.log("signup failed", err);
-
-    if (err.code === "auth/email-already-in-use") {
+    if (err.code === 'auth/email-already-in-use') {
       try {
         const result = await signInWithPopup(auth, provider);
 
@@ -134,20 +132,18 @@ const handleSignup = async () => {
 
         // console.log("Google + Email linked");
 
-        navigateTo("/welcome");
-
+        navigateTo('/welcome');
       } catch (linkErr) {
         // console.error("Link failed:", linkErr);
-        error.value = "This email is linked with Google. Please login with Google.";
+        error.value =
+          'This email is linked with Google. Please login with Google.';
       }
 
       return;
     }
 
     error.value = err.message;
-
-  } 
-  finally {
+  } finally {
     isLoading.value = false;
   }
 };
@@ -222,7 +218,9 @@ const handleSignup = async () => {
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: background-color var(--transition-base), transform var(--transition-base);
+  transition:
+    background-color var(--transition-base),
+    transform var(--transition-base);
 }
 
 .signup-btn:hover {

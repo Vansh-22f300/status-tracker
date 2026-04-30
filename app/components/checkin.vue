@@ -2,7 +2,7 @@
   <div class="checkin">
     <div class="header">
       <div class="header-label">Today's check-ins</div>
-      <div class="header-count">{{users.length }} </div>
+      <div class="header-count">{{ users.length }}</div>
     </div>
     <div class="feed" v-if="users.length">
       <div class="feed-item" v-for="user in users" :key="user.name">
@@ -12,49 +12,48 @@
           <div class="feed-item-msg">{{ user.msg }}</div>
         </div>
         <div class="feed-item-right">
-          <div class="checkin-time" >{{ user.time }}</div>
+          <div class="checkin-time">{{ user.time }}</div>
           <div
             class="status-badge ui-chip"
-            :class="`tag-${user.status.toLowerCase()}`">
+            :class="`tag-${user.status.toLowerCase()}`"
+          >
             {{ user.statusCode }}
           </div>
         </div>
       </div>
     </div>
-        <div class="empty-title" v-else>No check-in recorded for Today.</div>
-
+    <div class="empty-title" v-else>No check-in recorded for Today.</div>
   </div>
 </template>
 
 <script setup>
-
-import { ref, onMounted } from "vue";
-import { db } from "../../firebase/config";
-import { collection, getDocs,query,where } from "firebase/firestore";
-import { onSnapshot } from "firebase/firestore";
+import { ref, onMounted } from 'vue';
+import { db } from '../../firebase/config';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 const users = ref([]);
 const { profile, user } = useUser();
 
 const { getInitials } = useInitials();
 
-function formatTime(timestamp,status) {
-    if (status === "leave") return;
+function formatTime(timestamp, status) {
+  if (status === 'leave') return;
 
-  return new Date(timestamp).toLocaleTimeString("en-IN", {
-    hour: "numeric",
-    minute: "numeric",
+  return new Date(timestamp).toLocaleTimeString('en-IN', {
+    hour: 'numeric',
+    minute: 'numeric'
   });
 }
 
 function formatStatus(status) {
-  if(status==="wfh") return "🏠 WFH";
-  else if(status==="wfo") return "🏢 Office";
-  return "🏝️ Leave";
+  if (status === 'wfh') return '🏠 WFH';
+  else if (status === 'wfo') return '🏢 Office';
+  return '🏝️ Leave';
 }
 function formatMessage(status) {
-  if(status==="wfh") return "Available Work from Home";
-  else if(status==="wfo") return" Available at Office";
-  return "On Leave";
+  if (status === 'wfh') return 'Available Work from Home';
+  else if (status === 'wfo') return ' Available at Office';
+  return 'On Leave';
 }
 
 function isToday(timestamp) {
@@ -65,43 +64,44 @@ function isToday(timestamp) {
 function fetchUsers() {
   const querySnapshot = onSnapshot(
     query(
-      collection(db, "status"),
-      where("teamId", "==", profile.value.teamId)
+      collection(db, 'status'),
+      where('teamId', '==', profile.value.teamId)
     ),
     (snapshot) => {
       users.value = snapshot.docs
-        .map(doc => ({
+        .map((doc) => ({
           id: doc.id,
           ...doc.data()
         }))
-    .filter(user=>isToday(user.timestamp))
-    .sort((a, b) => b.timestamp - a.timestamp)  
-    .map(user=>({
-      ...user,
-      time:formatTime(user.timestamp,user.status),
-      msg:formatMessage(user.status),
-      statusCode:formatStatus(user.status),
-    }))
-  });
+        .filter((user) => isToday(user.timestamp))
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .map((user) => ({
+          ...user,
+          time: formatTime(user.timestamp, user.status),
+          msg: formatMessage(user.status),
+          statusCode: formatStatus(user.status)
+        }));
+    }
+  );
 }
 
-
-import { watch } from "vue"  
+import { watch } from 'vue';
 
 onMounted(() => {
   if (profile.value?.teamId) {
-    fetchUsers()  
-  } 
-  else {
-    const stop = watch(() => profile.value?.teamId, (teamId) => {
-      if (teamId) {
-        fetchUsers()
-        stop() 
+    fetchUsers();
+  } else {
+    const stop = watch(
+      () => profile.value?.teamId,
+      (teamId) => {
+        if (teamId) {
+          fetchUsers();
+          stop();
+        }
       }
-    })
+    );
   }
-})
-
+});
 
 // const { teamData } = useData();
 </script>
@@ -147,10 +147,11 @@ onMounted(() => {
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
-
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
 }
-.feed-item:hover{
+.feed-item:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -201,12 +202,12 @@ onMounted(() => {
   font-size: 11px;
 }
 
-.empty-title{
+.empty-title {
   font-size: 16px;
   color: var(--color-text-muted);
   text-align: center;
 }
-@media(max-width:768px){
+@media (max-width: 768px) {
   .checkin {
     padding: var(--space-5) var(--space-4);
   }

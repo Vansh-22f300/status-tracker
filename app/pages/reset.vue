@@ -13,7 +13,7 @@
           required
         />
         <button type="submit" class="send-btn" :disabled="isLoading">
-          {{ isLoading ? "Sending..." : "Send Reset Link" }}
+          {{ isLoading ? 'Sending...' : 'Send Reset Link' }}
         </button>
       </form>
       <p v-if="error" class="error-text">{{ error }}</p>
@@ -25,33 +25,33 @@
 
 <script setup>
 definePageMeta({
-  layout: "auth",
+  layout: 'auth'
 });
 
-import { ref } from "vue";
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import { ref } from 'vue';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../../firebase/config';
 
-const resetEmail = ref("");
-const error = ref("");
-const successMessage = ref("");
+const resetEmail = ref('');
+const error = ref('');
+const successMessage = ref('');
 const isLoading = ref(false);
 
-const handleResetPassword=async () => {
+const handleResetPassword = async () => {
   if (!resetEmail.value) {
-    error.value = "Please enter your email address";
-    successMessage.value = "";
+    error.value = 'Please enter your email address';
+    successMessage.value = '';
     return;
   }
 
   if (isLoading.value) return;
   isLoading.value = true;
-  error.value = "";
-  successMessage.value = "";
+  error.value = '';
+  successMessage.value = '';
 
   try {
     await sendPasswordResetEmail(auth, resetEmail.value);
-    successMessage.value = "Reset password email sent.";
+    successMessage.value = 'Reset password email sent.';
   } catch (err) {
     error.value = err.message;
     // console.log("Reset error", err);
@@ -72,12 +72,12 @@ const handleResetPassword=async () => {
 
 .reset-card {
   width: min(420px, 100%);
-  padding:32px;
+  padding: 32px;
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
-  text-align:center;
+  text-align: center;
 }
 
 .reset-card h1 {
@@ -89,16 +89,16 @@ const handleResetPassword=async () => {
   color: var(--color-text-muted);
 }
 .form-fields {
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-  margin-top:20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .field-label {
-  text-align:left;
-  font-size:14px;
-  font-weight:700;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--color-text);
 }
 
@@ -111,16 +111,18 @@ const handleResetPassword=async () => {
 .send-btn {
   width: 60%;
   border-radius: var(--radius-sm);
-  padding:12px;
+  padding: 12px;
   background: var(--color-primary);
   color: #ffffff;
-  font-size:16px;
+  font-size: 16px;
   font-weight: 600;
-  cursor:pointer;
-  border:none;
+  cursor: pointer;
+  border: none;
   align-self: center;
-  margin-bottom:12px;
-  transition: background-color var(--transition-base), transform var(--transition-base);
+  margin-bottom: 12px;
+  transition:
+    background-color var(--transition-base),
+    transform var(--transition-base);
 }
 
 .send-btn:hover {
@@ -129,25 +131,25 @@ const handleResetPassword=async () => {
 }
 
 .send-btn:disabled {
-  opacity:0.7;
-  cursor:not-allowed;
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .error-text {
-  margin-top:12px;
+  margin-top: 12px;
   color: #b00020;
 }
 
 .success-text {
-  margin-top:12px;
+  margin-top: 12px;
   color: var(--color-primary-strong);
-  font-weight:600;
+  font-weight: 600;
 }
 
 .back-link {
   color: var(--color-text);
-  text-decoration:none;
-  font-weight:600;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .back-link:hover {

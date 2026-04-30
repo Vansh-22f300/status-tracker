@@ -19,17 +19,17 @@
 <script setup>
 // const { teamData } = useData();
 const { getInitials } = useInitials();
-import { ref, onMounted } from "vue";
-import { db } from "../../firebase/config";
-import { collection, getDocs,query,where } from "firebase/firestore";
-import { onSnapshot } from "firebase/firestore";
+import { ref, onMounted } from 'vue';
+import { db } from '../../firebase/config';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 const users = ref([]);
 const { profile, user } = useUser();
 
 function formatStatus(status) {
-  if (status === "wfh") return "🏠 WFH";
-  else if (status === "wfo") return "🏢 Office";
-  return "🏝️ Leave";
+  if (status === 'wfh') return '🏠 WFH';
+  else if (status === 'wfo') return '🏢 Office';
+  return '🏝️ Leave';
 }
 
 function yesterday(timestamp) {
@@ -41,38 +41,41 @@ function yesterday(timestamp) {
 function fetchUsers() {
   const querySnapshot = onSnapshot(
     query(
-      collection(db, "status"),
-      where("teamId", "==", profile.value.teamId)
+      collection(db, 'status'),
+      where('teamId', '==', profile.value.teamId)
     ),
     (snapshot) => {
       users.value = snapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
-      .filter((user) => yesterday(user.timestamp))
-      .map((user) => ({
-        ...user,
-        status: formatStatus(user.status),
-      }));
-  });
+        .filter((user) => yesterday(user.timestamp))
+        .map((user) => ({
+          ...user,
+          status: formatStatus(user.status)
+        }));
+    }
+  );
 }
 
-import { watch } from "vue"  
+import { watch } from 'vue';
 
 onMounted(() => {
   if (profile.value?.teamId) {
-    fetchUsers()  
-  } 
-  else {
-    const stop = watch(() => profile.value?.teamId, (teamId) => {
-      if (teamId) {
-        fetchUsers()
-        stop() 
+    fetchUsers();
+  } else {
+    const stop = watch(
+      () => profile.value?.teamId,
+      (teamId) => {
+        if (teamId) {
+          fetchUsers();
+          stop();
+        }
       }
-    })
+    );
   }
-})
+});
 </script>
 <style scoped>
 .yesterday-section {
@@ -104,7 +107,9 @@ onMounted(() => {
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   padding: 8px;
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
 }
 .grid-item:hover {
   transform: translateY(-1px);
@@ -133,19 +138,19 @@ onMounted(() => {
   text-align: center;
 }
 
-@media(max-width: 768px) {
-  .yesterday-section{
+@media (max-width: 768px) {
+  .yesterday-section {
     margin: var(--space-4);
     padding: var(--space-3);
   }
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .grid-item{
-    gap:10px;
+  .grid-item {
+    gap: 10px;
   }
-  .grid-name{
-    font-size:13px;
+  .grid-name {
+    font-size: 13px;
   }
 }
 </style>

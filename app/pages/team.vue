@@ -8,8 +8,12 @@
           <div class="team-sub">Share this code with team members to join:</div>
           <div class="code-row">
             <div class="join-code">{{ teamsData?.joinCode }}</div>
-            <button type="button" class="copy-btn ui-btn ui-btn-secondary" @click="copyCode">
-              {{ copied ? "Copied!" : "Copy" }}
+            <button
+              type="button"
+              class="copy-btn ui-btn ui-btn-secondary"
+              @click="copyCode"
+            >
+              {{ copied ? 'Copied!' : 'Copy' }}
             </button>
           </div>
         </div>
@@ -39,7 +43,7 @@
             class="member-role"
             :class="{
               member: m?.role?.toLowerCase() === 'member',
-              manager: m?.role?.toLowerCase() === 'manager',
+              manager: m?.role?.toLowerCase() === 'manager'
             }"
           >
             {{ m?.role }}
@@ -48,10 +52,10 @@
             class="status-text ui-chip"
             :class="{
               'no-checkin': !m.status,
-              [`tag-${m.status}`]: !!m.status,
+              [`tag-${m.status}`]: !!m.status
             }"
           >
-            {{ m.status ? formatStatus(m.status) : "No Check-in" }}
+            {{ m.status ? formatStatus(m.status) : 'No Check-in' }}
           </div>
 
           <div class="status">
@@ -119,8 +123,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { db } from "../../firebase/config";
+import { ref, onMounted } from 'vue';
+import { db } from '../../firebase/config';
 import {
   doc,
   getDoc,
@@ -131,11 +135,11 @@ import {
   getDocs,
   updateDoc,
   increment,
-  onSnapshot,
-} from "firebase/firestore";
+  onSnapshot
+} from 'firebase/firestore';
 
-definePageMeta({ middleware: ["auth", "manager"] });
-import {useToast} from "vue-toastification";
+definePageMeta({ middleware: ['auth', 'manager'] });
+import { useToast } from 'vue-toastification';
 const toast = useToast();
 const { user, profile } = useUser();
 const { getInitials } = useInitials();
@@ -146,52 +150,51 @@ const copied = ref(false);
 const statusConfirm = ref(null);
 const removeMember = ref(null);
 
-const statusMap     = ref({})     
+const statusMap = ref({});
 
-let stopStatusListener  = null
-let stopMembersListener = null
-let stopTeamListener    = null
+let stopStatusListener = null;
+let stopMembersListener = null;
+let stopTeamListener = null;
 
 async function fetchData() {
-  const teamId = profile.value.teamId
-  const today  = todayKey()
+  const teamId = profile.value.teamId;
+  const today = todayKey();
 
-  stopTeamListener = onSnapshot(doc(db, "teams", teamId), (snap) => {
-    teamsData.value = snap.data()
-  })
+  stopTeamListener = onSnapshot(doc(db, 'teams', teamId), (snap) => {
+    teamsData.value = snap.data();
+  });
 
   stopStatusListener = onSnapshot(
-    query(collection(db, "status"), where("teamId", "==", teamId)),
+    query(collection(db, 'status'), where('teamId', '==', teamId)),
     (snapshot) => {
-      const map = {}
-      snapshot.docs.forEach(d => {
-        const data = d.data()
-        const date = new Date(data.timestamp).toLocaleDateString("en-CA")
-        if (date === today) map[data.uid] = data.status
-      })
-      statusMap.value = map
+      const map = {};
+      snapshot.docs.forEach((d) => {
+        const data = d.data();
+        const date = new Date(data.timestamp).toLocaleDateString('en-CA');
+        if (date === today) map[data.uid] = data.status;
+      });
+      statusMap.value = map;
 
       if (members.value.length) {
-        members.value = members.value.map(m => ({
+        members.value = members.value.map((m) => ({
           ...m,
           status: map[m.id] || null
-        }))
+        }));
       }
     }
-  )
+  );
 
   stopMembersListener = onSnapshot(
-    query(collection(db, "profiles"), where("teamId", "==", teamId)),
+    query(collection(db, 'profiles'), where('teamId', '==', teamId)),
     (snapshot) => {
-      members.value = snapshot.docs.map(d => ({
+      members.value = snapshot.docs.map((d) => ({
         id: d.id,
         ...d.data(),
         status: statusMap.value[d.id] || null
-      }))
+      }));
     }
-  )
+  );
 }
-
 
 function handleStatusChange(member, newStatus) {
   if (!newStatus) return;
@@ -200,19 +203,19 @@ function handleStatusChange(member, newStatus) {
 
 async function confirmStatusChange() {
   const { member, newStatus } = statusConfirm.value;
-  const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
+  const statusRef = doc(db, 'status', `${member.id}_${todayKey()}`);
   await setDoc(statusRef, {
     uid: member.id,
     name: member.name,
     email: member.email,
     status: newStatus,
     teamId: profile.value.teamId,
-    timestamp: Date.now(),
+    timestamp: Date.now()
   });
   // console.log("Status updated");
   member.status = newStatus;
   handlewebhook();
-  toast.success(`${member.name}'s status updated `)
+  toast.success(`${member.name}'s status updated `);
 
   statusConfirm.value = null;
 }
@@ -226,22 +229,22 @@ function handleRemove(member) {
 
 async function confirmRemove() {
   const member = removeMember.value;
-  const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
+  const statusRef = doc(db, 'status', `${member.id}_${todayKey()}`);
 
-  await updateDoc(doc(db, "profiles", member.id), {
+  await updateDoc(doc(db, 'profiles', member.id), {
     teamId: null,
     teamName: null,
-    role: null,
+    role: null
   });
 
-  await updateDoc(doc(db, "teams", profile.value.teamId), {
-    count: increment(-1),
+  await updateDoc(doc(db, 'teams', profile.value.teamId), {
+    count: increment(-1)
   });
 
   const statusSnap = await getDoc(statusRef);
   if (statusSnap.exists()) {
     await updateDoc(statusRef, {
-      teamId: null,
+      teamId: null
     });
   }
 
@@ -251,17 +254,17 @@ async function confirmRemove() {
 }
 
 function todayKey() {
-  return new Date().toLocaleDateString("en-CA");
+  return new Date().toLocaleDateString('en-CA');
 }
 function formatStatus(status) {
-  if (status === "wfh") return "🏠 WFH";
-  else if (status === "wfo") return "🏢 Office";
-  return "🏝️ Leave";
+  if (status === 'wfh') return '🏠 WFH';
+  else if (status === 'wfo') return '🏢 Office';
+  return '🏝️ Leave';
 }
-function formatStatusflow(status){
-  if (status === "wfh") return "Work From Home";
-  else if (status === "wfo") return "In Office";
-  return "On Leave";
+function formatStatusflow(status) {
+  if (status === 'wfh') return 'Work From Home';
+  else if (status === 'wfo') return 'In Office';
+  return 'On Leave';
 }
 function copyCode() {
   navigator.clipboard.writeText(teamsData.value.joinCode);
@@ -269,28 +272,28 @@ function copyCode() {
 }
 async function handlewebhook() {
   try {
-    await $fetch("/api/update", {
-      method: "POST",
+    await $fetch('/api/update', {
+      method: 'POST',
       body: {
         status: formatStatusflow(statusConfirm.value.newStatus),
         name: statusConfirm.value.member.name,
         time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      },
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }
     });
     // console.log("sent to google chat space");
   } catch (err) {
-    console.log("webhook failed", err);
+    console.log('webhook failed', err);
   }
 }
 onMounted(fetchData);
 
 onUnmounted(() => {
-  if (typeof stopStatusListener === "function") stopStatusListener();
-  if (typeof stopMembersListener === "function") stopMembersListener();
-  if (typeof stopTeamListener === "function") stopTeamListener();
+  if (typeof stopStatusListener === 'function') stopStatusListener();
+  if (typeof stopMembersListener === 'function') stopMembersListener();
+  if (typeof stopTeamListener === 'function') stopTeamListener();
 });
 </script>
 
@@ -380,7 +383,6 @@ onUnmounted(() => {
   font-weight: 800;
   color: var(--color-text);
   font-family: var(--font-display);
-
 }
 
 .team-length-label {
@@ -507,21 +509,21 @@ onUnmounted(() => {
   background: #f8dddb;
 }
 .modal {
-  position:fixed;
-  display:flex;
-  inset:0;
-  align-items:center;
-  justify-content:center;
-  z-index:100;
-  background:rgba(14, 24, 39, 0.35);
+  position: fixed;
+  display: flex;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  background: rgba(14, 24, 39, 0.35);
   backdrop-filter: blur(3px);
 }
 .modal-content {
   background-color: var(--color-surface);
   border-radius: var(--radius-md);
-  padding:24px;
-  border:1px solid var(--color-border);
-  text-align:center;
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  text-align: center;
   box-shadow: var(--shadow-md);
   max-width: 480px;
 }
@@ -604,19 +606,19 @@ onUnmounted(() => {
     padding: 12px;
   }
   .member-email {
-    display:none;
+    display: none;
   }
   .modal-content {
-    margin:16px;
-    padding:20px;
+    margin: 16px;
+    padding: 20px;
   }
 
   .modal-title {
-    font-size:22px;
+    font-size: 22px;
   }
 
   .modal-sub {
-    font-size:14px;
+    font-size: 14px;
   }
 }
 </style>

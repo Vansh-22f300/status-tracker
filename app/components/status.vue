@@ -1,11 +1,11 @@
 <template>
   <div class="section">
     <p class="label">Your status today</p>
-    <div class="list" >
+    <div class="list">
       <div
         class="card ui-card"
         :class="{
-          selected_office: selectedstatus == 'wfo',
+          selected_office: selectedstatus == 'wfo'
         }"
         @click="selectstatus('wfo')"
       >
@@ -16,7 +16,7 @@
       <div
         class="card ui-card"
         :class="{
-          selected_home: selectedstatus == 'wfh',
+          selected_home: selectedstatus == 'wfh'
         }"
         @click="selectstatus('wfh')"
       >
@@ -27,7 +27,7 @@
       <div
         class="card ui-card"
         :class="{
-          selected_leave: selectedstatus == 'leave',
+          selected_leave: selectedstatus == 'leave'
         }"
         @click="selectstatus('leave')"
       >
@@ -38,32 +38,51 @@
     </div>
     <div class="submit ui-card" v-if="selectedstatus">
       <div class="submit-info">
-        <div>{{ message() }}— will notify {{ profile?.teamName ||"your team"}}</div>
+        <div>
+          {{ message() }}— will notify {{ profile?.teamName || 'your team' }}
+        </div>
         <div class="submit-time" v-if="selectedstatus !== 'leave'">
           Posting at {{ time }}
         </div>
       </div>
 
-      <button type="button" class="notify-btn ui-btn ui-btn-primary" @click="notified" :disabled="isPosting" :class="{ 'disabled': isPosting }">{{ isPosting ? 'Notifying...' : 'Notify Group ->' }}</button>
+      <button
+        type="button"
+        class="notify-btn ui-btn ui-btn-primary"
+        @click="notified"
+        :disabled="isPosting"
+        :class="{ disabled: isPosting }"
+      >
+        {{ isPosting ? 'Notifying...' : 'Notify Group ->' }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-const {user ,profile} = useUser();
+import { ref } from 'vue';
+const { user, profile } = useUser();
 const selectedstatus = ref(null);
-const time = ref("");
+const time = ref('');
 const isPosting = ref(false);
-import {useToast} from "vue-toastification";
+import { useToast } from 'vue-toastification';
 const toast = useToast();
 let interval = null;
-import { db } from "../../firebase/config";
-import { collection, addDoc, query, where, getDoc, updateDoc, setDoc, doc } from "firebase/firestore";
+import { db } from '../../firebase/config';
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDoc,
+  updateDoc,
+  setDoc,
+  doc
+} from 'firebase/firestore';
 const message = () => {
-  if (selectedstatus.value === "wfo") return " Available Office";
-  else if (selectedstatus.value === "wfh") return " Available WFH";
-  else if (selectedstatus.value === "leave") return "On Leave";
+  if (selectedstatus.value === 'wfo') return ' Available Office';
+  else if (selectedstatus.value === 'wfh') return ' Available WFH';
+  else if (selectedstatus.value === 'leave') return 'On Leave';
 };
 function selectstatus(status) {
   selectedstatus.value = status;
@@ -76,70 +95,71 @@ async function submitStatus() {
   }
 
   try {
-    const today = new Date().toLocaleDateString("en-CA");
+    const today = new Date().toLocaleDateString('en-CA');
     const docId = `${user.value.uid}_${today}`;
-    
-    await setDoc(doc(db, "status", docId), {
-      uid: user.value.uid,
-      name: profile.value?.name || user.value?.displayName || "Unknown User",
-      email: user.value.email,
-      status: selectedstatus.value,
-      teamId: profile.value?.teamId || null,
-      timestamp: Date.now(),
-    }, { merge: true });
 
+    await setDoc(
+      doc(db, 'status', docId),
+      {
+        uid: user.value.uid,
+        name: profile.value?.name || user.value?.displayName || 'Unknown User',
+        email: user.value.email,
+        status: selectedstatus.value,
+        teamId: profile.value?.teamId || null,
+        timestamp: Date.now()
+      },
+      { merge: true }
+    );
   } catch (err) {
-    console.error("Error:", err);
+    console.error('Error:', err);
   }
 }
 
-async function handlewebhook(){
-  const statusValue={
-    wfo:"In Office",
-    wfh:"Work From Home",
-    leave:"On Leave"
-  }
-  try{
-    await $fetch("/api/notify", {
-      method:"POST",
-      body:{
-        status:statusValue[selectedstatus.value],
-        name: profile.value?.name || user.value?.displayName || "Unknown User",
-        time: time.value,
+async function handlewebhook() {
+  const statusValue = {
+    wfo: 'In Office',
+    wfh: 'Work From Home',
+    leave: 'On Leave'
+  };
+  try {
+    await $fetch('/api/notify', {
+      method: 'POST',
+      body: {
+        status: statusValue[selectedstatus.value],
+        name: profile.value?.name || user.value?.displayName || 'Unknown User',
+        time: time.value
       }
     });
-    console.log("sent to google chat space")
+    console.log('sent to google chat space');
+  } catch (err) {
+    console.log('webhook failed', err);
   }
-  catch(err){
-    console.log("webhook failed",err);
-  }
-
 }
 
 async function notified() {
   if (!selectedstatus.value) {
-    toast.warning("Please select a status first.")
-    return
+    toast.warning('Please select a status first.');
+    return;
   }
-  if (isPosting.value) return   
-  isPosting.value = true
+  if (isPosting.value) return;
+  isPosting.value = true;
 
   try {
-    await submitStatus()
-    await handlewebhook()
-    toast.success("Status posted successfully!")
+    await submitStatus();
+    await handlewebhook();
+    toast.success('Status posted successfully!');
   } catch (err) {
-    toast.error("Something went wrong. Please try again.")
-    console.error(err)
+    toast.error('Something went wrong. Please try again.');
+    console.error(err);
   } finally {
-    isPosting.value = false     
+    isPosting.value = false;
   }
 }
 
 const updateTime = () => {
-  time.value = new Date().toLocaleTimeString("en-IN", {
-    hour: "numeric",
-    minute: "numeric",
+  time.value = new Date().toLocaleTimeString('en-IN', {
+    hour: 'numeric',
+    minute: 'numeric'
   });
 };
 
@@ -173,7 +193,11 @@ onUnmounted(() => {
   flex: 1;
   padding: 28px;
   cursor: pointer;
-  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base), background-color var(--transition-base);
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    background-color var(--transition-base);
 }
 .card:hover {
   transform: translateY(-2px);
@@ -232,7 +256,7 @@ onUnmounted(() => {
   border-color: rgba(122, 26, 26, 0.35);
   background-color: var(--color-leave-bg);
 }
-@media(max-width:768px){
+@media (max-width: 768px) {
   .section {
     padding: var(--space-5) var(--space-4);
   }
@@ -251,11 +275,11 @@ onUnmounted(() => {
   }
 
   .card-name {
-    font-size:18px;
+    font-size: 18px;
   }
 
   .card-status {
-    font-size:13px;
+    font-size: 13px;
   }
   .submit {
     flex-direction: column;
@@ -268,14 +292,14 @@ onUnmounted(() => {
   }
   .notify-btn {
     width: 100%;
-    font-size:14px;
-    text-align:center;
+    font-size: 14px;
+    text-align: center;
   }
   .notify-btn:hover {
     transform: translateY(0);
     opacity: 0.7;
   }
-  .notify-btn.disabled{
+  .notify-btn.disabled {
     transform: translateY(0);
     opacity: 0.4;
   }

@@ -6,18 +6,21 @@
         DEV
         <span class="sidebar-title-team">Team</span>
       </div>
-      <div class="sidebar-subtitle">AVAILABILITY • {{mounted ? profile?.teamName :"" }}</div>
+      <div class="sidebar-subtitle">
+        AVAILABILITY • {{ mounted ? profile?.teamName : '' }}
+      </div>
     </div>
     <div class="sidebar-member">
       <span class="profile-pic ui-avatar">{{
-        getInitials(profile?.name || user?.displayName || "User")
+        getInitials(profile?.name || user?.displayName || 'User')
       }}</span>
       <div class="sidebar-member-info">
         <span class="sidebar-member-name">{{
-         mounted ? profile?.name || user?.displayName :""
+          mounted ? profile?.name || user?.displayName : ''
         }}</span>
         <span class="user-role"
-          >{{ mounted ? profile?.role : "" }} • {{ mounted ? profile?.teamName : "" }}</span
+          >{{ mounted ? profile?.role : '' }} •
+          {{ mounted ? profile?.teamName : '' }}</span
         >
       </div>
     </div>
@@ -41,7 +44,9 @@
 
       <div class="sidebar-bottom-list">
         <div class="sidebar-bottom-item" v-for="user in users" :key="user.id">
-          <span class="profile-pic ui-avatar">{{ getInitials(user.name) }}</span>
+          <span class="profile-pic ui-avatar">{{
+            getInitials(user.name)
+          }}</span>
           <div class="sidebar-bottom-item-info">
             <span class="sidebar-bottom-name">{{ user.name }}</span>
             <span class="sidebar-bottom-time">{{ user.time }}</span>
@@ -61,30 +66,30 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { db } from "../../firebase/config";
-import { collection, query, where } from "firebase/firestore";
-import { onSnapshot } from "firebase/firestore";
+import { ref, onMounted, onUnmounted } from 'vue';
+import { db } from '../../firebase/config';
+import { collection, query, where } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 // const { teamData } = useData();
 const users = ref([]);
 const { profile, user } = useUser();
 const { sidebarClose } = useSidebar();
-const mounted=ref(false);
+const mounted = ref(false);
 const { getInitials } = useInitials();
 let stopUsersListener = null;
 
 function formatTime(timestamp, status) {
-  if (status === "leave") return;
-  return new Date(timestamp).toLocaleTimeString("en-IN", {
-    hour: "numeric",
-    minute: "numeric",
+  if (status === 'leave') return;
+  return new Date(timestamp).toLocaleTimeString('en-IN', {
+    hour: 'numeric',
+    minute: 'numeric'
   });
 }
 
 function formatStatus(status) {
-  if (status === "wfh") return "WFH";
-  else if (status === "wfo") return "Office";
-  return "Leave";
+  if (status === 'wfh') return 'WFH';
+  else if (status === 'wfo') return 'Office';
+  return 'Leave';
 }
 
 function isToday(timestamp) {
@@ -95,30 +100,30 @@ function isToday(timestamp) {
 function fetchUsers() {
   stopUsersListener = onSnapshot(
     query(
-      collection(db, "status"),
-      where("teamId", "==", profile.value?.teamId),
+      collection(db, 'status'),
+      where('teamId', '==', profile.value?.teamId)
     ),
     (snapshot) => {
       users.value = snapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
         .filter((user) => isToday(user.timestamp))
         .sort((a, b) => b.timestamp - a.timestamp)
         .map((user) => ({
           ...user,
           time: formatTime(user.timestamp, user.status),
-          status: formatStatus(user.status),
+          status: formatStatus(user.status)
         }));
-    },
+    }
   );
 }
 
-import { watch } from "vue";
+import { watch } from 'vue';
 
 onMounted(() => {
-   mounted.value = true;
+  mounted.value = true;
   if (profile.value?.teamId) {
     fetchUsers();
   } else {
@@ -129,12 +134,12 @@ onMounted(() => {
           fetchUsers();
           stop();
         }
-      },
+      }
     );
   }
 });
 onUnmounted(() => {
-  if (typeof stopUsersListener === "function") {
+  if (typeof stopUsersListener === 'function') {
     stopUsersListener();
   }
 });
@@ -296,8 +301,6 @@ onUnmounted(() => {
   display: none;
 }
 @media (max-width: 768px) {
- 
-
   .close-btn {
     position: absolute;
     display: flex;
@@ -306,46 +309,45 @@ onUnmounted(() => {
     background-color: rgba(255, 255, 255, 0.12);
     cursor: pointer;
     color: var(--color-sidebar-text);
-    font-weight:700;
+    font-weight: 700;
     border: none;
     padding: 4px 8px;
     border-radius: 50%;
   }
-  .sidebar{
-    position:relative;
-    width:80vw;
-    max-width:270px;
-        height: 100vh;
+  .sidebar {
+    position: relative;
+    width: 80vw;
+    max-width: 270px;
+    height: 100vh;
   }
-   .sidebar-top {
+  .sidebar-top {
     margin-top: 40px;
   }
-  .sidebar-bottom-name{
+  .sidebar-bottom-name {
     font-size: 13px;
   }
-  .sidebar-bottom-time{
+  .sidebar-bottom-time {
     font-size: 11px;
   }
-  .navigation a{
-    padding:10px 12px;
-    font-size:13px;
+  .navigation a {
+    padding: 10px 12px;
+    font-size: 13px;
   }
-   .navigation-title{
-    font-size:9px;
+  .navigation-title {
+    font-size: 9px;
   }
-  .sidebar-member-name{
-    font-size:13px;
+  .sidebar-member-name {
+    font-size: 13px;
   }
- 
-  .user-role{
-    font-size:10px;
-  }
-  
 
-  .profile-pic{
-    height:28px;
-    width:28px;
-    font-size:10px;
+  .user-role {
+    font-size: 10px;
+  }
+
+  .profile-pic {
+    height: 28px;
+    width: 28px;
+    font-size: 10px;
   }
 }
 </style>

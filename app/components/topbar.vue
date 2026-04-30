@@ -9,7 +9,7 @@
       <span
         >Welcome,
         <span class="name"
-          >{{ mounted ? profile?.name || user?.displayName : "" }}
+          >{{ mounted ? profile?.name || user?.displayName : '' }}
         </span> </span
       ><br />
 
@@ -23,27 +23,27 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { auth } from "../../firebase/config";
-import { signOut } from "firebase/auth";
+import { ref } from 'vue';
+import { auth } from '../../firebase/config';
+import { signOut } from 'firebase/auth';
 const { profile, user } = useUser();
-const{ toggleSidebar } = useSidebar();
-const mounted=ref(false);
+const { toggleSidebar } = useSidebar();
+const mounted = ref(false);
 async function handleLogout() {
   try {
     await signOut(auth);
-    navigateTo("/login");
+    navigateTo('/login');
     // console.log("User Logout successful");
   } catch (err) {
-    console.error("Logout fail", err);
+    console.error('Logout fail', err);
   }
 }
 
-const currentDate = new Date().toLocaleDateString("en-IN", {
-  weekday: "long",
-  day: "numeric",
-  year: "numeric",
-  month: "long",
+const currentDate = new Date().toLocaleDateString('en-IN', {
+  weekday: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  month: 'long'
 });
 onMounted(() => {
   mounted.value = true;
@@ -96,37 +96,35 @@ onMounted(() => {
   color: var(--color-primary);
   font-weight: 700;
 }
-.hamburger{
+.hamburger {
   display: none;
-  
 }
 
-@media(max-width:768px){
-   .topbar {
+@media (max-width: 768px) {
+  .topbar {
     padding: 0 16px;
     height: 60px;
     min-height: 60px;
   }
-  .hamburger{
+  .hamburger {
     display: flex;
     flex-direction: column;
-  cursor: pointer;
-  gap: 5px;
+    cursor: pointer;
+    gap: 5px;
   }
-  .line{
+  .line {
     width: 25px;
-    height:2px;
+    height: 2px;
     background-color: var(--color-text);
     gap: 5px;
   }
-  .topbar-left{
-    font-size:14px;
+  .topbar-left {
+    font-size: 14px;
     margin-left: 10%;
     margin-right: auto;
   }
-  .topbar-left-date{
-    font-size:11px;
+  .topbar-left-date {
+    font-size: 11px;
   }
-  
 }
 </style>

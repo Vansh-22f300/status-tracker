@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-const { isLoaded } = useUser()
+const { isLoaded } = useUser();
 </script>
 
 <style>
@@ -34,6 +34,8 @@ const { isLoaded } = useUser()
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

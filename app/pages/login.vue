@@ -63,7 +63,7 @@
           <NuxtLink to="/reset" class="reset-pass">Reset Password</NuxtLink>
         </div>
         <button type="submit" class="login-btn" :disabled="isLoading">
-          {{ isLoading ? "Logging in..." : "Login" }}
+          {{ isLoading ? 'Logging in...' : 'Login' }}
         </button>
       </form>
 
@@ -78,36 +78,36 @@
 </template>
 <script setup>
 definePageMeta({
-  middleware: ["auth"],
-  layout: "auth",
+  middleware: ['auth'],
+  layout: 'auth'
 });
-import { ref } from "vue";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase/config";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { ref } from 'vue';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase/config';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
-const email = ref("");
-const password = ref("");
-const error = ref("");
-const successMessage = ref("");
+const email = ref('');
+const password = ref('');
+const error = ref('');
+const successMessage = ref('');
 const isLoading = ref(false);
 
 const handleEmailLogin = async () => {
   if (isLoading.value) return;
   isLoading.value = true;
-  error.value = "";
-  successMessage.value = "";
+  error.value = '';
+  successMessage.value = '';
   try {
     const userCreds = await signInWithEmailAndPassword(
       auth,
       email.value.trim(),
-      password.value,
+      password.value
     );
-    successMessage.value = "Login Successful...";
+    successMessage.value = 'Login Successful...';
     // <!-- navigateTo("/"); -->
     // console.log("login succesfull", userCreds.user);
   } catch (err) {
-    successMessage.value = "";
+    successMessage.value = '';
     error.value = err.message;
     // console.error("login failed", err);
   } finally {
@@ -117,15 +117,15 @@ const handleEmailLogin = async () => {
 const handleGoogleLogin = async () => {
   if (isLoading.value) return;
   isLoading.value = true;
-  error.value = "";
-  successMessage.value = "";
+  error.value = '';
+  successMessage.value = '';
   try {
     const provider = new GoogleAuthProvider();
     const googleCreds = await signInWithPopup(auth, provider);
-    successMessage.value = "Login Successful...";
+    successMessage.value = 'Login Successful...';
     // console.log("Google login succesfull", googleCreds.user);
   } catch (err) {
-    successMessage.value = "";
+    successMessage.value = '';
     error.value = err.message;
     // console.error("login failed", err);
   } finally {
@@ -172,7 +172,9 @@ const handleGoogleLogin = async () => {
   cursor: pointer;
   border: none;
   align-self: center;
-  transition: background-color var(--transition-base), transform var(--transition-base);
+  transition:
+    background-color var(--transition-base),
+    transform var(--transition-base);
 }
 .login-btn:hover {
   background: var(--color-primary-strong);
@@ -236,7 +238,7 @@ const handleGoogleLogin = async () => {
 
 .gsi-material-button .gsi-material-button-contents {
   color: #1f1f1f;
-  font-family: "Roboto", "Segoe UI", sans-serif;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.25px;
