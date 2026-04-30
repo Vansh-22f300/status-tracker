@@ -8,9 +8,9 @@
           <div class="team-sub">Share this code with team members to join:</div>
           <div class="code-row">
             <div class="join-code">{{ teamsData?.joinCode }}</div>
-            <div class="copy-btn" @click="copyCode">
+            <button type="button" class="copy-btn ui-btn ui-btn-secondary" @click="copyCode">
               {{ copied ? "Copied!" : "Copy" }}
-            </div>
+            </button>
           </div>
         </div>
 
@@ -29,7 +29,7 @@
 
       <div class="members-list">
         <div class="member-item" v-for="m in members" :key="m.id">
-          <div class="profile-pic">{{ getInitials(m?.name) }}</div>
+          <div class="profile-pic ui-avatar">{{ getInitials(m?.name) }}</div>
           <div class="member-info">
             <div class="member-name">{{ m?.name }}</div>
             <div class="member-email">{{ m?.email }}</div>
@@ -45,7 +45,7 @@
             {{ m?.role }}
           </div>
           <div
-            class="status-text"
+            class="status-text ui-chip"
             :class="{
               'no-checkin': !m.status,
               [`tag-${m.status}`]: !!m.status,
@@ -296,7 +296,7 @@ onUnmounted(() => {
 
 <style scoped>
 .team-page {
-  padding: 30px;
+  padding: var(--space-7);
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -311,39 +311,44 @@ onUnmounted(() => {
   align-items: center;
 }
 .header-label {
-  color: grey;
+  color: var(--color-text-muted);
   font-size: 11px;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   margin: 0;
   text-transform: uppercase;
   margin-right: 20px;
+  font-weight: 600;
 }
 .header-count {
   font-size: 11px;
-  color: grey;
-  background-color: rgb(231, 229, 225);
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
   padding: 5px 10px;
-  border-radius: 20px;
+  border-radius: 999px;
+  font-weight: 700;
 }
 
 .team-card {
-  background-color: #fdfcfa;
-  border-radius: 14px;
-  border: 1px solid rgb(220, 220, 220);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
   padding: 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: var(--shadow-sm);
 }
 .team-name {
   font-size: 32px;
-  font-weight: bold;
-  color: #1a1918;
+  font-weight: 800;
+  color: var(--color-text);
+  font-family: var(--font-display);
   margin-bottom: 5px;
 }
 .team-sub {
   font-size: 12px;
-  color: grey;
+  color: var(--color-text-muted);
   margin-bottom: 16px;
 }
 .code-row {
@@ -353,24 +358,17 @@ onUnmounted(() => {
 }
 
 .join-code {
-  background-color: #e8f4ed;
+  background-color: var(--color-primary-soft);
   font-size: 22px;
   font-weight: bold;
   padding: 10px 16px;
   border-radius: 12px;
-  color: green;
+  color: var(--color-primary-strong);
+  border: 1px dashed rgba(24, 125, 83, 0.4);
   letter-spacing: 3px;
 }
 .copy-btn {
-  background-color: black;
-  color: white;
-  padding: 8px 16px;
   font-size: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-.copy-btn:hover {
-  opacity: 0.8;
 }
 
 .card-right {
@@ -379,22 +377,24 @@ onUnmounted(() => {
 
 .team-length {
   font-size: 42px;
-  font-weight: bold;
-  color: #1a1918;
+  font-weight: 800;
+  color: var(--color-text);
+  font-family: var(--font-display);
 
 }
 
 .team-length-label {
   font-size: 12px;
-  color: grey;
+  color: var(--color-text-muted);
 }
 
 .members-list {
   display: flex;
   flex-direction: column;
-  background-color: #fdfcfa;
-  border-radius: 14px;
-  border: 1px solid rgb(220, 220, 220);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 .member-item {
   display: flex;
@@ -403,19 +403,16 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  border-bottom: 1px solid rgb(220, 220, 220);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--transition-base);
+}
+.member-item:hover {
+  background: var(--color-bg-elevated);
 }
 .profile-pic {
   width: 34px;
   height: 34px;
-  border-radius: 50%;
-  background-color: #e8e4dc;
-  color: #5a5450;
-  display: flex;
   font-size: 12px;
-  font-weight: 500;
-  align-items: center;
-  justify-content: center;
 }
 
 .member-info {
@@ -423,28 +420,28 @@ onUnmounted(() => {
 }
 .member-name {
   font-size: 14px;
-  font-weight: 500;
-  color: #1a1918;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .member-email {
   font-size: 12px;
-  color: #868584;
+  color: var(--color-text-muted);
 }
 
 .member-role.member {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: #e8f5e9;
-  color: #2e8b57;
-  border-radius: 12px;
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  border-radius: 999px;
 }
 .member-role.manager {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: #abc4f0;
-  color: #1a3b7a;
-  border-radius: 12px;
+  background-color: var(--color-wfh-bg);
+  color: var(--color-wfh-text);
+  border-radius: 999px;
 }
 .status {
   display: flex;
@@ -454,48 +451,60 @@ onUnmounted(() => {
 .status-text {
   min-width: 120px;
   font-size: 13px;
-  border-radius: 12px;
   text-align: center;
-  padding: 5px;
+  justify-content: center;
 }
 
 .status-text.tag-wfh {
-  background-color: #e8eef9;
-  color: #1a3b7a;
+  background-color: var(--color-wfh-bg);
+  color: var(--color-wfh-text);
 }
 .status-text.tag-wfo {
-  background-color: #e8f4ed;
-  color: #1a6b40;
+  background-color: var(--color-wfo-bg);
+  color: var(--color-wfo-text);
 }
 .status-text.tag-leave {
-  background-color: #fbeaea;
-  color: #7a1a1a;
+  background-color: var(--color-leave-bg);
+  color: var(--color-leave-text);
 }
 .status-text.no-checkin {
-  background-color: #ffebcc;
-  color: #ff6c86;
+  background-color: var(--color-none-bg);
+  color: var(--color-none-text);
 }
 .select-status {
   padding: 6px 10px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  background-color: white;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
   cursor: pointer;
+}
+.select-status:focus-visible {
+  outline-color: rgba(30, 155, 102, 0.24);
 }
 .you {
-  background: none;
-  border: none;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
   cursor: default;
   font-size: 13px;
+  border-radius: 999px;
+  padding: 6px 10px;
 }
 .remove-btn {
-  background: none;
-  border: none;
-  font-size: 16px;
+  background: var(--color-danger-soft);
+  border: 1px solid rgba(200, 61, 54, 0.25);
+  color: var(--color-danger);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: grid;
+  place-items: center;
   cursor: pointer;
+  transition: all var(--transition-base);
 }
 .remove-btn:hover {
-  transform: translateY(2px);
+  transform: translateY(-1px);
+  background: #f8dddb;
 }
 .modal {
   position:fixed;
@@ -504,25 +513,28 @@ onUnmounted(() => {
   align-items:center;
   justify-content:center;
   z-index:100;
-  background:rgba(240, 239, 239, 0.5);
+  background:rgba(14, 24, 39, 0.35);
+  backdrop-filter: blur(3px);
 }
 .modal-content {
-  background-color: rgb(255, 245, 245);
-  border-radius:16px;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
   padding:24px;
-  border:1px solid rgb(206, 200, 200);
+  border:1px solid var(--color-border);
   text-align:center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
+  max-width: 480px;
 }
 .modal-title {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
-  color: #1a1918;
+  color: var(--color-text);
+  font-family: var(--font-display);
   margin-bottom: 8px;
 }
 .modal-sub {
   font-size: 16px;
-  color: #868584;
+  color: var(--color-text-muted);
   font-weight: 500;
   margin-bottom: 24px;
 }
@@ -533,27 +545,26 @@ onUnmounted(() => {
 }
 .modal-confirm {
   padding: 8px 16px;
-  background-color: #00c147;
+  background-color: var(--color-primary);
   color: white;
-  border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 .modal-confirm:hover {
-  background-color: #019323;
-  transform: translateY(2px);
+  background-color: var(--color-primary-strong);
+  transform: translateY(-1px);
 }
 .modal-cancel {
   padding: 8px 16px;
-  background-color: rgb(255, 255, 255);
-  border: 1px solid #878787;
-  border-radius: 8px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
   font-weight: 600;
   cursor: pointer;
 }
 .modal-cancel:hover {
-  background-color: #cbc9c5;
-  transform: translateY(2px);
+  background-color: var(--color-surface-soft);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {

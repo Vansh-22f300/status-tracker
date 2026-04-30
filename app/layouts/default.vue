@@ -32,6 +32,7 @@
   }
   .main-content {
     width: 100%;
+    backdrop-filter: saturate(130%) blur(2px);
   }
   .sidebar-overlay{
     display:none;
@@ -60,7 +61,8 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+      background: rgba(11, 21, 34, 0.45);
+      backdrop-filter: blur(2px);
     z-index: 199;
   }
   }

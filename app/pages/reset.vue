@@ -67,15 +67,26 @@ const handleResetPassword=async () => {
   display: grid;
   align-items: center;
   justify-items: center;
+  padding: var(--space-5);
 }
 
 .reset-card {
-  width:420px;
+  width: min(420px, 100%);
   padding:32px;
-  border-radius:15px;
-  background: #fff8ef;
-  border:1px solid rgba(145, 96, 42, 0.18);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
   text-align:center;
+}
+
+.reset-card h1 {
+  font-size: 30px;
+  color: var(--color-text);
+}
+
+.reset-card p {
+  color: var(--color-text-muted);
 }
 .form-fields {
   display:flex;
@@ -88,30 +99,33 @@ const handleResetPassword=async () => {
   text-align:left;
   font-size:14px;
   font-weight:700;
-  color: #444444;
+  color: var(--color-text);
 }
 
 .form-fields input {
   padding: 12px 12px;
-  border-radius: 10px;
-  border:1px solid #b9aa96;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
 }
 
 .send-btn {
   width: 60%;
-  border-radius:10px;
+  border-radius: var(--radius-sm);
   padding:12px;
-  background: #019323;
+  background: var(--color-primary);
   color: #ffffff;
   font-size:16px;
+  font-weight: 600;
   cursor:pointer;
   border:none;
   align-self: center;
   margin-bottom:12px;
+  transition: background-color var(--transition-base), transform var(--transition-base);
 }
 
 .send-btn:hover {
-  opacity:0.8;
+  background: var(--color-primary-strong);
+  transform: translateY(-1px);
 }
 
 .send-btn:disabled {
@@ -126,12 +140,12 @@ const handleResetPassword=async () => {
 
 .success-text {
   margin-top:12px;
-  color: #1c8434;
+  color: var(--color-primary-strong);
   font-weight:600;
 }
 
 .back-link {
-  color: #3c3c3c;
+  color: var(--color-text);
   text-decoration:none;
   font-weight:600;
 }

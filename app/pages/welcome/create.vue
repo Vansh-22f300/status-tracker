@@ -115,33 +115,35 @@ onMounted(() => {
   display: grid;
   align-items: center;
   justify-items: center;
+  padding: var(--space-5);
 }
 .welcome-grid {
-  width: 500px;
+  width: min(520px, 100%);
   margin: 0 auto;
   padding: 40px;
-  background: #fff8ef;
-  border: 1px solid rgb(253, 180, 180);
-  border-radius: 20px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .back-btn {
   cursor: pointer;
-  color: grey;
+  color: var(--color-text-muted);
   font-weight: 600;
+  margin-bottom: var(--space-3);
 }
 .back-btn:hover {
   font-weight: 700;
-  color: rgb(93, 93, 93);
+  color: var(--color-text);
   text-decoration: underline;
 }
 
 .field-input{
     width: 100%;
     padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #b9aa96;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-strong);
     background: #ffffff;
     font-size: 14px;
     box-sizing: border-box;
@@ -151,22 +153,25 @@ onMounted(() => {
 .field-label{
   font-size:16px;
   font-weight:700;
-  color: #1a1918;
+  color: var(--color-text);
   margin-bottom:16px;
 }
 .create-btn{
   width:100%;
-  border-radius:12px;
+  border-radius: var(--radius-sm);
   padding:12px;
-  background-color:#019323;
+  background-color: var(--color-primary);
   font-size:16px;
+  font-weight: 600;
   color:white;
   border:none;
   cursor:pointer;
+  transition: background-color var(--transition-base), transform var(--transition-base);
 }
 
 .create-btn:hover{
-  opacity:0.80;
+  background-color: var(--color-primary-strong);
+  transform: translateY(-1px);
 }
 
 .create-btn:disabled{

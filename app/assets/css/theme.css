@@ -1,0 +1,207 @@
+:root {
+  --font-body: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Manrope", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --color-bg: #eef3f8;
+  --color-bg-elevated: #f8fbff;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f3f7fb;
+  --color-border: #d8e1eb;
+  --color-border-strong: #c2cfdd;
+
+  --color-text: #162334;
+  --color-text-muted: #617286;
+  --color-text-soft: #8595a9;
+
+  --color-primary: #1e9b66;
+  --color-primary-strong: #187d53;
+  --color-primary-soft: #e8f6ef;
+
+  --color-sidebar-bg: #121b28;
+  --color-sidebar-surface: #1b2737;
+  --color-sidebar-border: #29384d;
+  --color-sidebar-text: #f4f8fc;
+  --color-sidebar-muted: #9cb0c8;
+
+  --color-wfh-bg: #e8eef9;
+  --color-wfh-text: #1a3b7a;
+  --color-wfo-bg: #e8f4ed;
+  --color-wfo-text: #1a6b40;
+  --color-leave-bg: #fbeaea;
+  --color-leave-text: #7a1a1a;
+  --color-none-bg: #fff3df;
+  --color-none-text: #ad4e1f;
+
+  --color-danger: #c83d36;
+  --color-danger-soft: #fbecec;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+
+  --shadow-sm: 0 8px 20px rgba(17, 32, 49, 0.08);
+  --shadow-md: 0 18px 38px rgba(17, 32, 49, 0.12);
+
+  --transition-base: 180ms ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#__nuxt {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.45;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(168, 192, 220, 0.22), transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(140, 201, 170, 0.18), transparent 35%),
+    var(--color-bg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  border: none;
+}
+
+:focus-visible {
+  outline: 3px solid rgba(30, 155, 102, 0.28);
+  outline-offset: 2px;
+}
+
+.ui-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--transition-base), background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.ui-btn:hover {
+  transform: translateY(-1px);
+}
+
+.ui-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ui-btn-primary {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.ui-btn-primary:hover {
+  background: var(--color-primary-strong);
+}
+
+.ui-btn-secondary {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.ui-btn-danger {
+  background: var(--color-danger-soft);
+  border: 1px solid rgba(200, 61, 54, 0.28);
+  color: var(--color-danger);
+}
+
+.ui-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ui-chip.tag-wfh {
+  background: var(--color-wfh-bg);
+  color: var(--color-wfh-text);
+}
+
+.ui-chip.tag-office,
+.ui-chip.tag-wfo {
+  background: var(--color-wfo-bg);
+  color: var(--color-wfo-text);
+}
+
+.ui-chip.tag-leave {
+  background: var(--color-leave-bg);
+  color: var(--color-leave-text);
+}
+
+.ui-chip.no-checkin {
+  background: var(--color-none-bg);
+  color: var(--color-none-text);
+}
+
+.ui-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
