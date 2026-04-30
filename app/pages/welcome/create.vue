@@ -37,7 +37,8 @@ import {
   setDoc,
   doc,
 } from "firebase/firestore";
-
+import {useToast} from "vue-toastification";
+const toast = useToast();
 const { user, profile } = useUser();
 
 const teamName = ref("");
@@ -68,7 +69,7 @@ async function handleCreateTeam() {
       error.value = "Team name already exists, try another name.";
       return;
     }
-    console.log("Creating Team...");
+    // console.log("Creating Team...");
     const code = generateTeamCode();
     await setDoc(teamRef, {
       name: teamName.value.trim(),
@@ -92,6 +93,7 @@ async function handleCreateTeam() {
       teamName: teamName.value.trim(),
     };
     console.log("Team Created");
+    toast.success(`Team ${teamName.value.trim()} created successfully ✅`);
     navigateTo("/");
   } catch (err) {
     console.error("Failed to create Team", err);

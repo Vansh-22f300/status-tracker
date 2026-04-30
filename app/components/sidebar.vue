@@ -178,7 +178,6 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  cursor: pointer;
 }
 .sidebar-member-info {
   display: flex;
