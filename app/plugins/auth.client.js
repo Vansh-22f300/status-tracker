@@ -1,4 +1,3 @@
-// plugins/auth.client.js
 import { onAuthStateChanged } from "firebase/auth"
 import { auth, db } from "../../firebase/config"
 import { doc, getDoc, setDoc } from "firebase/firestore"

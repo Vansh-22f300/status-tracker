@@ -9,6 +9,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      title:'Status Tracker',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
       meta: [
         { name: 'mobile-web-app-capable', content: 'yes' },

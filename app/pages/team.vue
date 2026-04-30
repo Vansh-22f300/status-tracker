@@ -68,10 +68,10 @@
           </div>
 
           <div class="remove">
-            <button class="you" v-if="m.id == user.uid">You</button>
+            <button class="you" v-if="m.id == user?.uid">You</button>
             <button
               class="remove-btn"
-              v-if="m.id !== user.uid"
+              v-if="m.id !== user?.uid"
               @click="handleRemove(m)"
             >
               ❌
@@ -218,7 +218,7 @@ async function confirmStatusChange() {
 }
 
 function handleRemove(member) {
-  if (member.id === user.uid) {
+  if (member.id === user?.uid) {
     return;
   }
   removeMember.value = member;
