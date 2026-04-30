@@ -93,7 +93,7 @@ async function handleCreateTeam() {
       teamName: teamName.value.trim(),
     };
     // console.log("Team Created");
-    toast.success(`Team ${teamName.value.trim()} created successfully ✅`);
+    toast.success(`Team ${teamName.value.trim()} created successfully `);
     navigateTo("/");
   } catch (err) {
     console.error("Failed to create Team", err);

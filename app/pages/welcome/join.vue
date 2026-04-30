@@ -88,7 +88,7 @@ async function handleJoinTeam() {
       teamId: teamId,
       teamName: teamName,
     };
-    toast.success(`Joined team ${teamName} successfully ✅`);
+    toast.success(`Joined team ${teamName} successfully`);
     navigateTo("/");
   } catch (err) {
     // console.error("fail to join team", err);

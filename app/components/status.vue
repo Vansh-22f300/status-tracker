@@ -127,7 +127,7 @@ async function notified() {
   try {
     await submitStatus()
     await handlewebhook()
-    toast.success("Status posted successfully! 🎉")
+    toast.success("Status posted successfully!")
   } catch (err) {
     toast.error("Something went wrong. Please try again.")
     console.error(err)
