@@ -194,13 +194,13 @@ onUnmounted(() => {
   padding: 28px;
   cursor: pointer;
   transition:
-    transform var(--transition-base),
     border-color var(--transition-base),
     box-shadow var(--transition-base),
     background-color var(--transition-base);
 }
 .card:hover {
-  transform: translateY(-2px);
+  border-color: rgba(22, 35, 52, 0.18);
+  background-color: var(--color-bg-elevated);
   box-shadow: var(--shadow-md);
 }
 .card-icon {

@@ -35,7 +35,10 @@
         <div class="member-item" v-for="m in members" :key="m.id">
           <div class="profile-pic ui-avatar">{{ getInitials(m?.name) }}</div>
           <div class="member-info">
-            <div class="member-name">{{ m?.name }}</div>
+            <div class="member-name">
+              {{ m?.name }}
+              <span v-if="m.id === user?.uid" class="self-label">You</span>
+            </div>
             <div class="member-email">{{ m?.email }}</div>
           </div>
 
@@ -72,13 +75,19 @@
           </div>
 
           <div class="remove">
-            <button class="you" v-if="m.id == user?.uid">You</button>
+            <span
+              v-if="m.id == user?.uid"
+              class="self-indicator"
+              title="Your account"
+              >-</span
+            >
             <button
               class="remove-btn"
               v-if="m.id !== user?.uid"
               @click="handleRemove(m)"
+              aria-label="Remove member"
             >
-              ❌
+              <span aria-hidden="true">×</span>
             </button>
           </div>
         </div>
@@ -333,26 +342,34 @@ onUnmounted(() => {
 }
 
 .team-card {
-  background-color: var(--color-surface);
+  background: linear-gradient(145deg, #ffffff 0%, #f7fbff 100%);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  padding: 24px;
+  padding: 28px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
+  gap: 20px;
   box-shadow: var(--shadow-sm);
+}
+.card-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
 }
 .team-name {
   font-size: 32px;
   font-weight: 800;
   color: var(--color-text);
   font-family: var(--font-display);
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  line-height: 1.05;
 }
 .team-sub {
   font-size: 12px;
   color: var(--color-text-muted);
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 .code-row {
   display: flex;
@@ -364,30 +381,53 @@ onUnmounted(() => {
   background-color: var(--color-primary-soft);
   font-size: 22px;
   font-weight: bold;
-  padding: 10px 16px;
+  padding: 12px 18px;
   border-radius: 12px;
   color: var(--color-primary-strong);
   border: 1px dashed rgba(24, 125, 83, 0.4);
-  letter-spacing: 3px;
+  letter-spacing: 4px;
 }
 .copy-btn {
+  min-width: 86px;
   font-size: 12px;
+  font-weight: 700;
+  background: var(--color-surface-soft);
+  border-color: var(--color-border-strong);
+  transition: none !important;
+}
+.copy-btn:hover {
+  background: #e7eef6;
+  border-color: var(--color-border-strong);
+  transform: none !important;
+}
+.copy-btn:focus-visible {
+  transform: none;
 }
 
 .card-right {
+  min-width: 156px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
   text-align: center;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .team-length {
-  font-size: 42px;
+  font-size: 50px;
   font-weight: 800;
   color: var(--color-text);
   font-family: var(--font-display);
+  line-height: 1;
 }
 
 .team-length-label {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-text-muted);
+  margin-top: 8px;
 }
 
 .members-list {
@@ -424,6 +464,19 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.self-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+  background: var(--color-primary-soft);
+  border: 1px solid rgba(24, 125, 83, 0.2);
+  border-radius: 999px;
+  padding: 2px 8px;
 }
 
 .member-email {
@@ -483,13 +536,26 @@ onUnmounted(() => {
 .select-status:focus-visible {
   outline-color: rgba(30, 155, 102, 0.24);
 }
-.you {
-  background: var(--color-surface-soft);
+.remove {
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.self-indicator {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   border: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
+  color: var(--color-text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 700;
   cursor: default;
-  font-size: 13px;
-  border-radius: 999px;
-  padding: 6px 10px;
 }
 .remove-btn {
   background: var(--color-danger-soft);
@@ -499,10 +565,17 @@ onUnmounted(() => {
   height: 28px;
   border-radius: 8px;
   font-size: 14px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
   cursor: pointer;
   transition: all var(--transition-base);
+}
+.remove-btn span {
+  font-size: 24px;
+  transform: translateY(-1px);
 }
 .remove-btn:hover {
   transform: translateY(-1px);
@@ -576,8 +649,10 @@ onUnmounted(() => {
   }
 
   .team-card {
-    align-items: flex-start;
+    align-items: stretch;
+    flex-direction: column;
     gap: 16px;
+    padding: 20px;
   }
 
   .team-name {
@@ -590,10 +665,10 @@ onUnmounted(() => {
   }
 
   .card-right {
-    display: flex;
-    flex-direction: column;
+    width: 100%;
     align-items: center;
     gap: 8px;
+    padding: 14px;
   }
 
   .team-length {

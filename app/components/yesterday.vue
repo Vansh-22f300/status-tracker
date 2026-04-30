@@ -108,11 +108,13 @@ onMounted(() => {
   border: 1px solid var(--color-border);
   padding: 8px;
   transition:
-    transform var(--transition-base),
+    border-color var(--transition-base),
+    background-color var(--transition-base),
     box-shadow var(--transition-base);
 }
 .grid-item:hover {
-  transform: translateY(-1px);
+  border-color: rgba(22, 35, 52, 0.14);
+  background-color: var(--color-bg-elevated);
   box-shadow: var(--shadow-sm);
 }
 .profile-pic {

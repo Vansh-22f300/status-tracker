@@ -148,11 +148,13 @@ onMounted(() => {
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
   transition:
-    transform var(--transition-base),
+    border-color var(--transition-base),
+    background-color var(--transition-base),
     box-shadow var(--transition-base);
 }
 .feed-item:hover {
-  transform: translateY(-2px);
+  border-color: rgba(22, 35, 52, 0.16);
+  background-color: var(--color-bg-elevated);
   box-shadow: var(--shadow-md);
 }
 

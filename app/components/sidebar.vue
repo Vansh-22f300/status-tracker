@@ -147,7 +147,7 @@ onUnmounted(() => {
 
 <style scoped>
 .sidebar {
-  width: 270px;
+  width: 292px;
   background: linear-gradient(180deg, #121b28 0%, #172235 100%);
   padding: 30px;
   height: 100%;
@@ -316,8 +316,8 @@ onUnmounted(() => {
   }
   .sidebar {
     position: relative;
-    width: 80vw;
-    max-width: 270px;
+    width: 84vw;
+    max-width: 292px;
     height: 100vh;
   }
   .sidebar-top {
