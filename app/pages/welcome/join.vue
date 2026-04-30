@@ -158,14 +158,11 @@ async function handleJoinTeam() {
   color: white;
   border: none;
   cursor: pointer;
-  transition:
-    background-color var(--transition-base),
-    transform var(--transition-base);
+  transition: background-color var(--transition-base);
 }
 
 .join-btn:hover {
   background-color: var(--color-primary-strong);
-  transform: translateY(-1px);
 }
 
 .join-btn:disabled {

@@ -578,7 +578,6 @@ onUnmounted(() => {
   transform: translateY(-1px);
 }
 .remove-btn:hover {
-  transform: translateY(-1px);
   background: #f8dddb;
 }
 .modal {
@@ -627,7 +626,6 @@ onUnmounted(() => {
 }
 .modal-confirm:hover {
   background-color: var(--color-primary-strong);
-  transform: translateY(-1px);
 }
 .modal-cancel {
   padding: 8px 16px;
@@ -639,7 +637,6 @@ onUnmounted(() => {
 }
 .modal-cancel:hover {
   background-color: var(--color-surface-soft);
-  transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {

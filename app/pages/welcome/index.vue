@@ -91,13 +91,11 @@ onMounted(() => {
   padding: 30px;
   cursor: pointer;
   transition:
-    transform var(--transition-base),
     border-color var(--transition-base),
     box-shadow var(--transition-base);
 }
 .card:hover {
   border-color: rgba(24, 125, 83, 0.35);
-  transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
 .card-icon {

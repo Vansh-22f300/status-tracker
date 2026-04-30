@@ -296,11 +296,9 @@ onUnmounted(() => {
     text-align: center;
   }
   .notify-btn:hover {
-    transform: translateY(0);
     opacity: 0.7;
   }
   .notify-btn.disabled {
-    transform: translateY(0);
     opacity: 0.4;
   }
 }

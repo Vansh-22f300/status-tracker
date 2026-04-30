@@ -165,14 +165,11 @@ onMounted(() => {
   color: white;
   border: none;
   cursor: pointer;
-  transition:
-    background-color var(--transition-base),
-    transform var(--transition-base);
+  transition: background-color var(--transition-base);
 }
 
 .create-btn:hover {
   background-color: var(--color-primary-strong);
-  transform: translateY(-1px);
 }
 
 .create-btn:disabled {

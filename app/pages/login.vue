@@ -172,13 +172,10 @@ const handleGoogleLogin = async () => {
   cursor: pointer;
   border: none;
   align-self: center;
-  transition:
-    background-color var(--transition-base),
-    transform var(--transition-base);
+  transition: background-color var(--transition-base);
 }
 .login-btn:hover {
   background: var(--color-primary-strong);
-  transform: translateY(-1px);
 }
 
 .login-btn:disabled {
@@ -198,7 +195,6 @@ const handleGoogleLogin = async () => {
   overflow: hidden;
 }
 .gsi-material-button:hover {
-  transform: translateY(1px);
 }
 .gsi-material-button:disabled {
   opacity: 0.7;

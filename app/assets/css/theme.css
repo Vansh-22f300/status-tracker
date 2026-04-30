@@ -123,11 +123,7 @@ button {
   padding: 10px 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform var(--transition-base), background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
-}
-
-.ui-btn:hover {
-  transform: translateY(-1px);
+  transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 .ui-btn:disabled {

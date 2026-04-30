@@ -120,14 +120,11 @@ const handleResetPassword = async () => {
   border: none;
   align-self: center;
   margin-bottom: 12px;
-  transition:
-    background-color var(--transition-base),
-    transform var(--transition-base);
+  transition: background-color var(--transition-base);
 }
 
 .send-btn:hover {
   background: var(--color-primary-strong);
-  transform: translateY(-1px);
 }
 
 .send-btn:disabled {

@@ -218,14 +218,11 @@ const handleSignup = async () => {
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition:
-    background-color var(--transition-base),
-    transform var(--transition-base);
+  transition: background-color var(--transition-base);
 }
 
 .signup-btn:hover {
   background: var(--color-primary-strong);
-  transform: translateY(-1px);
 }
 
 .signup-btn:disabled {

@@ -90,7 +90,6 @@ onMounted(() => {
 .logout:hover {
   background-color: var(--color-primary);
   color: white;
-  transform: translateY(-1px);
 }
 .name {
   color: var(--color-primary);
