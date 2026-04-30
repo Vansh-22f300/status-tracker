@@ -32,7 +32,6 @@ import { ref, onMounted } from "vue";
 import { db } from "../../firebase/config";
 import { collection, getDocs,query,where } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
-// const { teamData } = useData();
 const users = ref([]);
 const { profile, user } = useUser();
 
@@ -217,5 +216,38 @@ onMounted(() => {
   font-size: 16px;
   color: grey;
   text-align: center;
+}
+@media(max-width:768px){
+  .checkin {
+    padding: 20px 15px;
+  }
+
+  .feed-item {
+    padding: 12px;
+  }
+
+  .feed-item-name {
+    font-size: 13px;
+  }
+
+  .feed-item-msg {
+    font-size: 12px;
+  }
+
+  .profile-pic {
+    width: 26px;
+    height: 26px;
+    font-size: 10px;
+    margin-right: 8px;
+  }
+
+  .status-badge {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .checkin-time {
+    font-size: 10px;
+  }
 }
 </style>

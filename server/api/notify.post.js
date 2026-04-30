@@ -16,6 +16,5 @@ export default defineEventHandler(async (event) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(message),
   });
-  // test
   return { ok: true };
 });

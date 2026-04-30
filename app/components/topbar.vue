@@ -1,10 +1,16 @@
 <template>
   <div class="topbar">
+    <div class="hamburger" @click="toggleSidebar">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
     <div class="topbar-left">
       <span
-        >Welcome, <span class="name">{{
-          profile?.name || user?.displayName || "User"
-        }}</span></span
+        >Welcome,
+        <span class="name"
+          >{{ mounted ? profile?.name || user?.displayName : "" }}
+        </span> </span
       ><br />
 
       <span class="topbar-left-date">{{ currentDate }}</span>
@@ -21,12 +27,13 @@ import { ref } from "vue";
 import { auth } from "../../firebase/config";
 import { signOut } from "firebase/auth";
 const { profile, user } = useUser();
-
+const{ toggleSidebar } = useSidebar();
+const mounted=ref(false);
 async function handleLogout() {
   try {
     await signOut(auth);
     navigateTo("/login");
-    console.log("User Logout successful");
+    // console.log("User Logout successful");
   } catch (err) {
     console.error("Logout fail", err);
   }
@@ -38,17 +45,19 @@ const currentDate = new Date().toLocaleDateString("en-IN", {
   year: "numeric",
   month: "long",
 });
+onMounted(() => {
+  mounted.value = true;
+});
 </script>
 
 <style scoped>
 .topbar {
-  /* width: 100%; */
+  max-width: 100%;
   height: 80px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #fdfcfa;
-  /* background-color:blue; */
   padding: 0 30px;
   border-bottom: 1px solid rgb(207, 205, 205);
 }
@@ -81,5 +90,37 @@ const currentDate = new Date().toLocaleDateString("en-IN", {
 .name {
   color: #4caf50;
   font-weight: bold;
+}
+.hamburger{
+  display: none;
+  
+}
+
+@media(max-width:768px){
+   .topbar {
+    padding: 0 16px;
+    height: 60px;
+  }
+  .hamburger{
+    display: flex;
+    flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+  }
+  .line{
+    width: 25px;
+    height:2px;
+    background-color: #474644;
+    gap: 5px;
+  }
+  .topbar-left{
+    font-size:14px;
+    margin-left: 10%;
+    margin-right: auto;
+  }
+  .topbar-left-date{
+    font-size:11px;
+  }
+  
 }
 </style>

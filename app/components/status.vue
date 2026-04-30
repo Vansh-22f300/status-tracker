@@ -1,7 +1,7 @@
 <template>
   <div class="section">
     <p class="label">Your status today</p>
-    <div class="list">
+    <div class="list" >
       <div
         class="card"
         :class="{
@@ -38,24 +38,25 @@
     </div>
     <div class="submit" v-if="selectedstatus">
       <div class="submit-info">
-        <div>{{ message() }}— will notify MAP Team C</div>
+        <div>{{ message() }}— will notify {{ profile?.teamName ||"your team"}}</div>
         <div class="submit-time" v-if="selectedstatus !== 'leave'">
-          Posting as You {{ time }}
+          Posting at {{ time }}
         </div>
       </div>
 
-      <div class="notify-btn" @click="notified">Notify Group ➡️</div>
+      <div class="notify-btn" @click="notified" :class="{ 'disabled': isPosting }">{{ isPosting ? 'Notifying...' : 'Notify Group ➡️' }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-// const { teamData } = useData();
 const {user ,profile} = useUser();
 const selectedstatus = ref(null);
 const time = ref("");
-
+const isPosting = ref(false);
+import {useToast} from "vue-toastification";
+const toast = useToast();
 let interval = null;
 import { db } from "../../firebase/config";
 import { collection, addDoc, query, where, getDoc, updateDoc, setDoc, doc } from "firebase/firestore";
@@ -71,15 +72,12 @@ async function submitStatus() {
   if (!selectedstatus.value) return;
 
   if (!user.value || !user.value.email) {
-    console.log("data not ready");
     return;
   }
 
   try {
     const today = new Date().toLocaleDateString("en-CA");
-    console.log(today);
     const docId = `${user.value.uid}_${today}`;
-    console.log(docId);
     
     await setDoc(doc(db, "status", docId), {
       uid: user.value.uid,
@@ -90,7 +88,6 @@ async function submitStatus() {
       timestamp: Date.now(),
     }, { merge: true });
 
-    console.log("Saved or Updated ");
   } catch (err) {
     console.error("Error:", err);
   }
@@ -119,12 +116,24 @@ async function handlewebhook(){
 
 }
 
-function notified() {
-  submitStatus();
-  handlewebhook();
-  // console.log(user.value);
-  console.log("Posted", selectedstatus.value);
-  console.log(time);
+async function notified() {
+  if (!selectedstatus.value) {
+    toast.warning("Please select a status first.")
+    return
+  }
+  if (isPosting.value) return   
+  isPosting.value = true
+
+  try {
+    await submitStatus()
+    await handlewebhook()
+    toast.success("Status posted successfully!")
+  } catch (err) {
+    toast.error("Something went wrong. Please try again.")
+    console.error(err)
+  } finally {
+    isPosting.value = false     
+  }
 }
 
 const updateTime = () => {
@@ -146,7 +155,6 @@ onUnmounted(() => {
 
 <style scoped>
 .section {
-  /* margin-top:30px; */
   padding: 30px;
 }
 .label {
@@ -156,18 +164,13 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 .list {
-  /* background-color:pink; */
   display: flex;
   gap: 20px;
-  /* border-radius:10px; */
 }
 .card {
-  /* margin:20px; x */
   background-color: #fdfcfa;
   border-radius: 15px;
   flex: 1;
-  /* width:430px; */
-  /* height:200px; */
   padding: 30px;
   cursor: pointer;
 }
@@ -211,9 +214,14 @@ onUnmounted(() => {
   border-radius: 8px;
 }
 .notify-btn:hover {
-  background-color: rgb(46, 46, 46);
+  opacity:0.7;
   color: white;
   transform: translateY(2px);
+}
+.notify-btn.disabled {
+  cursor: not-allowed;
+  transform: translateY(0);
+  opacity: 0.4;
 }
 .selected_office {
   border: 1px solid green;
@@ -228,5 +236,52 @@ onUnmounted(() => {
   border: 1px solid red;
   background-color: #f9d0d0;
 }
+@media(max-width:768px){
+  .section {
+    padding: 20px 15px;
+  }
+  .list {
+    flex-direction: column;
+  }
 
+  .card {
+    padding: 20px;
+    text-align: center;
+  }
+  .card-icon {
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-name {
+    font-size:18px;
+  }
+
+  .card-status {
+    font-size:13px;
+  }
+  .submit {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  .submit-info {
+    margin: 0 auto;
+    text-align: center;
+  }
+  .notify-btn {
+    width: 100%;
+    font-size:14px;
+    text-align:center;
+  }
+  .notify-btn:hover {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  .notify-btn.disabled{
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+}
 </style>

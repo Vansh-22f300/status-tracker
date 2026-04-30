@@ -1,52 +1,51 @@
 <template>
-  <div v-if="!isLoaded" class="loader-container">
-    <ClipLoader :loading="true" color="#5dc596" size="85px" />
+  <div>
+    <div v-if="!isLoaded" class="loader-container">
+      <div class="spinner"></div>
+    </div>
+    <NuxtLayout v-else>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
-
-  <NuxtLayout v-if="isLoaded">
-    <NuxtPage />
-  </NuxtLayout>
 </template>
 
 <script setup>
-const { isLoaded } = useUser();
-import { ClipLoader } from "vue-spinner";
+const { isLoaded } = useUser()
 </script>
 
 <style>
+* { box-sizing: border-box; }
 body {
   margin: 0;
-  /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
   background-color: rgb(238, 238, 227);
 }
-
 .loader-container {
   position: fixed;
   inset: 0;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color:rgb(238,238,227);
   display: grid;
   place-items: center;
-  z-index: 999999; 
-  pointer-events: none;
-  isolation: isolate; 
-  animation: loader 1.5s ease-in-out infinite;
-
+  z-index: 999999;
 }
-.loader-clip {
-  animation: loader 1.5s ease-in-out infinite;
+.spinner {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(93, 197, 150, 0.2);
+  border-top-color: #5dc596;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-@keyframes loader {
-  0% {
-    opacity: 0.3;
-    transform: translateY(15px);
-  }
-  50% {
-    opacity: 0.6;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(15px);
-  }
+@media (max-width: 768px) {
+  body { font-size: 14px; }
 }
 </style>

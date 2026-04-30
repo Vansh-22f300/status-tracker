@@ -37,25 +37,24 @@ const error = ref("");
 const successMessage = ref("");
 const isLoading = ref(false);
 
-const handleResetPassword=async ()=> {
+const handleResetPassword=async () => {
   if (!resetEmail.value) {
     error.value = "Please enter your email address";
     successMessage.value = "";
     return;
   }
-  
+
   if (isLoading.value) return;
   isLoading.value = true;
-  error.value ="";
-  successMessage.value ="";
+  error.value = "";
+  successMessage.value = "";
 
   try {
     await sendPasswordResetEmail(auth, resetEmail.value);
     successMessage.value = "Reset password email sent.";
-    
   } catch (err) {
     error.value = err.message;
-    console.log("Reset error", err);
+    // console.log("Reset error", err);
   } finally {
     isLoading.value = false;
   }
@@ -64,10 +63,10 @@ const handleResetPassword=async ()=> {
 
 <style scoped>
 .reset-page {
-  min-height:100vh;
-  display:grid;
-  align-items:center;
-  justify-items:center;
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+  justify-items: center;
 }
 
 .reset-card {
@@ -139,5 +138,50 @@ const handleResetPassword=async ()=> {
 
 .back-link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .reset-page {
+    padding: 20px;
+  }
+  .reset-card {
+    width: 100%;
+    padding: 24px;
+    border-radius: 12px;
+  }
+  .reset-card h1 {
+    margin-bottom: 8px;
+  }
+  .form-fields {
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .field-label {
+    font-size: 13px;
+    margin-bottom: -6px;
+  }
+
+  .form-fields input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .send-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .error-text,
+  .success-text {
+    font-size: 12px;
+    margin-top: 10px;
+  }
+
+  .back-link {
+    font-size: 13px;
+  }
 }
 </style>

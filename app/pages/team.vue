@@ -68,10 +68,10 @@
           </div>
 
           <div class="remove">
-            <button class="you" v-if="m.id == user.uid">You</button>
+            <button class="you" v-if="m.id == user?.uid">You</button>
             <button
               class="remove-btn"
-              v-if="m.id !== user.uid"
+              v-if="m.id !== user?.uid"
               @click="handleRemove(m)"
             >
               ❌
@@ -135,7 +135,8 @@ import {
 } from "firebase/firestore";
 
 definePageMeta({ middleware: ["auth", "manager"] });
-
+import {useToast} from "vue-toastification";
+const toast = useToast();
 const { user, profile } = useUser();
 const { getInitials } = useInitials();
 
@@ -145,50 +146,50 @@ const copied = ref(false);
 const statusConfirm = ref(null);
 const removeMember = ref(null);
 
-let stopStatusListener = null;
-let stopMembersListener = null;
-let stopTeamListener = null;
+const statusMap     = ref({})     
+
+let stopStatusListener  = null
+let stopMembersListener = null
+let stopTeamListener    = null
 
 async function fetchData() {
-  const teamId = profile.value.teamId;
-  const today = todayKey();
+  const teamId = profile.value.teamId
+  const today  = todayKey()
 
   stopTeamListener = onSnapshot(doc(db, "teams", teamId), (snap) => {
-    teamsData.value = snap.data();
-  });
-
-  stopMembersListener = onSnapshot(
-    query(collection(db, "profiles"), where("teamId", "==", teamId)),
-    (snapshot) => {
-      const existingStatuses = {};
-      members.value.forEach((m) => {
-        existingStatuses[m.id] = m.status;
-      });
-
-      members.value = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-        status: existingStatuses[d.id] || null, 
-      }));
-    },
-  );
+    teamsData.value = snap.data()
+  })
 
   stopStatusListener = onSnapshot(
     query(collection(db, "status"), where("teamId", "==", teamId)),
     (snapshot) => {
-      const map = {};
-      snapshot.docs.forEach((d) => {
-        const data = d.data();
-        const date = new Date(data.timestamp).toLocaleDateString("en-CA");
-        if (date === today) map[data.uid] = data.status;
-      });
+      const map = {}
+      snapshot.docs.forEach(d => {
+        const data = d.data()
+        const date = new Date(data.timestamp).toLocaleDateString("en-CA")
+        if (date === today) map[data.uid] = data.status
+      })
+      statusMap.value = map
 
-      members.value = members.value.map((m) => ({
-        ...m,
-        status: map[m.id] || null,
-      }));
-    },
-  );
+      if (members.value.length) {
+        members.value = members.value.map(m => ({
+          ...m,
+          status: map[m.id] || null
+        }))
+      }
+    }
+  )
+
+  stopMembersListener = onSnapshot(
+    query(collection(db, "profiles"), where("teamId", "==", teamId)),
+    (snapshot) => {
+      members.value = snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data(),
+        status: statusMap.value[d.id] || null
+      }))
+    }
+  )
 }
 
 
@@ -208,16 +209,16 @@ async function confirmStatusChange() {
     teamId: profile.value.teamId,
     timestamp: Date.now(),
   });
-  console.log("Status updated");
+  // console.log("Status updated");
   member.status = newStatus;
   handlewebhook();
+  toast.success(`${member.name}'s status updated `)
 
   statusConfirm.value = null;
 }
 
 function handleRemove(member) {
-  if (member.id === user.uid) {
-    console.log("cannot be removed");
+  if (member.id === user?.uid) {
     return;
   }
   removeMember.value = member;
@@ -225,6 +226,7 @@ function handleRemove(member) {
 
 async function confirmRemove() {
   const member = removeMember.value;
+  const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
 
   await updateDoc(doc(db, "profiles", member.id), {
     teamId: null,
@@ -235,10 +237,16 @@ async function confirmRemove() {
   await updateDoc(doc(db, "teams", profile.value.teamId), {
     count: increment(-1),
   });
-  await updateDoc(doc(db, "status", `${member.id}_${todayKey()}`), {
-    teamId: null,
-  });
+
+  const statusSnap = await getDoc(statusRef);
+  if (statusSnap.exists()) {
+    await updateDoc(statusRef, {
+      teamId: null,
+    });
+  }
+
   members.value = members.value.filter((m) => m.id !== member.id);
+  toast.success(`${member.name} removed from team `);
   removeMember.value = null;
 }
 
@@ -250,7 +258,11 @@ function formatStatus(status) {
   else if (status === "wfo") return "🏢 Office";
   return "🏝️ Leave";
 }
-
+function formatStatusflow(status){
+  if (status === "wfh") return "Work From Home";
+  else if (status === "wfo") return "In Office";
+  return "On Leave";
+}
 function copyCode() {
   navigator.clipboard.writeText(teamsData.value.joinCode);
   copied.value = true;
@@ -260,7 +272,7 @@ async function handlewebhook() {
     await $fetch("/api/update", {
       method: "POST",
       body: {
-        status: formatStatus(statusConfirm.value.newStatus),
+        status: formatStatusflow(statusConfirm.value.newStatus),
         name: statusConfirm.value.member.name,
         time: new Date().toLocaleTimeString([], {
           hour: "2-digit",
@@ -268,7 +280,7 @@ async function handlewebhook() {
         }),
       },
     });
-    console.log("sent to google chat space");
+    // console.log("sent to google chat space");
   } catch (err) {
     console.log("webhook failed", err);
   }
@@ -280,7 +292,6 @@ onUnmounted(() => {
   if (typeof stopMembersListener === "function") stopMembersListener();
   if (typeof stopTeamListener === "function") stopTeamListener();
 });
-
 </script>
 
 <style scoped>
@@ -289,7 +300,6 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 32px;
-  /* background-color:red; */
 }
 .section {
   display: flex;
@@ -372,13 +382,11 @@ onUnmounted(() => {
   font-weight: bold;
   color: #1a1918;
 
-  /* color:rgb(46, 40, 40); */
 }
 
 .team-length-label {
   font-size: 12px;
   color: grey;
-  margin-top: 4px;
 }
 
 .members-list {
@@ -490,20 +498,20 @@ onUnmounted(() => {
   transform: translateY(2px);
 }
 .modal {
-  position: fixed;
-  display: flex;
-  inset: 0;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  background: rgba(240, 239, 239, 0.5);
+  position:fixed;
+  display:flex;
+  inset:0;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+  background:rgba(240, 239, 239, 0.5);
 }
 .modal-content {
   background-color: rgb(255, 245, 245);
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid rgb(206, 200, 200);
-  text-align: center;
+  border-radius:16px;
+  padding:24px;
+  border:1px solid rgb(206, 200, 200);
+  text-align:center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 .modal-title {
@@ -546,5 +554,58 @@ onUnmounted(() => {
 .modal-cancel:hover {
   background-color: #cbc9c5;
   transform: translateY(2px);
+}
+
+@media (max-width: 768px) {
+  .team-page {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .team-card {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .team-name {
+    font-size: 22px;
+  }
+
+  .join-code {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  .card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .team-length {
+    font-size: 28px;
+  }
+
+  .member-item {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+  }
+  .member-email {
+    display:none;
+  }
+  .modal-content {
+    margin:16px;
+    padding:20px;
+  }
+
+  .modal-title {
+    font-size:22px;
+  }
+
+  .modal-sub {
+    font-size:14px;
+  }
 }
 </style>

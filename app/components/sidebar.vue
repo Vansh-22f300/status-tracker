@@ -1,11 +1,12 @@
 <template>
   <div class="sidebar">
+    <div class="close-btn" @click="sidebarClose">✕</div>
     <div class="sidebar-top">
       <div class="sidebar-title">
         DEV
         <span class="sidebar-title-team">Team</span>
       </div>
-      <div class="sidebar-subtitle">AVAILABILITY • {{profile?.teamName}}</div>
+      <div class="sidebar-subtitle">AVAILABILITY • {{mounted ? profile?.teamName :"" }}</div>
     </div>
     <div class="sidebar-member">
       <span class="profile-pic">{{
@@ -13,22 +14,27 @@
       }}</span>
       <div class="sidebar-member-info">
         <span class="sidebar-member-name">{{
-          profile?.name || user?.displayName || "User"
+         mounted ? profile?.name || user?.displayName :""
         }}</span>
-        <span class="user-role">{{profile?.role}} • {{profile?.teamName}}</span>
+        <span class="user-role"
+          >{{ mounted ? profile?.role : "" }} • {{ mounted ? profile?.teamName : "" }}</span
+        >
       </div>
     </div>
     <div class="navigation">
       <span class="navigation-title">Navigation</span><br />
-      <NuxtLink to="/" class="navigation-tile">
-        <span class="navigation-icon">◷</span>Today</NuxtLink
+      <NuxtLink to="/" class="navigation-tile" @click="sidebarClose()">
+        <span class="navigation-icon">◈</span>Today</NuxtLink
       >
-      <NuxtLink to="/team" class="navigation-tile"  v-if="profile.role=='Manager'">
-        <span class="navigation-icon">◷</span>Manage Team</NuxtLink
+      <NuxtLink
+        to="/team"
+        class="navigation-tile"
+        v-if="mounted && profile?.role == 'Manager'"
+        @click="sidebarClose()"
       >
-
+        <span class="navigation-icon">⚙</span>Manage Team</NuxtLink
+      >
     </div>
-    
 
     <div class="sidebar-bottom">
       <div class="sidebar-bottom-title">Checked in today</div>
@@ -57,12 +63,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { db } from "../../firebase/config";
-import { collection ,query, where} from "firebase/firestore";
+import { collection, query, where } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 // const { teamData } = useData();
 const users = ref([]);
 const { profile, user } = useUser();
-
+const { sidebarClose } = useSidebar();
+const mounted=ref(false);
 const { getInitials } = useInitials();
 let stopUsersListener = null;
 
@@ -78,7 +85,6 @@ function formatStatus(status) {
   if (status === "wfh") return "WFH";
   else if (status === "wfo") return "Office";
   return "Leave";
-  // return status === "wfh" ? "WFH" : "Office";
 }
 
 function isToday(timestamp) {
@@ -87,44 +93,46 @@ function isToday(timestamp) {
 }
 
 function fetchUsers() {
-  console.log(status.value?.teamId);
-  console.log(profile.value?.teamId)
   stopUsersListener = onSnapshot(
-  query(
-    collection(db, "status"),
-    where("teamId", "==", profile.value?.teamId) 
-  ),
-  (snapshot) => {
-    users.value = snapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-      .filter((user) => isToday(user.timestamp))
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .map((user) => ({
-        ...user,
-        time: formatTime(user.timestamp, user.status),
-        status: formatStatus(user.status),
-      }));
-  });
+    query(
+      collection(db, "status"),
+      where("teamId", "==", profile.value?.teamId),
+    ),
+    (snapshot) => {
+      users.value = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter((user) => isToday(user.timestamp))
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .map((user) => ({
+          ...user,
+          time: formatTime(user.timestamp, user.status),
+          status: formatStatus(user.status),
+        }));
+    },
+  );
 }
 
-import { watch } from "vue"  
+import { watch } from "vue";
 
 onMounted(() => {
+   mounted.value = true;
   if (profile.value?.teamId) {
-    fetchUsers()  
-  } 
-  else {
-    const stop = watch(() => profile.value?.teamId, (teamId) => {
-      if (teamId) {
-        fetchUsers()
-        stop() 
-      }
-    })
+    fetchUsers();
+  } else {
+    const stop = watch(
+      () => profile.value?.teamId,
+      (teamId) => {
+        if (teamId) {
+          fetchUsers();
+          stop();
+        }
+      },
+    );
   }
-})
+});
 onUnmounted(() => {
   if (typeof stopUsersListener === "function") {
     stopUsersListener();
@@ -134,14 +142,14 @@ onUnmounted(() => {
 
 <style scoped>
 .sidebar {
-  width: 220px;
+  width: 270px;
   background-color: #1a1918;
   padding: 30px;
   height: 100%;
 }
 .sidebar-title {
   color: #f7f4ef;
-  font-size: 31px;
+  font-size: 32px;
   font-weight: bold;
   margin-bottom: 5px;
 }
@@ -170,7 +178,6 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  cursor: pointer;
 }
 .sidebar-member-info {
   display: flex;
@@ -193,7 +200,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 11px;
+  padding:5px;
   /* margin-right: 10px; */
 }
 .navigation {
@@ -298,5 +306,61 @@ onUnmounted(() => {
   color: #767474;
   font-size: 12px;
   padding: 8px;
+}
+.close-btn {
+  display: none;
+}
+@media (max-width: 768px) {
+ 
+
+  .close-btn {
+    position: absolute;
+    display: flex;
+    top: 16px;
+    right: 16px;
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    color: #f7f4ef;
+    font-weight:700;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 50%;
+  }
+  .sidebar{
+    position:relative;
+    width:80vw;
+    max-width:270px;
+        height: 100vh;
+  }
+   .sidebar-top {
+    margin-top: 40px;
+  }
+  .sidebar-bottom-name{
+    font-size: 13px;
+  }
+  .sidebar-bottom-time{
+    font-size: 11px;
+  }
+  .navigation a{
+    padding:10px 12px;
+    font-size:13px;
+  }
+   .navigation-title{
+    font-size:9px;
+  }
+  .sidebar-member-name{
+    font-size:13px;
+  }
+ 
+  .user-role{
+    font-size:10px;
+  }
+  
+
+  .profile-pic{
+    height:28px;
+    width:28px;
+    font-size:10px;
+  }
 }
 </style>

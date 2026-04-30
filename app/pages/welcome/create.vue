@@ -30,7 +30,6 @@ import { ref, onMounted } from "vue";
 import { db } from "../../../firebase/config";
 import {
   collection,
-  addDoc,
   query,
   where,
   getDocs,
@@ -38,16 +37,15 @@ import {
   setDoc,
   doc,
 } from "firebase/firestore";
-
-const { getInitials } = useInitials();
-
+import {useToast} from "vue-toastification";
+const toast = useToast();
 const { user, profile } = useUser();
 
 const teamName = ref("");
 const error = ref("");
 const isLoading = ref(false);
 function generateTeamCode() {
-  const numbers = Math.floor(1000 + Math.random() * 9000);
+  const numbers = Math.floor(100000 + Math.random() * 900000);
   return `${numbers}`;
 }
 async function handleCreateTeam() {
@@ -58,10 +56,20 @@ async function handleCreateTeam() {
   }
 
   isLoading.value = true;
-  console.log("handle check create");
 
   try {
     const teamRef = doc(collection(db, "teams"));
+    const existingTeamQuery = query(
+      collection(db, "teams"),
+      where("name", "==", teamName.value.trim())
+    );
+    const existingTeamSnapshot = await getDocs(existingTeamQuery);
+    if (!existingTeamSnapshot.empty) {
+      // console.log("Team already exist");
+      error.value = "Team name already exists, try another name.";
+      return;
+    }
+    // console.log("Creating Team...");
     const code = generateTeamCode();
     await setDoc(teamRef, {
       name: teamName.value.trim(),
@@ -84,8 +92,8 @@ async function handleCreateTeam() {
       teamId: teamRef.id,
       teamName: teamName.value.trim(),
     };
-    console.log("Team Created");
-    console.log("join code", code);
+    // console.log("Team Created");
+    toast.success(`Team ${teamName.value.trim()} created successfully `);
     navigateTo("/");
   } catch (err) {
     console.error("Failed to create Team", err);
@@ -170,5 +178,37 @@ onMounted(() => {
   color: #b00020;
   font-size: 14px;
   margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .welcome-page {
+    padding:20px;
+  }
+  .welcome-grid {
+    width:100%;
+    max-width:100%;
+     padding:20px;
+    border-radius:15px;
+  }
+  .back-btn {
+    font-size:14px;
+    margin-bottom:15px;
+  }
+  .field-label {
+    font-size:16px;
+    margin-bottom:12px;
+  }
+  .field-input {
+    padding:10px;
+    font-size:14px;
+  margin-bottom:12px;
+  }
+  .create-btn {
+    padding:10px;
+    font-size:14px;
+  }
+  .error {
+     font-size:12px;
+  }
 }
 </style>
