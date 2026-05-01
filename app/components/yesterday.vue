@@ -5,7 +5,7 @@
     </div>
     <div class="grid" v-if="users.length">
       <div class="grid-item" v-for="user in users" :key="user.id">
-        <div class="profile-pic">{{ getInitials(user.name) }}</div>
+        <div class="profile-pic ui-avatar">{{ getInitials(user.name) }}</div>
         <div class="grid-info">
           <div class="grid-name">{{ user.name }}</div>
           <div class="grid-status">{{ user.status }}</div>
@@ -19,17 +19,17 @@
 <script setup>
 // const { teamData } = useData();
 const { getInitials } = useInitials();
-import { ref, onMounted } from "vue";
-import { db } from "../../firebase/config";
-import { collection, getDocs,query,where } from "firebase/firestore";
-import { onSnapshot } from "firebase/firestore";
+import { ref, onMounted } from 'vue';
+import { db } from '../../firebase/config';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 const users = ref([]);
 const { profile, user } = useUser();
 
 function formatStatus(status) {
-  if (status === "wfh") return "🏠 WFH";
-  else if (status === "wfo") return "🏢 Office";
-  return "🏝️ Leave";
+  if (status === 'wfh') return '🏠 WFH';
+  else if (status === 'wfo') return '🏢 Office';
+  return '🏝️ Leave';
 }
 
 function yesterday(timestamp) {
@@ -41,79 +41,84 @@ function yesterday(timestamp) {
 function fetchUsers() {
   const querySnapshot = onSnapshot(
     query(
-      collection(db, "status"),
-      where("teamId", "==", profile.value.teamId)
+      collection(db, 'status'),
+      where('teamId', '==', profile.value.teamId)
     ),
     (snapshot) => {
       users.value = snapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
-      .filter((user) => yesterday(user.timestamp))
-      .map((user) => ({
-        ...user,
-        status: formatStatus(user.status),
-      }));
-  });
+        .filter((user) => yesterday(user.timestamp))
+        .map((user) => ({
+          ...user,
+          status: formatStatus(user.status)
+        }));
+    }
+  );
 }
 
-import { watch } from "vue"  
+import { watch } from 'vue';
 
 onMounted(() => {
   if (profile.value?.teamId) {
-    fetchUsers()  
-  } 
-  else {
-    const stop = watch(() => profile.value?.teamId, (teamId) => {
-      if (teamId) {
-        fetchUsers()
-        stop() 
+    fetchUsers();
+  } else {
+    const stop = watch(
+      () => profile.value?.teamId,
+      (teamId) => {
+        if (teamId) {
+          fetchUsers();
+          stop();
+        }
       }
-    })
+    );
   }
-})
+});
 </script>
 <style scoped>
 .yesterday-section {
-  margin: 35px;
-  padding: 15px;
-  background-color: #fdfcfa;
-  border-radius: 10px;
+  margin: var(--space-7);
+  padding: var(--space-5);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  /* background-color:pink; */
+  gap: var(--space-2);
 }
 .label {
-  font-size: 10px;
-  letter-spacing: 1px;
+  font-size: 11px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: grey;
-  margin-bottom: 20px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+  font-weight: 600;
 }
 .grid-item {
   display: flex;
   align-items: center;
-  gap: 20px;
-  /* margin-top:20px; */
+  gap: var(--space-5);
   margin: 5px;
-  border-radius: 8px;
-  border: 1px solid #e8e4dc;
-  padding: 5px;
-  /* gap:10px; */
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  padding: 8px;
+  transition:
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    box-shadow var(--transition-base);
+}
+.grid-item:hover {
+  border-color: rgba(22, 35, 52, 0.14);
+  background-color: var(--color-bg-elevated);
+  box-shadow: var(--shadow-sm);
 }
 .profile-pic {
-  width: 30px;
-  height: 30px;
-  background-color: #e8e4dc;
-  color: grey;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 11px;
+  flex-shrink: 0;
 }
 .grid-info {
   display: flex;
@@ -121,33 +126,33 @@ onMounted(() => {
 }
 .grid-name {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
 }
 .grid-status {
   padding: 5px 0px;
   border-radius: 5px;
   font-size: 11px;
-  color: #afaca7;
+  color: var(--color-text-muted);
 }
 .empty-title {
   font-size: 16px;
-  color: grey;
+  color: var(--color-text-muted);
   text-align: center;
 }
 
-@media(max-width: 768px) {
-  .yesterday-section{
-    margin:15px;
-    padding:12px;
+@media (max-width: 768px) {
+  .yesterday-section {
+    margin: var(--space-4);
+    padding: var(--space-3);
   }
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .grid-item{
-    gap:10px;
+  .grid-item {
+    gap: 10px;
   }
-  .grid-name{
-    font-size:13px;
+  .grid-name {
+    font-size: 13px;
   }
 }
 </style>

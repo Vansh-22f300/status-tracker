@@ -12,7 +12,7 @@
       />
       <p v-if="error" class="error">{{ error }}</p>
       <button @click="handleJoinTeam" class="join-btn" :disabled="isLoading">
-        {{ isLoading ? "Joining..." : "Join Team" }}
+        {{ isLoading ? 'Joining...' : 'Join Team' }}
       </button>
     </div>
   </div>
@@ -20,10 +20,10 @@
 
 <script setup>
 definePageMeta({
-  layout: "welcome",
+  layout: 'welcome'
 });
-import { ref, onMounted } from "vue";
-import { db } from "../../../firebase/config";
+import { ref, onMounted } from 'vue';
+import { db } from '../../../firebase/config';
 import {
   collection,
   query,
@@ -32,73 +32,72 @@ import {
   updateDoc,
   setDoc,
   doc,
-  increment,
-} from "firebase/firestore";
+  increment
+} from 'firebase/firestore';
 
-import {useToast} from "vue-toastification";
+import { useToast } from 'vue-toastification';
 const toast = useToast();
 const { user, profile } = useUser();
 
-const teamName = ref("");
-const error = ref("");
+const teamName = ref('');
+const error = ref('');
 const isLoading = ref(false);
-const joinCode = ref("");
+const joinCode = ref('');
 onMounted(() => {
   if (profile.value?.teamId) {
-    navigateTo("/");
+    navigateTo('/');
   }
 });
 async function handleJoinTeam() {
-  error.value = "";
+  error.value = '';
   if (!joinCode.value.trim()) {
-    error.value = "Enter Join Code";
+    error.value = 'Enter Join Code';
     return;
   }
   isLoading.value = true;
 
   try {
     const q = query(
-      collection(db, "teams"),
-      where("joinCode", "==", joinCode.value.trim()),
+      collection(db, 'teams'),
+      where('joinCode', '==', joinCode.value.trim())
     );
 
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
       // error.value = "Invalid Join Code";
-      toast.error("Invalid Join Code");
+      toast.error('Invalid Join Code');
       isLoading.value = false;
       return;
     }
     const teamId = snapshot.docs[0].id;
     const teamName = snapshot.docs[0].data().name;
-    await updateDoc(doc(db, "profiles", user.value.uid), {
-      role: "Member",
+    await updateDoc(doc(db, 'profiles', user.value.uid), {
+      role: 'Member',
       updatedAt: Date.now(),
       teamId: teamId,
-      teamName: teamName,
+      teamName: teamName
     });
 
-    await updateDoc(doc(db, "teams", teamId), {
-      count: increment(1),
+    await updateDoc(doc(db, 'teams', teamId), {
+      count: increment(1)
     });
     profile.value = {
       ...profile.value,
-      role: "Member",
+      role: 'Member',
       teamId: teamId,
-      teamName: teamName,
+      teamName: teamName
     };
     toast.success(`Joined team ${teamName} successfully`);
-    navigateTo("/");
+    navigateTo('/');
   } catch (err) {
     // console.error("fail to join team", err);
     error.value = err.message;
-    toast.error("Failed to join team. Please try again.")
+    toast.error('Failed to join team. Please try again.');
   } finally {
     isLoading.value = false;
   }
 }
-
 </script>
 
 <style scoped>
@@ -107,111 +106,71 @@ async function handleJoinTeam() {
   display: grid;
   align-items: center;
   justify-items: center;
+  padding: var(--space-5);
 }
 .welcome-grid {
-  width: 500px;
+  width: min(520px, 100%);
   margin: 0 auto;
   padding: 40px;
-  background: #fff8ef;
-  border: 1px solid rgb(253, 180, 180);
-  border-radius: 20px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-.header h1 {
-  font-size: 32px;
-  margin-bottom: 8px;
-}
-.header p {
-  font-size: 16px;
-  color: #5c5750;
-}
-.list {
-  display: flex;
-  gap: 20px;
-}
-.card {
-  background-color: #fdfcfa;
-  border: 1px solid #eeeeed;
-  text-align: center;
-  border-radius: 25px;
-  flex: 1;
-  padding: 30px;
-  cursor: pointer;
-}
-.card:hover {
-  border-color: #019323;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-}
-.card-icon {
-  font-size: 32px;
-  margin-bottom: 20px;
-}
-.card-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-.card-subtitle {
-  color: #868584;
-  font-size: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 .back-btn {
   cursor: pointer;
-  color: grey;
+  color: var(--color-text-muted);
   font-weight: 600;
+  margin-bottom: var(--space-3);
 }
 .back-btn:hover {
   font-weight: 700;
-  color: rgb(93, 93, 93);
+  color: var(--color-text);
   text-decoration: underline;
 }
 
-.field-input{
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #b9aa96;
-    background: #ffffff;
-    font-size: 14px;
-    box-sizing: border-box;
-    margin-bottom: 16px;
-
+.field-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
 }
-.field-label{
-  font-size:18px;
-  font-weight:700;
-  color: #1a1918;
+.field-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
 }
-.field-sub{
-  font-size:14px;
-  color:#868585
+.field-sub {
+  font-size: 14px;
+  color: var(--color-text-muted);
 }
-.join-btn{
-  width:100%;
-  border-radius:12px;
-  padding:12px;
-  background-color:#019323;
-  font-size:16px;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
-
-.join-btn:hover{
-  opacity:0.80;
+.join-btn {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background-color: var(--color-primary);
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-base);
 }
 
-.join-btn:disabled{
-  opacity:0.40;
-  cursor:not-allowed;
+.join-btn:hover {
+  background-color: var(--color-primary-strong);
 }
 
-.error{
+.join-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.error {
   color: #b00020;
   font-size: 14px;
   margin-top: 8px;
@@ -219,33 +178,33 @@ async function handleJoinTeam() {
 
 @media (max-width: 768px) {
   .welcome-page {
-    padding:20px;
+    padding: 20px;
   }
   .welcome-grid {
-    width:100%;
-    max-width:100%;
-    padding:20px;
-    border-radius:15px;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 15px;
   }
   .back-btn {
-    font-size:14px;
-    margin-bottom:15px;
+    font-size: 14px;
+    margin-bottom: 15px;
   }
   .field-label {
-    font-size:16px;
-    margin-bottom:12px;
+    font-size: 16px;
+    margin-bottom: 12px;
   }
   .field-input {
-    padding:10px;
-    font-size:14px;
-    margin-bottom:12px;
+    padding: 10px;
+    font-size: 14px;
+    margin-bottom: 12px;
   }
   .join-btn {
-    padding:10px;
-    font-size:14px;
+    padding: 10px;
+    font-size: 14px;
   }
   .error {
-    font-size:12px;
+    font-size: 12px;
   }
 }
 </style>

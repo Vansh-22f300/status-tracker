@@ -1,11 +1,11 @@
 <template>
   <div class="section">
     <p class="label">Your status today</p>
-    <div class="list" >
+    <div class="list">
       <div
-        class="card"
+        class="card ui-card"
         :class="{
-          selected_office: selectedstatus == 'wfo',
+          selected_office: selectedstatus == 'wfo'
         }"
         @click="selectstatus('wfo')"
       >
@@ -14,9 +14,9 @@
         <div class="card-status">Available at Office</div>
       </div>
       <div
-        class="card"
+        class="card ui-card"
         :class="{
-          selected_home: selectedstatus == 'wfh',
+          selected_home: selectedstatus == 'wfh'
         }"
         @click="selectstatus('wfh')"
       >
@@ -25,9 +25,9 @@
         <div class="card-status">Remote Today</div>
       </div>
       <div
-        class="card"
+        class="card ui-card"
         :class="{
-          selected_leave: selectedstatus == 'leave',
+          selected_leave: selectedstatus == 'leave'
         }"
         @click="selectstatus('leave')"
       >
@@ -36,34 +36,53 @@
         <div class="card-status">Leave</div>
       </div>
     </div>
-    <div class="submit" v-if="selectedstatus">
+    <div class="submit ui-card" v-if="selectedstatus">
       <div class="submit-info">
-        <div>{{ message() }}— will notify {{ profile?.teamName ||"your team"}}</div>
+        <div>
+          {{ message() }}— will notify {{ profile?.teamName || 'your team' }}
+        </div>
         <div class="submit-time" v-if="selectedstatus !== 'leave'">
           Posting at {{ time }}
         </div>
       </div>
 
-      <div class="notify-btn" @click="notified" :class="{ 'disabled': isPosting }">{{ isPosting ? 'Notifying...' : 'Notify Group ➡️' }}</div>
+      <button
+        type="button"
+        class="notify-btn ui-btn ui-btn-primary"
+        @click="notified"
+        :disabled="isPosting"
+        :class="{ disabled: isPosting }"
+      >
+        {{ isPosting ? 'Notifying...' : 'Notify Group ->' }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-const {user ,profile} = useUser();
+import { ref } from 'vue';
+const { user, profile } = useUser();
 const selectedstatus = ref(null);
-const time = ref("");
+const time = ref('');
 const isPosting = ref(false);
-import {useToast} from "vue-toastification";
+import { useToast } from 'vue-toastification';
 const toast = useToast();
 let interval = null;
-import { db } from "../../firebase/config";
-import { collection, addDoc, query, where, getDoc, updateDoc, setDoc, doc } from "firebase/firestore";
+import { db } from '../../firebase/config';
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDoc,
+  updateDoc,
+  setDoc,
+  doc
+} from 'firebase/firestore';
 const message = () => {
-  if (selectedstatus.value === "wfo") return " Available Office";
-  else if (selectedstatus.value === "wfh") return " Available WFH";
-  else if (selectedstatus.value === "leave") return "On Leave";
+  if (selectedstatus.value === 'wfo') return ' Available Office';
+  else if (selectedstatus.value === 'wfh') return ' Available WFH';
+  else if (selectedstatus.value === 'leave') return 'On Leave';
 };
 function selectstatus(status) {
   selectedstatus.value = status;
@@ -76,70 +95,71 @@ async function submitStatus() {
   }
 
   try {
-    const today = new Date().toLocaleDateString("en-CA");
+    const today = new Date().toLocaleDateString('en-CA');
     const docId = `${user.value.uid}_${today}`;
-    
-    await setDoc(doc(db, "status", docId), {
-      uid: user.value.uid,
-      name: profile.value?.name || user.value?.displayName || "Unknown User",
-      email: user.value.email,
-      status: selectedstatus.value,
-      teamId: profile.value?.teamId || null,
-      timestamp: Date.now(),
-    }, { merge: true });
 
+    await setDoc(
+      doc(db, 'status', docId),
+      {
+        uid: user.value.uid,
+        name: profile.value?.name || user.value?.displayName || 'Unknown User',
+        email: user.value.email,
+        status: selectedstatus.value,
+        teamId: profile.value?.teamId || null,
+        timestamp: Date.now()
+      },
+      { merge: true }
+    );
   } catch (err) {
-    console.error("Error:", err);
+    console.error('Error:', err);
   }
 }
 
-async function handlewebhook(){
-  const statusValue={
-    wfo:"In Office",
-    wfh:"Work From Home",
-    leave:"On Leave"
-  }
-  try{
-    await $fetch("/api/notify", {
-      method:"POST",
-      body:{
-        status:statusValue[selectedstatus.value],
-        name: profile.value?.name || user.value?.displayName || "Unknown User",
-        time: time.value,
+async function handlewebhook() {
+  const statusValue = {
+    wfo: 'In Office',
+    wfh: 'Work From Home',
+    leave: 'On Leave'
+  };
+  try {
+    await $fetch('/api/notify', {
+      method: 'POST',
+      body: {
+        status: statusValue[selectedstatus.value],
+        name: profile.value?.name || user.value?.displayName || 'Unknown User',
+        time: time.value
       }
     });
-    console.log("sent to google chat space")
+    console.log('sent to google chat space');
+  } catch (err) {
+    console.log('webhook failed', err);
   }
-  catch(err){
-    console.log("webhook failed",err);
-  }
-
 }
 
 async function notified() {
   if (!selectedstatus.value) {
-    toast.warning("Please select a status first.")
-    return
+    toast.warning('Please select a status first.');
+    return;
   }
-  if (isPosting.value) return   
-  isPosting.value = true
+  if (isPosting.value) return;
+  isPosting.value = true;
 
   try {
-    await submitStatus()
-    await handlewebhook()
-    toast.success("Status posted successfully!")
+    await submitStatus();
+    await handlewebhook();
+    toast.success('Status posted successfully!');
   } catch (err) {
-    toast.error("Something went wrong. Please try again.")
-    console.error(err)
+    toast.error('Something went wrong. Please try again.');
+    console.error(err);
   } finally {
-    isPosting.value = false     
+    isPosting.value = false;
   }
 }
 
 const updateTime = () => {
-  time.value = new Date().toLocaleTimeString("en-IN", {
-    hour: "numeric",
-    minute: "numeric",
+  time.value = new Date().toLocaleTimeString('en-IN', {
+    hour: 'numeric',
+    minute: 'numeric'
   });
 };
 
@@ -155,97 +175,97 @@ onUnmounted(() => {
 
 <style scoped>
 .section {
-  padding: 30px;
+  padding: var(--space-7);
 }
 .label {
-  color: #868584;
-  font-size: 10px;
-  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
+  margin-bottom: var(--space-4);
+  font-weight: 600;
 }
 .list {
   display: flex;
-  gap: 20px;
+  gap: var(--space-5);
 }
 .card {
-  background-color: #fdfcfa;
-  border-radius: 15px;
   flex: 1;
-  padding: 30px;
+  padding: 28px;
   cursor: pointer;
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    background-color var(--transition-base);
 }
 .card:hover {
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  border-color: rgba(22, 35, 52, 0.18);
+  background-color: var(--color-bg-elevated);
+  box-shadow: var(--shadow-md);
 }
 .card-icon {
   width: 45px;
   font-size: 32px;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 .card-name {
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--color-text);
 }
 .card-status {
-  color: #868584;
+  color: var(--color-text-muted);
 }
 
 .submit {
-  padding: 20px;
-  background-color: #fdfcfa;
-  margin-top: 20px;
+  padding: var(--space-5);
+  margin-top: var(--space-5);
   display: flex;
   align-items: center;
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  gap: var(--space-4);
 }
 .submit-info {
   margin-right: auto;
+  font-weight: 600;
 }
 .submit-time {
-  color: #868584;
+  color: var(--color-text-muted);
   font-size: 12px;
+  font-weight: 500;
 }
 .notify-btn {
-  padding: 10px 15px;
-  background-color: black;
-  color: white;
-  cursor: pointer;
-  border-radius: 8px;
+  min-width: 160px;
 }
 .notify-btn:hover {
-  opacity:0.7;
-  color: white;
-  transform: translateY(2px);
+  opacity: 1;
 }
 .notify-btn.disabled {
-  cursor: not-allowed;
-  transform: translateY(0);
-  opacity: 0.4;
+  transform: none;
 }
 .selected_office {
-  border: 1px solid green;
-  background-color: #d0eddc;
+  border-color: rgba(26, 107, 64, 0.4);
+  background-color: var(--color-wfo-bg);
 }
 
 .selected_home {
-  border: 1px solid blue;
-  background-color: #d0dfed;
+  border-color: rgba(26, 59, 122, 0.35);
+  background-color: var(--color-wfh-bg);
 }
 .selected_leave {
-  border: 1px solid red;
-  background-color: #f9d0d0;
+  border-color: rgba(122, 26, 26, 0.35);
+  background-color: var(--color-leave-bg);
 }
-@media(max-width:768px){
+@media (max-width: 768px) {
   .section {
-    padding: 20px 15px;
+    padding: var(--space-5) var(--space-4);
   }
   .list {
     flex-direction: column;
   }
 
   .card {
-    padding: 20px;
+    padding: var(--space-5);
     text-align: center;
   }
   .card-icon {
@@ -255,15 +275,15 @@ onUnmounted(() => {
   }
 
   .card-name {
-    font-size:18px;
+    font-size: 18px;
   }
 
   .card-status {
-    font-size:13px;
+    font-size: 13px;
   }
   .submit {
     flex-direction: column;
-    gap: 12px;
+    gap: var(--space-3);
     text-align: center;
   }
   .submit-info {
@@ -272,15 +292,13 @@ onUnmounted(() => {
   }
   .notify-btn {
     width: 100%;
-    font-size:14px;
-    text-align:center;
+    font-size: 14px;
+    text-align: center;
   }
   .notify-btn:hover {
-    transform: translateY(0);
     opacity: 0.7;
   }
-  .notify-btn.disabled{
-    transform: translateY(0);
+  .notify-btn.disabled {
     opacity: 0.4;
   }
 }

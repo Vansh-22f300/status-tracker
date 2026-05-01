@@ -6,18 +6,21 @@
         DEV
         <span class="sidebar-title-team">Team</span>
       </div>
-      <div class="sidebar-subtitle">AVAILABILITY • {{mounted ? profile?.teamName :"" }}</div>
+      <div class="sidebar-subtitle">
+        AVAILABILITY • {{ mounted ? profile?.teamName : '' }}
+      </div>
     </div>
     <div class="sidebar-member">
-      <span class="profile-pic">{{
-        getInitials(profile?.name || user?.displayName || "User")
+      <span class="profile-pic ui-avatar">{{
+        getInitials(profile?.name || user?.displayName || 'User')
       }}</span>
       <div class="sidebar-member-info">
         <span class="sidebar-member-name">{{
-         mounted ? profile?.name || user?.displayName :""
+          mounted ? profile?.name || user?.displayName : ''
         }}</span>
         <span class="user-role"
-          >{{ mounted ? profile?.role : "" }} • {{ mounted ? profile?.teamName : "" }}</span
+          >{{ mounted ? profile?.role : '' }} •
+          {{ mounted ? profile?.teamName : '' }}</span
         >
       </div>
     </div>
@@ -41,14 +44,16 @@
 
       <div class="sidebar-bottom-list">
         <div class="sidebar-bottom-item" v-for="user in users" :key="user.id">
-          <span class="profile-pic">{{ getInitials(user.name) }}</span>
+          <span class="profile-pic ui-avatar">{{
+            getInitials(user.name)
+          }}</span>
           <div class="sidebar-bottom-item-info">
             <span class="sidebar-bottom-name">{{ user.name }}</span>
             <span class="sidebar-bottom-time">{{ user.time }}</span>
           </div>
 
           <span
-            class="sidebar-bottom-status"
+            class="sidebar-bottom-status ui-chip"
             :class="`tag-${user.status.toLowerCase()}`"
             >{{ user.status }}</span
           >
@@ -61,30 +66,30 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { db } from "../../firebase/config";
-import { collection, query, where } from "firebase/firestore";
-import { onSnapshot } from "firebase/firestore";
+import { ref, onMounted, onUnmounted } from 'vue';
+import { db } from '../../firebase/config';
+import { collection, query, where } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 // const { teamData } = useData();
 const users = ref([]);
 const { profile, user } = useUser();
 const { sidebarClose } = useSidebar();
-const mounted=ref(false);
+const mounted = ref(false);
 const { getInitials } = useInitials();
 let stopUsersListener = null;
 
 function formatTime(timestamp, status) {
-  if (status === "leave") return;
-  return new Date(timestamp).toLocaleTimeString("en-IN", {
-    hour: "numeric",
-    minute: "numeric",
+  if (status === 'leave') return;
+  return new Date(timestamp).toLocaleTimeString('en-IN', {
+    hour: 'numeric',
+    minute: 'numeric'
   });
 }
 
 function formatStatus(status) {
-  if (status === "wfh") return "WFH";
-  else if (status === "wfo") return "Office";
-  return "Leave";
+  if (status === 'wfh') return 'WFH';
+  else if (status === 'wfo') return 'Office';
+  return 'Leave';
 }
 
 function isToday(timestamp) {
@@ -95,30 +100,30 @@ function isToday(timestamp) {
 function fetchUsers() {
   stopUsersListener = onSnapshot(
     query(
-      collection(db, "status"),
-      where("teamId", "==", profile.value?.teamId),
+      collection(db, 'status'),
+      where('teamId', '==', profile.value?.teamId)
     ),
     (snapshot) => {
       users.value = snapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
         .filter((user) => isToday(user.timestamp))
         .sort((a, b) => b.timestamp - a.timestamp)
         .map((user) => ({
           ...user,
           time: formatTime(user.timestamp, user.status),
-          status: formatStatus(user.status),
+          status: formatStatus(user.status)
         }));
-    },
+    }
   );
 }
 
-import { watch } from "vue";
+import { watch } from 'vue';
 
 onMounted(() => {
-   mounted.value = true;
+  mounted.value = true;
   if (profile.value?.teamId) {
     fetchUsers();
   } else {
@@ -129,12 +134,12 @@ onMounted(() => {
           fetchUsers();
           stop();
         }
-      },
+      }
     );
   }
 });
 onUnmounted(() => {
-  if (typeof stopUsersListener === "function") {
+  if (typeof stopUsersListener === 'function') {
     stopUsersListener();
   }
 });
@@ -142,34 +147,35 @@ onUnmounted(() => {
 
 <style scoped>
 .sidebar {
-  width: 270px;
-  background-color: #1a1918;
+  width: 292px;
+  background: linear-gradient(180deg, #121b28 0%, #172235 100%);
   padding: 30px;
   height: 100%;
+  border-right: 1px solid var(--color-sidebar-border);
 }
 .sidebar-title {
-  color: #f7f4ef;
+  color: var(--color-sidebar-text);
   font-size: 32px;
-  font-weight: bold;
+  font-weight: 800;
+  font-family: var(--font-display);
   margin-bottom: 5px;
 }
 .sidebar-title-team {
   font-style: italic;
-  color: #a09a90;
+  color: var(--color-sidebar-muted);
 }
 .sidebar-top {
-  /* margin-left: 40px; */
   margin-bottom: 40px;
-  color: #b6b5b5;
+  color: var(--color-sidebar-muted);
 }
 .sidebar-subtitle {
-  color: #80786d;
+  color: var(--color-sidebar-muted);
   font-size: 11px;
   margin-bottom: 40px;
   letter-spacing: 1.5px;
 }
 .sidebar-member {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-sidebar-surface);
   padding: 14px 16px;
   border-radius: 12px;
   margin-bottom: 36px;
@@ -177,32 +183,23 @@ onUnmounted(() => {
   min-height: 40px;
   display: flex;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-sidebar-border);
 }
 .sidebar-member-info {
   display: flex;
   flex-direction: column;
 }
 .sidebar-member-name {
-  color: #f7f4ef;
+  color: var(--color-sidebar-text);
   font-size: 14px;
 }
 .user-role {
-  color: #80786d;
+  color: var(--color-sidebar-muted);
   font-size: 11px;
 }
 .profile-pic {
-  width: 30px;
-  height: 30px;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  padding:5px;
-  /* margin-right: 10px; */
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary-strong);
 }
 .navigation {
   display: flex;
@@ -210,23 +207,23 @@ onUnmounted(() => {
   cursor: pointer;
 }
 .navigation a {
-  color: #c4c4c4;
+  color: #d4e0ee;
   text-decoration: none;
   margin-bottom: 2px;
-  border-radius: 5px;
+  border-radius: 10px;
   font-size: 14px;
   align-items: center;
   padding: 12px 15px;
+  transition: all var(--transition-base);
 }
 
 .navigation a:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #c9c3b8;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-sidebar-text);
 }
 .router-link-exact-active {
-  background: rgba(255, 255, 255, 0.08);
-  color: #f0ece6;
-  /* padding:15px; */
+  background: rgba(30, 155, 102, 0.2);
+  color: #e9fff5;
 }
 
 .navigation-tile {
@@ -235,9 +232,7 @@ onUnmounted(() => {
   gap: 10px;
 }
 .navigation-title {
-  color: #5e564a;
-
-  /* color: #5e564a; */
+  color: var(--color-sidebar-muted);
   font-size: 10px;
   margin-bottom: 10px;
   text-transform: uppercase;
@@ -248,8 +243,7 @@ onUnmounted(() => {
 }
 
 .sidebar-bottom-title {
-  /* color: #3d3830; */
-  color: #5e564a;
+  color: var(--color-sidebar-muted);
   text-transform: uppercase;
   letter-spacing: 1.5px;
   font-size: 10px;
@@ -265,9 +259,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
   padding: 8px;
-  border-bottom: 1px solid #3d3830;
-
-  /* background-color:rgb(203, 203, 11); */
+  border-bottom: 1px solid var(--color-sidebar-border);
 }
 
 .sidebar-bottom-item-info {
@@ -278,32 +270,30 @@ onUnmounted(() => {
 
 .sidebar-bottom-status {
   margin-left: 12px;
-  border-radius: 22px;
-  padding: 3px 8px;
   font-size: 10px;
 }
 .sidebar-bottom-status.tag-wfh {
-  background: rgba(60, 100, 200, 0.2);
-  color: #7aabf7;
+  background: rgba(60, 100, 200, 0.26);
+  color: #93b8ff;
 }
 .sidebar-bottom-status.tag-office {
-  background: rgba(30, 107, 64, 0.25);
-  color: #4fca78;
+  background: rgba(30, 107, 64, 0.28);
+  color: #78e5a1;
 }
 .sidebar-bottom-status.tag-leave {
-  background: rgba(107, 30, 30, 0.25);
-  color: rgb(202, 79, 79);
+  background: rgba(157, 53, 53, 0.25);
+  color: #f09c9c;
 }
 .sidebar-bottom-name {
-  color: #f7f4ef;
+  color: var(--color-sidebar-text);
   font-size: 14px;
 }
 .sidebar-bottom-time {
-  color: #767474;
+  color: var(--color-sidebar-muted);
   font-size: 12px;
 }
 .sidebar-empty {
-  color: #767474;
+  color: var(--color-sidebar-muted);
   font-size: 12px;
   padding: 8px;
 }
@@ -311,56 +301,53 @@ onUnmounted(() => {
   display: none;
 }
 @media (max-width: 768px) {
- 
-
   .close-btn {
     position: absolute;
     display: flex;
     top: 16px;
     right: 16px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.12);
     cursor: pointer;
-    color: #f7f4ef;
-    font-weight:700;
+    color: var(--color-sidebar-text);
+    font-weight: 700;
     border: none;
     padding: 4px 8px;
     border-radius: 50%;
   }
-  .sidebar{
-    position:relative;
-    width:80vw;
-    max-width:270px;
-        height: 100vh;
+  .sidebar {
+    position: relative;
+    width: 84vw;
+    max-width: 292px;
+    height: 100vh;
   }
-   .sidebar-top {
+  .sidebar-top {
     margin-top: 40px;
   }
-  .sidebar-bottom-name{
+  .sidebar-bottom-name {
     font-size: 13px;
   }
-  .sidebar-bottom-time{
+  .sidebar-bottom-time {
     font-size: 11px;
   }
-  .navigation a{
-    padding:10px 12px;
-    font-size:13px;
+  .navigation a {
+    padding: 10px 12px;
+    font-size: 13px;
   }
-   .navigation-title{
-    font-size:9px;
+  .navigation-title {
+    font-size: 9px;
   }
-  .sidebar-member-name{
-    font-size:13px;
+  .sidebar-member-name {
+    font-size: 13px;
   }
- 
-  .user-role{
-    font-size:10px;
-  }
-  
 
-  .profile-pic{
-    height:28px;
-    width:28px;
-    font-size:10px;
+  .user-role {
+    font-size: 10px;
+  }
+
+  .profile-pic {
+    height: 28px;
+    width: 28px;
+    font-size: 10px;
   }
 }
 </style>

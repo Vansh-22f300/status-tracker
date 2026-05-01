@@ -9,7 +9,7 @@
       <span
         >Welcome,
         <span class="name"
-          >{{ mounted ? profile?.name || user?.displayName : "" }}
+          >{{ mounted ? profile?.name || user?.displayName : '' }}
         </span> </span
       ><br />
 
@@ -17,33 +17,33 @@
     </div>
 
     <div class="topbar-right">
-      <span class="logout" @click="handleLogout">Logout</span>
+      <button type="button" class="logout" @click="handleLogout">Logout</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { auth } from "../../firebase/config";
-import { signOut } from "firebase/auth";
+import { ref } from 'vue';
+import { auth } from '../../firebase/config';
+import { signOut } from 'firebase/auth';
 const { profile, user } = useUser();
-const{ toggleSidebar } = useSidebar();
-const mounted=ref(false);
+const { toggleSidebar } = useSidebar();
+const mounted = ref(false);
 async function handleLogout() {
   try {
     await signOut(auth);
-    navigateTo("/login");
+    navigateTo('/login');
     // console.log("User Logout successful");
   } catch (err) {
-    console.error("Logout fail", err);
+    console.error('Logout fail', err);
   }
 }
 
-const currentDate = new Date().toLocaleDateString("en-IN", {
-  weekday: "long",
-  day: "numeric",
-  year: "numeric",
-  month: "long",
+const currentDate = new Date().toLocaleDateString('en-IN', {
+  weekday: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  month: 'long'
 });
 onMounted(() => {
   mounted.value = true;
@@ -53,74 +53,77 @@ onMounted(() => {
 <style scoped>
 .topbar {
   max-width: 100%;
-  height: 80px;
+  min-height: 80px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fdfcfa;
-  padding: 0 30px;
-  border-bottom: 1px solid rgb(207, 205, 205);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+  padding: 14px 30px;
+  border-bottom: 1px solid var(--color-border);
 }
 .topbar-left {
-  color: #1a1918;
+  color: var(--color-text);
   margin-left: 12px;
 
+  font-family: var(--font-display);
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 700;
   letter-spacing: 0.3px;
 }
 .topbar-left-date {
-  color: #868584;
+  color: var(--color-text-muted);
   font-size: 12px;
   font-weight: 500;
 }
 .logout {
-  background-color: #e8f5e9;
-  color: #4caf50;
-  border-radius: 15px;
-  padding: 6px 12px;
-  border: 1px solid #4caf50;
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  border-radius: 999px;
+  padding: 8px 14px;
+  border: 1px solid rgba(24, 125, 83, 0.25);
   font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all var(--transition-base);
 }
 .logout:hover {
-  background-color: #4caf50;
+  background-color: var(--color-primary);
   color: white;
 }
 .name {
-  color: #4caf50;
-  font-weight: bold;
+  color: var(--color-primary);
+  font-weight: 700;
 }
-.hamburger{
+.hamburger {
   display: none;
-  
 }
 
-@media(max-width:768px){
-   .topbar {
+@media (max-width: 768px) {
+  .topbar {
     padding: 0 16px;
     height: 60px;
+    min-height: 60px;
   }
-  .hamburger{
+  .hamburger {
     display: flex;
     flex-direction: column;
-  cursor: pointer;
-  gap: 5px;
-  }
-  .line{
-    width: 25px;
-    height:2px;
-    background-color: #474644;
+    cursor: pointer;
     gap: 5px;
   }
-  .topbar-left{
-    font-size:14px;
+  .line {
+    width: 25px;
+    height: 2px;
+    background-color: var(--color-text);
+    gap: 5px;
+  }
+  .topbar-left {
+    font-size: 14px;
     margin-left: 10%;
     margin-right: auto;
   }
-  .topbar-left-date{
-    font-size:11px;
+  .topbar-left-date {
+    font-size: 11px;
   }
-  
 }
 </style>

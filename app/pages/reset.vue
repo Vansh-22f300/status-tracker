@@ -13,7 +13,7 @@
           required
         />
         <button type="submit" class="send-btn" :disabled="isLoading">
-          {{ isLoading ? "Sending..." : "Send Reset Link" }}
+          {{ isLoading ? 'Sending...' : 'Send Reset Link' }}
         </button>
       </form>
       <p v-if="error" class="error-text">{{ error }}</p>
@@ -25,33 +25,33 @@
 
 <script setup>
 definePageMeta({
-  layout: "auth",
+  layout: 'auth'
 });
 
-import { ref } from "vue";
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import { ref } from 'vue';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../../firebase/config';
 
-const resetEmail = ref("");
-const error = ref("");
-const successMessage = ref("");
+const resetEmail = ref('');
+const error = ref('');
+const successMessage = ref('');
 const isLoading = ref(false);
 
-const handleResetPassword=async () => {
+const handleResetPassword = async () => {
   if (!resetEmail.value) {
-    error.value = "Please enter your email address";
-    successMessage.value = "";
+    error.value = 'Please enter your email address';
+    successMessage.value = '';
     return;
   }
 
   if (isLoading.value) return;
   isLoading.value = true;
-  error.value = "";
-  successMessage.value = "";
+  error.value = '';
+  successMessage.value = '';
 
   try {
     await sendPasswordResetEmail(auth, resetEmail.value);
-    successMessage.value = "Reset password email sent.";
+    successMessage.value = 'Reset password email sent.';
   } catch (err) {
     error.value = err.message;
     // console.log("Reset error", err);
@@ -67,73 +67,86 @@ const handleResetPassword=async () => {
   display: grid;
   align-items: center;
   justify-items: center;
+  padding: var(--space-5);
 }
 
 .reset-card {
-  width:420px;
-  padding:32px;
-  border-radius:15px;
-  background: #fff8ef;
-  border:1px solid rgba(145, 96, 42, 0.18);
-  text-align:center;
+  width: min(420px, 100%);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.reset-card h1 {
+  font-size: 30px;
+  color: var(--color-text);
+}
+
+.reset-card p {
+  color: var(--color-text-muted);
 }
 .form-fields {
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-  margin-top:20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .field-label {
-  text-align:left;
-  font-size:14px;
-  font-weight:700;
-  color: #444444;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 .form-fields input {
   padding: 12px 12px;
-  border-radius: 10px;
-  border:1px solid #b9aa96;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
 }
 
 .send-btn {
   width: 60%;
-  border-radius:10px;
-  padding:12px;
-  background: #019323;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: var(--color-primary);
   color: #ffffff;
-  font-size:16px;
-  cursor:pointer;
-  border:none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
   align-self: center;
-  margin-bottom:12px;
+  margin-bottom: 12px;
+  transition: background-color var(--transition-base);
 }
 
 .send-btn:hover {
-  opacity:0.8;
+  background: var(--color-primary-strong);
 }
 
 .send-btn:disabled {
-  opacity:0.7;
-  cursor:not-allowed;
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .error-text {
-  margin-top:12px;
+  margin-top: 12px;
   color: #b00020;
 }
 
 .success-text {
-  margin-top:12px;
-  color: #1c8434;
-  font-weight:600;
+  margin-top: 12px;
+  color: var(--color-primary-strong);
+  font-weight: 600;
 }
 
 .back-link {
-  color: #3c3c3c;
-  text-decoration:none;
-  font-weight:600;
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .back-link:hover {

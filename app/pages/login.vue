@@ -63,7 +63,7 @@
           <NuxtLink to="/reset" class="reset-pass">Reset Password</NuxtLink>
         </div>
         <button type="submit" class="login-btn" :disabled="isLoading">
-          {{ isLoading ? "Logging in..." : "Login" }}
+          {{ isLoading ? 'Logging in...' : 'Login' }}
         </button>
       </form>
 
@@ -78,36 +78,36 @@
 </template>
 <script setup>
 definePageMeta({
-  middleware: ["auth"],
-  layout: "auth",
+  middleware: ['auth'],
+  layout: 'auth'
 });
-import { ref } from "vue";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase/config";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { ref } from 'vue';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase/config';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
-const email = ref("");
-const password = ref("");
-const error = ref("");
-const successMessage = ref("");
+const email = ref('');
+const password = ref('');
+const error = ref('');
+const successMessage = ref('');
 const isLoading = ref(false);
 
 const handleEmailLogin = async () => {
   if (isLoading.value) return;
   isLoading.value = true;
-  error.value = "";
-  successMessage.value = "";
+  error.value = '';
+  successMessage.value = '';
   try {
     const userCreds = await signInWithEmailAndPassword(
       auth,
       email.value.trim(),
-      password.value,
+      password.value
     );
-    successMessage.value = "Login Successful...";
+    successMessage.value = 'Login Successful...';
     // <!-- navigateTo("/"); -->
     // console.log("login succesfull", userCreds.user);
   } catch (err) {
-    successMessage.value = "";
+    successMessage.value = '';
     error.value = err.message;
     // console.error("login failed", err);
   } finally {
@@ -117,15 +117,15 @@ const handleEmailLogin = async () => {
 const handleGoogleLogin = async () => {
   if (isLoading.value) return;
   isLoading.value = true;
-  error.value = "";
-  successMessage.value = "";
+  error.value = '';
+  successMessage.value = '';
   try {
     const provider = new GoogleAuthProvider();
     const googleCreds = await signInWithPopup(auth, provider);
-    successMessage.value = "Login Successful...";
+    successMessage.value = 'Login Successful...';
     // console.log("Google login succesfull", googleCreds.user);
   } catch (err) {
-    successMessage.value = "";
+    successMessage.value = '';
     error.value = err.message;
     // console.error("login failed", err);
   } finally {
@@ -139,33 +139,43 @@ const handleGoogleLogin = async () => {
   display: grid;
   align-items: center;
   justify-items: center;
-  left: 50%;
+  padding: var(--space-5);
 }
 
 .login-card {
-  width: 420px;
+  width: min(420px, 100%);
   padding: 32px;
-  border-radius: 16px;
-  background: #fff8ef;
-  border: 1px solid rgba(145, 96, 42, 0.18);
-  box-shadow: 0 24px 45px rgba(81, 55, 27, 0.16);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
   text-align: center;
+}
+
+.login-card h1 {
+  font-size: 30px;
+  color: var(--color-text);
+}
+
+.login-card p {
+  color: var(--color-text-muted);
 }
 
 .login-btn {
   width: 60%;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 15px;
-  background: #019323;
+  background: var(--color-primary);
   color: #ffffff;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   border: none;
   align-self: center;
+  transition: background-color var(--transition-base);
 }
 .login-btn:hover {
-  background: #019323;
-  opacity: 0.8;
+  background: var(--color-primary-strong);
 }
 
 .login-btn:disabled {
@@ -185,7 +195,6 @@ const handleGoogleLogin = async () => {
   overflow: hidden;
 }
 .gsi-material-button:hover {
-  transform: translateY(1px);
 }
 .gsi-material-button:disabled {
   opacity: 0.7;
@@ -225,7 +234,7 @@ const handleGoogleLogin = async () => {
 
 .gsi-material-button .gsi-material-button-contents {
   color: #1f1f1f;
-  font-family: "Roboto", "Segoe UI", sans-serif;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.25px;
@@ -241,7 +250,7 @@ const handleGoogleLogin = async () => {
 .form-fields {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
   margin-top: 20px;
 }
 
@@ -249,19 +258,19 @@ const handleGoogleLogin = async () => {
   text-align: left;
   font-size: 14px;
   font-weight: 600;
-  color: #444444;
+  color: var(--color-text);
   margin-bottom: -8px;
 }
 
 .form-fields input {
   padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #b9aa96;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background: #ffffff;
 }
 
 .form-fields input::placeholder {
-  color: #000000;
-  /* opacity: 1; */
+  color: var(--color-text-soft);
 }
 
 .reset-row {
@@ -275,20 +284,20 @@ const handleGoogleLogin = async () => {
   padding: 0;
   border: none;
   background: transparent;
-  color: #4f4f4f;
+  color: var(--color-text-muted);
   font-size: 13px;
   cursor: pointer;
   text-decoration: none;
 }
 .reset-pass:hover {
-  color: #000000;
+  color: var(--color-text);
   text-decoration: underline;
 }
 
 .signup-link {
   display: inline-block;
   margin-top: 14px;
-  color: #3c3c3c;
+  color: var(--color-text);
   text-decoration: none;
   font-weight: 600;
 }
@@ -305,7 +314,7 @@ const handleGoogleLogin = async () => {
 
 .success-text {
   margin-top: 12px;
-  color: #1c8434;
+  color: var(--color-primary-strong);
   font-weight: 600;
 }
 </style>

@@ -16,7 +16,7 @@
         class="create-btn"
         :disabled="isLoading"
       >
-        {{ isLoading ? "Creating..." : "Create Team" }}
+        {{ isLoading ? 'Creating...' : 'Create Team' }}
       </button>
     </div>
   </div>
@@ -24,10 +24,10 @@
 
 <script setup>
 definePageMeta({
-  layout: "welcome",
+  layout: 'welcome'
 });
-import { ref, onMounted } from "vue";
-import { db } from "../../../firebase/config";
+import { ref, onMounted } from 'vue';
+import { db } from '../../../firebase/config';
 import {
   collection,
   query,
@@ -35,38 +35,38 @@ import {
   getDocs,
   updateDoc,
   setDoc,
-  doc,
-} from "firebase/firestore";
-import {useToast} from "vue-toastification";
+  doc
+} from 'firebase/firestore';
+import { useToast } from 'vue-toastification';
 const toast = useToast();
 const { user, profile } = useUser();
 
-const teamName = ref("");
-const error = ref("");
+const teamName = ref('');
+const error = ref('');
 const isLoading = ref(false);
 function generateTeamCode() {
   const numbers = Math.floor(100000 + Math.random() * 900000);
   return `${numbers}`;
 }
 async function handleCreateTeam() {
-  error.value = "";
+  error.value = '';
   if (!teamName.value.trim()) {
-    error.value = "Enter a team name first";
+    error.value = 'Enter a team name first';
     return;
   }
 
   isLoading.value = true;
 
   try {
-    const teamRef = doc(collection(db, "teams"));
+    const teamRef = doc(collection(db, 'teams'));
     const existingTeamQuery = query(
-      collection(db, "teams"),
-      where("name", "==", teamName.value.trim())
+      collection(db, 'teams'),
+      where('name', '==', teamName.value.trim())
     );
     const existingTeamSnapshot = await getDocs(existingTeamQuery);
     if (!existingTeamSnapshot.empty) {
       // console.log("Team already exist");
-      error.value = "Team name already exists, try another name.";
+      error.value = 'Team name already exists, try another name.';
       return;
     }
     // console.log("Creating Team...");
@@ -76,35 +76,35 @@ async function handleCreateTeam() {
       count: 1,
       managerId: user.value.uid,
       joinCode: code,
-      createdAt: Date.now(),
+      createdAt: Date.now()
     });
 
-    await updateDoc(doc(db, "profiles", user.value.uid), {
-      role: "Manager",
+    await updateDoc(doc(db, 'profiles', user.value.uid), {
+      role: 'Manager',
       teamId: teamRef.id,
       teamName: teamName.value.trim(),
-      updatedAt: Date.now(),
+      updatedAt: Date.now()
     });
 
     profile.value = {
       ...profile.value,
-      role: "Manager",
+      role: 'Manager',
       teamId: teamRef.id,
-      teamName: teamName.value.trim(),
+      teamName: teamName.value.trim()
     };
     // console.log("Team Created");
     toast.success(`Team ${teamName.value.trim()} created successfully `);
-    navigateTo("/");
+    navigateTo('/');
   } catch (err) {
-    console.error("Failed to create Team", err);
-    error.value = err?.message || "Failed to create team.";
+    console.error('Failed to create Team', err);
+    error.value = err?.message || 'Failed to create team.';
   } finally {
     isLoading.value = false;
   }
 }
 onMounted(() => {
   if (profile.value?.teamId) {
-    navigateTo("/");
+    navigateTo('/');
   }
 });
 </script>
@@ -115,66 +115,69 @@ onMounted(() => {
   display: grid;
   align-items: center;
   justify-items: center;
+  padding: var(--space-5);
 }
 .welcome-grid {
-  width: 500px;
+  width: min(520px, 100%);
   margin: 0 auto;
   padding: 40px;
-  background: #fff8ef;
-  border: 1px solid rgb(253, 180, 180);
-  border-radius: 20px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .back-btn {
   cursor: pointer;
-  color: grey;
+  color: var(--color-text-muted);
   font-weight: 600;
+  margin-bottom: var(--space-3);
 }
 .back-btn:hover {
   font-weight: 700;
-  color: rgb(93, 93, 93);
+  color: var(--color-text);
   text-decoration: underline;
 }
 
-.field-input{
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #b9aa96;
-    background: #ffffff;
-    font-size: 14px;
-    box-sizing: border-box;
-    margin-bottom: 16px;
-
+.field-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
 }
-.field-label{
-  font-size:16px;
-  font-weight:700;
-  color: #1a1918;
-  margin-bottom:16px;
+.field-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 16px;
 }
-.create-btn{
-  width:100%;
-  border-radius:12px;
-  padding:12px;
-  background-color:#019323;
-  font-size:16px;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
-
-.create-btn:hover{
-  opacity:0.80;
+.create-btn {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background-color: var(--color-primary);
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-base);
 }
 
-.create-btn:disabled{
-  opacity:0.40;
-  cursor:not-allowed;
+.create-btn:hover {
+  background-color: var(--color-primary-strong);
 }
 
-.error{
+.create-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.error {
   color: #b00020;
   font-size: 14px;
   margin-top: 8px;
@@ -182,33 +185,33 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .welcome-page {
-    padding:20px;
+    padding: 20px;
   }
   .welcome-grid {
-    width:100%;
-    max-width:100%;
-     padding:20px;
-    border-radius:15px;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 15px;
   }
   .back-btn {
-    font-size:14px;
-    margin-bottom:15px;
+    font-size: 14px;
+    margin-bottom: 15px;
   }
   .field-label {
-    font-size:16px;
-    margin-bottom:12px;
+    font-size: 16px;
+    margin-bottom: 12px;
   }
   .field-input {
-    padding:10px;
-    font-size:14px;
-  margin-bottom:12px;
+    padding: 10px;
+    font-size: 14px;
+    margin-bottom: 12px;
   }
   .create-btn {
-    padding:10px;
-    font-size:14px;
+    padding: 10px;
+    font-size: 14px;
   }
   .error {
-     font-size:12px;
+    font-size: 12px;
   }
 }
 </style>

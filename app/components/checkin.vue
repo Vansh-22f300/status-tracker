@@ -2,59 +2,58 @@
   <div class="checkin">
     <div class="header">
       <div class="header-label">Today's check-ins</div>
-      <div class="header-count">{{users.length }} </div>
+      <div class="header-count">{{ users.length }}</div>
     </div>
     <div class="feed" v-if="users.length">
       <div class="feed-item" v-for="user in users" :key="user.name">
-        <div class="profile-pic">{{ getInitials(user.name) }}</div>
+        <div class="profile-pic ui-avatar">{{ getInitials(user.name) }}</div>
         <div class="feed-item-info">
           <div class="feed-item-name">{{ user.name }}</div>
           <div class="feed-item-msg">{{ user.msg }}</div>
         </div>
         <div class="feed-item-right">
-          <div class="checkin-time" >{{ user.time }}</div>
+          <div class="checkin-time">{{ user.time }}</div>
           <div
-            class="status-badge"
-            :class="`tag-${user.status.toLowerCase()}`">
+            class="status-badge ui-chip"
+            :class="`tag-${user.status.toLowerCase()}`"
+          >
             {{ user.statusCode }}
           </div>
         </div>
       </div>
     </div>
-        <div class="empty-title" v-else>No check-in recorded for Today.</div>
-
+    <div class="empty-title" v-else>No check-in recorded for Today.</div>
   </div>
 </template>
 
 <script setup>
-
-import { ref, onMounted } from "vue";
-import { db } from "../../firebase/config";
-import { collection, getDocs,query,where } from "firebase/firestore";
-import { onSnapshot } from "firebase/firestore";
+import { ref, onMounted } from 'vue';
+import { db } from '../../firebase/config';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 const users = ref([]);
 const { profile, user } = useUser();
 
 const { getInitials } = useInitials();
 
-function formatTime(timestamp,status) {
-    if (status === "leave") return;
+function formatTime(timestamp, status) {
+  if (status === 'leave') return;
 
-  return new Date(timestamp).toLocaleTimeString("en-IN", {
-    hour: "numeric",
-    minute: "numeric",
+  return new Date(timestamp).toLocaleTimeString('en-IN', {
+    hour: 'numeric',
+    minute: 'numeric'
   });
 }
 
 function formatStatus(status) {
-  if(status==="wfh") return "🏠 WFH";
-  else if(status==="wfo") return "🏢 Office";
-  return "🏝️ Leave";
+  if (status === 'wfh') return '🏠 WFH';
+  else if (status === 'wfo') return '🏢 Office';
+  return '🏝️ Leave';
 }
 function formatMessage(status) {
-  if(status==="wfh") return "Available Work from Home";
-  else if(status==="wfo") return" Available at Office";
-  return "On Leave";
+  if (status === 'wfh') return 'Available Work from Home';
+  else if (status === 'wfo') return ' Available at Office';
+  return 'On Leave';
 }
 
 function isToday(timestamp) {
@@ -65,105 +64,101 @@ function isToday(timestamp) {
 function fetchUsers() {
   const querySnapshot = onSnapshot(
     query(
-      collection(db, "status"),
-      where("teamId", "==", profile.value.teamId)
+      collection(db, 'status'),
+      where('teamId', '==', profile.value.teamId)
     ),
     (snapshot) => {
       users.value = snapshot.docs
-        .map(doc => ({
+        .map((doc) => ({
           id: doc.id,
           ...doc.data()
         }))
-    .filter(user=>isToday(user.timestamp))
-    .sort((a, b) => b.timestamp - a.timestamp)  
-    .map(user=>({
-      ...user,
-      time:formatTime(user.timestamp,user.status),
-      msg:formatMessage(user.status),
-      statusCode:formatStatus(user.status),
-    }))
-  });
+        .filter((user) => isToday(user.timestamp))
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .map((user) => ({
+          ...user,
+          time: formatTime(user.timestamp, user.status),
+          msg: formatMessage(user.status),
+          statusCode: formatStatus(user.status)
+        }));
+    }
+  );
 }
 
-
-import { watch } from "vue"  
+import { watch } from 'vue';
 
 onMounted(() => {
   if (profile.value?.teamId) {
-    fetchUsers()  
-  } 
-  else {
-    const stop = watch(() => profile.value?.teamId, (teamId) => {
-      if (teamId) {
-        fetchUsers()
-        stop() 
+    fetchUsers();
+  } else {
+    const stop = watch(
+      () => profile.value?.teamId,
+      (teamId) => {
+        if (teamId) {
+          fetchUsers();
+          stop();
+        }
       }
-    })
+    );
   }
-})
-
+});
 
 // const { teamData } = useData();
 </script>
 
 <style scoped>
 .checkin {
-  padding: 35px;
+  padding: var(--space-7);
 }
 .header {
   display: flex;
-  /* justify-content: space-between; */
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 
 .header-label {
-  font-size: 10px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 500;
-  color: #9c968c;
-  margin-right: 20px;
+  letter-spacing: 1.2px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-right: var(--space-5);
 }
 
 .header-count {
   font-size: 11px;
-  color: #9c968c;
-  background-color: rgb(231, 229, 225);
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
   padding: 5px 10px;
-  border-radius: 20px;
+  border-radius: 999px;
+  font-weight: 700;
 }
 .feed {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: var(--space-2);
 }
 .feed-item {
   display: flex;
-  /* justify-content: space-between; */
   align-items: center;
-  background-color: #fdfcfa;
+  background-color: var(--color-surface);
   padding: 15px;
-  border-radius: 12px 12px 5px 5px;
-  border: 1px solid rgb(220, 220, 220);
-
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    box-shadow var(--transition-base);
 }
-.feed-item:hover{
-  /* background-color:red; */
-    transform: translateY(5px);
-  transition: transform 0.2s ease;
+.feed-item:hover {
+  border-color: rgba(22, 35, 52, 0.16);
+  background-color: var(--color-bg-elevated);
+  box-shadow: var(--shadow-md);
 }
 
 .profile-pic {
-  width: 30px;
-  height: 30px;
-  color: #5a5450;
-  background-color: #e8e4dc;
-  font-size: 11px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin-right: 10px;
 }
 .feed-item-info {
@@ -173,13 +168,12 @@ onMounted(() => {
 }
 .feed-item-name {
   font-size: 15px;
-  font-weight: 400;
-  /* font-weight: bold; */
-  color: #1a1918;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .feed-item-msg {
-  color: #868584;
+  color: var(--color-text-muted);
   margin-top: 1px;
   font-size: 13px;
 }
@@ -190,36 +184,34 @@ onMounted(() => {
   gap: 5px;
 }
 .status-badge {
-  padding: 5px 10px;
-  border-radius: 5px;
   font-size: 11px;
 }
 .status-badge.tag-wfh {
-  background-color: #e8eef9;
-  color:#1a3b7a;
+  background-color: var(--color-wfh-bg);
+  color: var(--color-wfh-text);
 }
 .status-badge.tag-wfo {
-  background-color: #e8f4ed;
-  color:#1a6b40;
+  background-color: var(--color-wfo-bg);
+  color: var(--color-wfo-text);
 }
 .status-badge.tag-leave {
-  background-color: #fbeaea;
-  color: #7a1a1a;
+  background-color: var(--color-leave-bg);
+  color: var(--color-leave-text);
 }
 
 .checkin-time {
-  color: #868584;
+  color: var(--color-text-muted);
   font-size: 11px;
 }
 
-.empty-title{
+.empty-title {
   font-size: 16px;
-  color: grey;
+  color: var(--color-text-muted);
   text-align: center;
 }
-@media(max-width:768px){
+@media (max-width: 768px) {
   .checkin {
-    padding: 20px 15px;
+    padding: var(--space-5) var(--space-4);
   }
 
   .feed-item {

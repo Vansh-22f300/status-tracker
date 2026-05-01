@@ -2,7 +2,9 @@
   <div class="welcome-page">
     <div class="welcome-grid">
       <div class="header">
-        <h1 v-if="isLoaded">Welcome, {{ profile?.name || user?.displayName }}</h1>
+        <h1 v-if="isLoaded">
+          Welcome, {{ profile?.name || user?.displayName }}
+        </h1>
         <h1 v-else>Loading...</h1>
         <p>Let's get you set up.</p>
       </div>
@@ -27,24 +29,23 @@
 
 <script setup>
 definePageMeta({
-  layout: "welcome",
+  layout: 'welcome'
 });
-import { ref, onMounted } from "vue";
-import { db } from "../../../firebase/config";
-import { collection, getDocs } from "firebase/firestore";
+import { ref, onMounted } from 'vue';
+import { db } from '../../../firebase/config';
+import { collection, getDocs } from 'firebase/firestore';
 
 const { getInitials } = useInitials();
 
-const { user, profile , isLoaded } = useUser();
+const { user, profile, isLoaded } = useUser();
 
-const error = ref("");
+const error = ref('');
 
 onMounted(() => {
   if (profile.value?.teamId) {
-    navigateTo("/");
+    navigateTo('/');
   }
 });
-
 </script>
 
 <style scoped>
@@ -53,44 +54,49 @@ onMounted(() => {
   display: grid;
   align-items: center;
   justify-items: center;
+  padding: var(--space-5);
 }
 .welcome-grid {
-  width: 500px;
+  width: min(560px, 100%);
   margin: 0 auto;
   padding: 40px;
-  background: #fff8ef;
-  border: 1px solid rgb(253, 180, 180);
-  border-radius: 20px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 .header {
   text-align: center;
   margin-bottom: 40px;
 }
 .header h1 {
-  font-size: 32px;
+  font-size: 34px;
   margin-bottom: 8px;
+  color: var(--color-text);
 }
 .header p {
   font-size: 16px;
-  color: #5c5750;
+  color: var(--color-text-muted);
 }
 .list {
   display: flex;
   gap: 20px;
 }
 .card {
-  background-color: #fdfcfa;
-  border: 1px solid #f88a8a;
+  background-color: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
   text-align: center;
-  border-radius: 25px;
+  border-radius: var(--radius-md);
   flex: 1;
   padding: 30px;
   cursor: pointer;
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
 }
 .card:hover {
-  border-color: #019323;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  border-color: rgba(24, 125, 83, 0.35);
+  box-shadow: var(--shadow-sm);
 }
 .card-icon {
   font-size: 32px;
@@ -100,50 +106,51 @@ onMounted(() => {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 10px;
+  color: var(--color-text);
 }
 .card-subtitle {
-  color: #868584;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
 @media (max-width: 768px) {
   .welcome-page {
-    padding:20px;
+    padding: 20px;
   }
   .welcome-grid {
-    width:100%;
-    padding:25px;
-    border-radius:15px;
+    width: 100%;
+    padding: 25px;
+    border-radius: 15px;
   }
   .header {
     margin-bottom: 25px;
   }
   .header h1 {
-    font-size:24px;
-    margin-bottom:8px;
+    font-size: 24px;
+    margin-bottom: 8px;
   }
   .header p {
-    font-size:14px;
+    font-size: 14px;
   }
   .list {
-    flex-direction:column;
+    flex-direction: column;
 
-    gap:15px;
+    gap: 15px;
   }
   .card {
-    padding:20px;
-    border-radius:15px;
+    padding: 20px;
+    border-radius: 15px;
   }
   .card-icon {
-    font-size:28px;
-     margin-bottom:15px;
+    font-size: 28px;
+    margin-bottom: 15px;
   }
   .card-title {
-  font-size:18px;
-    margin-bottom:8px;
+    font-size: 18px;
+    margin-bottom: 8px;
   }
   .card-subtitle {
-    font-size:12px;
+    font-size: 12px;
   }
 }
 </style>

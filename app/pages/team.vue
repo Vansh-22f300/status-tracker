@@ -8,9 +8,13 @@
           <div class="team-sub">Share this code with team members to join:</div>
           <div class="code-row">
             <div class="join-code">{{ teamsData?.joinCode }}</div>
-            <div class="copy-btn" @click="copyCode">
-              {{ copied ? "Copied!" : "Copy" }}
-            </div>
+            <button
+              type="button"
+              class="copy-btn ui-btn ui-btn-secondary"
+              @click="copyCode"
+            >
+              {{ copied ? 'Copied!' : 'Copy' }}
+            </button>
           </div>
         </div>
 
@@ -29,9 +33,12 @@
 
       <div class="members-list">
         <div class="member-item" v-for="m in members" :key="m.id">
-          <div class="profile-pic">{{ getInitials(m?.name) }}</div>
+          <div class="profile-pic ui-avatar">{{ getInitials(m?.name) }}</div>
           <div class="member-info">
-            <div class="member-name">{{ m?.name }}</div>
+            <div class="member-name">
+              {{ m?.name }}
+              <span v-if="m.id === user?.uid" class="self-label">You</span>
+            </div>
             <div class="member-email">{{ m?.email }}</div>
           </div>
 
@@ -39,19 +46,19 @@
             class="member-role"
             :class="{
               member: m?.role?.toLowerCase() === 'member',
-              manager: m?.role?.toLowerCase() === 'manager',
+              manager: m?.role?.toLowerCase() === 'manager'
             }"
           >
             {{ m?.role }}
           </div>
           <div
-            class="status-text"
+            class="status-text ui-chip"
             :class="{
               'no-checkin': !m.status,
-              [`tag-${m.status}`]: !!m.status,
+              [`tag-${m.status}`]: !!m.status
             }"
           >
-            {{ m.status ? formatStatus(m.status) : "No Check-in" }}
+            {{ m.status ? formatStatus(m.status) : 'No Check-in' }}
           </div>
 
           <div class="status">
@@ -68,13 +75,19 @@
           </div>
 
           <div class="remove">
-            <button class="you" v-if="m.id == user?.uid">You</button>
+            <span
+              v-if="m.id == user?.uid"
+              class="self-indicator"
+              title="Your account"
+              >-</span
+            >
             <button
               class="remove-btn"
               v-if="m.id !== user?.uid"
               @click="handleRemove(m)"
+              aria-label="Remove member"
             >
-              ❌
+              <span aria-hidden="true">×</span>
             </button>
           </div>
         </div>
@@ -119,8 +132,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { db } from "../../firebase/config";
+import { ref, onMounted } from 'vue';
+import { db } from '../../firebase/config';
 import {
   doc,
   getDoc,
@@ -131,11 +144,11 @@ import {
   getDocs,
   updateDoc,
   increment,
-  onSnapshot,
-} from "firebase/firestore";
+  onSnapshot
+} from 'firebase/firestore';
 
-definePageMeta({ middleware: ["auth", "manager"] });
-import {useToast} from "vue-toastification";
+definePageMeta({ middleware: ['auth', 'manager'] });
+import { useToast } from 'vue-toastification';
 const toast = useToast();
 const { user, profile } = useUser();
 const { getInitials } = useInitials();
@@ -146,52 +159,51 @@ const copied = ref(false);
 const statusConfirm = ref(null);
 const removeMember = ref(null);
 
-const statusMap     = ref({})     
+const statusMap = ref({});
 
-let stopStatusListener  = null
-let stopMembersListener = null
-let stopTeamListener    = null
+let stopStatusListener = null;
+let stopMembersListener = null;
+let stopTeamListener = null;
 
 async function fetchData() {
-  const teamId = profile.value.teamId
-  const today  = todayKey()
+  const teamId = profile.value.teamId;
+  const today = todayKey();
 
-  stopTeamListener = onSnapshot(doc(db, "teams", teamId), (snap) => {
-    teamsData.value = snap.data()
-  })
+  stopTeamListener = onSnapshot(doc(db, 'teams', teamId), (snap) => {
+    teamsData.value = snap.data();
+  });
 
   stopStatusListener = onSnapshot(
-    query(collection(db, "status"), where("teamId", "==", teamId)),
+    query(collection(db, 'status'), where('teamId', '==', teamId)),
     (snapshot) => {
-      const map = {}
-      snapshot.docs.forEach(d => {
-        const data = d.data()
-        const date = new Date(data.timestamp).toLocaleDateString("en-CA")
-        if (date === today) map[data.uid] = data.status
-      })
-      statusMap.value = map
+      const map = {};
+      snapshot.docs.forEach((d) => {
+        const data = d.data();
+        const date = new Date(data.timestamp).toLocaleDateString('en-CA');
+        if (date === today) map[data.uid] = data.status;
+      });
+      statusMap.value = map;
 
       if (members.value.length) {
-        members.value = members.value.map(m => ({
+        members.value = members.value.map((m) => ({
           ...m,
           status: map[m.id] || null
-        }))
+        }));
       }
     }
-  )
+  );
 
   stopMembersListener = onSnapshot(
-    query(collection(db, "profiles"), where("teamId", "==", teamId)),
+    query(collection(db, 'profiles'), where('teamId', '==', teamId)),
     (snapshot) => {
-      members.value = snapshot.docs.map(d => ({
+      members.value = snapshot.docs.map((d) => ({
         id: d.id,
         ...d.data(),
         status: statusMap.value[d.id] || null
-      }))
+      }));
     }
-  )
+  );
 }
-
 
 function handleStatusChange(member, newStatus) {
   if (!newStatus) return;
@@ -200,19 +212,19 @@ function handleStatusChange(member, newStatus) {
 
 async function confirmStatusChange() {
   const { member, newStatus } = statusConfirm.value;
-  const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
+  const statusRef = doc(db, 'status', `${member.id}_${todayKey()}`);
   await setDoc(statusRef, {
     uid: member.id,
     name: member.name,
     email: member.email,
     status: newStatus,
     teamId: profile.value.teamId,
-    timestamp: Date.now(),
+    timestamp: Date.now()
   });
   // console.log("Status updated");
   member.status = newStatus;
   handlewebhook();
-  toast.success(`${member.name}'s status updated `)
+  toast.success(`${member.name}'s status updated `);
 
   statusConfirm.value = null;
 }
@@ -226,22 +238,22 @@ function handleRemove(member) {
 
 async function confirmRemove() {
   const member = removeMember.value;
-  const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
+  const statusRef = doc(db, 'status', `${member.id}_${todayKey()}`);
 
-  await updateDoc(doc(db, "profiles", member.id), {
+  await updateDoc(doc(db, 'profiles', member.id), {
     teamId: null,
     teamName: null,
-    role: null,
+    role: null
   });
 
-  await updateDoc(doc(db, "teams", profile.value.teamId), {
-    count: increment(-1),
+  await updateDoc(doc(db, 'teams', profile.value.teamId), {
+    count: increment(-1)
   });
 
   const statusSnap = await getDoc(statusRef);
   if (statusSnap.exists()) {
     await updateDoc(statusRef, {
-      teamId: null,
+      teamId: null
     });
   }
 
@@ -251,17 +263,17 @@ async function confirmRemove() {
 }
 
 function todayKey() {
-  return new Date().toLocaleDateString("en-CA");
+  return new Date().toLocaleDateString('en-CA');
 }
 function formatStatus(status) {
-  if (status === "wfh") return "🏠 WFH";
-  else if (status === "wfo") return "🏢 Office";
-  return "🏝️ Leave";
+  if (status === 'wfh') return '🏠 WFH';
+  else if (status === 'wfo') return '🏢 Office';
+  return '🏝️ Leave';
 }
-function formatStatusflow(status){
-  if (status === "wfh") return "Work From Home";
-  else if (status === "wfo") return "In Office";
-  return "On Leave";
+function formatStatusflow(status) {
+  if (status === 'wfh') return 'Work From Home';
+  else if (status === 'wfo') return 'In Office';
+  return 'On Leave';
 }
 function copyCode() {
   navigator.clipboard.writeText(teamsData.value.joinCode);
@@ -269,34 +281,34 @@ function copyCode() {
 }
 async function handlewebhook() {
   try {
-    await $fetch("/api/update", {
-      method: "POST",
+    await $fetch('/api/update', {
+      method: 'POST',
       body: {
         status: formatStatusflow(statusConfirm.value.newStatus),
         name: statusConfirm.value.member.name,
         time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      },
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }
     });
     // console.log("sent to google chat space");
   } catch (err) {
-    console.log("webhook failed", err);
+    console.log('webhook failed', err);
   }
 }
 onMounted(fetchData);
 
 onUnmounted(() => {
-  if (typeof stopStatusListener === "function") stopStatusListener();
-  if (typeof stopMembersListener === "function") stopMembersListener();
-  if (typeof stopTeamListener === "function") stopTeamListener();
+  if (typeof stopStatusListener === 'function') stopStatusListener();
+  if (typeof stopMembersListener === 'function') stopMembersListener();
+  if (typeof stopTeamListener === 'function') stopTeamListener();
 });
 </script>
 
 <style scoped>
 .team-page {
-  padding: 30px;
+  padding: var(--space-7);
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -311,40 +323,53 @@ onUnmounted(() => {
   align-items: center;
 }
 .header-label {
-  color: grey;
+  color: var(--color-text-muted);
   font-size: 11px;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   margin: 0;
   text-transform: uppercase;
   margin-right: 20px;
+  font-weight: 600;
 }
 .header-count {
   font-size: 11px;
-  color: grey;
-  background-color: rgb(231, 229, 225);
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
   padding: 5px 10px;
-  border-radius: 20px;
+  border-radius: 999px;
+  font-weight: 700;
 }
 
 .team-card {
-  background-color: #fdfcfa;
-  border-radius: 14px;
-  border: 1px solid rgb(220, 220, 220);
-  padding: 24px;
+  background: linear-gradient(145deg, #ffffff 0%, #f7fbff 100%);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  padding: 28px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
+  gap: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.card-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
 }
 .team-name {
   font-size: 32px;
-  font-weight: bold;
-  color: #1a1918;
-  margin-bottom: 5px;
+  font-weight: 800;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  margin-bottom: 8px;
+  line-height: 1.05;
 }
 .team-sub {
   font-size: 12px;
-  color: grey;
-  margin-bottom: 16px;
+  color: var(--color-text-muted);
+  margin-bottom: 18px;
 }
 .code-row {
   display: flex;
@@ -353,48 +378,65 @@ onUnmounted(() => {
 }
 
 .join-code {
-  background-color: #e8f4ed;
+  background-color: var(--color-primary-soft);
   font-size: 22px;
   font-weight: bold;
-  padding: 10px 16px;
+  padding: 12px 18px;
   border-radius: 12px;
-  color: green;
-  letter-spacing: 3px;
+  color: var(--color-primary-strong);
+  border: 1px dashed rgba(24, 125, 83, 0.4);
+  letter-spacing: 4px;
 }
 .copy-btn {
-  background-color: black;
-  color: white;
-  padding: 8px 16px;
+  min-width: 86px;
   font-size: 12px;
-  border-radius: 8px;
-  cursor: pointer;
+  font-weight: 700;
+  background: var(--color-surface-soft);
+  border-color: var(--color-border-strong);
+  transition: none !important;
 }
 .copy-btn:hover {
-  opacity: 0.8;
+  background: #e7eef6;
+  border-color: var(--color-border-strong);
+  transform: none !important;
+}
+.copy-btn:focus-visible {
+  transform: none;
 }
 
 .card-right {
+  min-width: 156px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
   text-align: center;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .team-length {
-  font-size: 42px;
-  font-weight: bold;
-  color: #1a1918;
-
+  font-size: 50px;
+  font-weight: 800;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  line-height: 1;
 }
 
 .team-length-label {
-  font-size: 12px;
-  color: grey;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 8px;
 }
 
 .members-list {
   display: flex;
   flex-direction: column;
-  background-color: #fdfcfa;
-  border-radius: 14px;
-  border: 1px solid rgb(220, 220, 220);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 .member-item {
   display: flex;
@@ -403,19 +445,16 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  border-bottom: 1px solid rgb(220, 220, 220);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--transition-base);
+}
+.member-item:hover {
+  background: var(--color-bg-elevated);
 }
 .profile-pic {
   width: 34px;
   height: 34px;
-  border-radius: 50%;
-  background-color: #e8e4dc;
-  color: #5a5450;
-  display: flex;
   font-size: 12px;
-  font-weight: 500;
-  align-items: center;
-  justify-content: center;
 }
 
 .member-info {
@@ -423,28 +462,41 @@ onUnmounted(() => {
 }
 .member-name {
   font-size: 14px;
-  font-weight: 500;
-  color: #1a1918;
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.self-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+  background: var(--color-primary-soft);
+  border: 1px solid rgba(24, 125, 83, 0.2);
+  border-radius: 999px;
+  padding: 2px 8px;
 }
 
 .member-email {
   font-size: 12px;
-  color: #868584;
+  color: var(--color-text-muted);
 }
 
 .member-role.member {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: #e8f5e9;
-  color: #2e8b57;
-  border-radius: 12px;
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  border-radius: 999px;
 }
 .member-role.manager {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: #abc4f0;
-  color: #1a3b7a;
-  border-radius: 12px;
+  background-color: var(--color-wfh-bg);
+  color: var(--color-wfh-text);
+  border-radius: 999px;
 }
 .status {
   display: flex;
@@ -454,75 +506,109 @@ onUnmounted(() => {
 .status-text {
   min-width: 120px;
   font-size: 13px;
-  border-radius: 12px;
   text-align: center;
-  padding: 5px;
+  justify-content: center;
 }
 
 .status-text.tag-wfh {
-  background-color: #e8eef9;
-  color: #1a3b7a;
+  background-color: var(--color-wfh-bg);
+  color: var(--color-wfh-text);
 }
 .status-text.tag-wfo {
-  background-color: #e8f4ed;
-  color: #1a6b40;
+  background-color: var(--color-wfo-bg);
+  color: var(--color-wfo-text);
 }
 .status-text.tag-leave {
-  background-color: #fbeaea;
-  color: #7a1a1a;
+  background-color: var(--color-leave-bg);
+  color: var(--color-leave-text);
 }
 .status-text.no-checkin {
-  background-color: #ffebcc;
-  color: #ff6c86;
+  background-color: var(--color-none-bg);
+  color: var(--color-none-text);
 }
 .select-status {
   padding: 6px 10px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  background-color: white;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
   cursor: pointer;
 }
-.you {
-  background: none;
-  border: none;
+.select-status:focus-visible {
+  outline-color: rgba(30, 155, 102, 0.24);
+}
+.remove {
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.self-indicator {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
+  color: var(--color-text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 700;
   cursor: default;
-  font-size: 13px;
 }
 .remove-btn {
-  background: none;
-  border: none;
-  font-size: 16px;
+  background: var(--color-danger-soft);
+  border: 1px solid rgba(200, 61, 54, 0.25);
+  color: var(--color-danger);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
   cursor: pointer;
+  transition: all var(--transition-base);
+}
+.remove-btn span {
+  font-size: 24px;
+  transform: translateY(-1px);
 }
 .remove-btn:hover {
-  transform: translateY(2px);
+  background: #f8dddb;
 }
 .modal {
-  position:fixed;
-  display:flex;
-  inset:0;
-  align-items:center;
-  justify-content:center;
-  z-index:100;
-  background:rgba(240, 239, 239, 0.5);
+  position: fixed;
+  display: flex;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  background: rgba(14, 24, 39, 0.35);
+  backdrop-filter: blur(3px);
 }
 .modal-content {
-  background-color: rgb(255, 245, 245);
-  border-radius:16px;
-  padding:24px;
-  border:1px solid rgb(206, 200, 200);
-  text-align:center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  max-width: 480px;
 }
 .modal-title {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
-  color: #1a1918;
+  color: var(--color-text);
+  font-family: var(--font-display);
   margin-bottom: 8px;
 }
 .modal-sub {
   font-size: 16px;
-  color: #868584;
+  color: var(--color-text-muted);
   font-weight: 500;
   margin-bottom: 24px;
 }
@@ -533,27 +619,24 @@ onUnmounted(() => {
 }
 .modal-confirm {
   padding: 8px 16px;
-  background-color: #00c147;
+  background-color: var(--color-primary);
   color: white;
-  border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 .modal-confirm:hover {
-  background-color: #019323;
-  transform: translateY(2px);
+  background-color: var(--color-primary-strong);
 }
 .modal-cancel {
   padding: 8px 16px;
-  background-color: rgb(255, 255, 255);
-  border: 1px solid #878787;
-  border-radius: 8px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
   font-weight: 600;
   cursor: pointer;
 }
 .modal-cancel:hover {
-  background-color: #cbc9c5;
-  transform: translateY(2px);
+  background-color: var(--color-surface-soft);
 }
 
 @media (max-width: 768px) {
@@ -563,8 +646,10 @@ onUnmounted(() => {
   }
 
   .team-card {
-    align-items: flex-start;
+    align-items: stretch;
+    flex-direction: column;
     gap: 16px;
+    padding: 20px;
   }
 
   .team-name {
@@ -577,10 +662,10 @@ onUnmounted(() => {
   }
 
   .card-right {
-    display: flex;
-    flex-direction: column;
+    width: 100%;
     align-items: center;
     gap: 8px;
+    padding: 14px;
   }
 
   .team-length {
@@ -593,19 +678,19 @@ onUnmounted(() => {
     padding: 12px;
   }
   .member-email {
-    display:none;
+    display: none;
   }
   .modal-content {
-    margin:16px;
-    padding:20px;
+    margin: 16px;
+    padding: 20px;
   }
 
   .modal-title {
-    font-size:22px;
+    font-size: 22px;
   }
 
   .modal-sub {
-    font-size:14px;
+    font-size: 14px;
   }
 }
 </style>
