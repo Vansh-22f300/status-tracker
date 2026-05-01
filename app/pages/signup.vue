@@ -119,26 +119,24 @@ const handleSignup = async () => {
   } catch (err) {
     console.log('signup failed', err);
 
-    if (err.code === 'auth/email-already-in-use') {
-      try {
-        const result = await signInWithPopup(auth, provider);
+    if (err.code === "auth/email-already-in-use") {
+      const { fetchSignInMethodsForEmail } = await import("firebase/auth");
+      const methods = await fetchSignInMethodsForEmail(
+        auth,
+        email.value.trim(),
+      );
 
-        const credential = EmailAuthProvider.credential(
-          email.value.trim(),
-          password.value
-        );
-
-        await linkWithCredential(result.user, credential);
-
-        // console.log("Google + Email linked");
-
-        navigateTo('/welcome');
-      } catch (linkErr) {
-        // console.error("Link failed:", linkErr);
+      if (methods.includes("google.com")) {
         error.value =
-          'This email is linked with Google. Please login with Google.';
+          "This email is already linked with Google Sign-In. Please use the Google button to login.";
+      } else {
+        error.value =
+          "An account with this email already exists. Try logging in instead.";
       }
-
+      return;
+    }
+    if(err.code==="auth/password-does-not-meet-requirements"){
+      error.value = "Password must contain at least 6 characters, a lower case character, a upper case character, and a special character.";
       return;
     }
 

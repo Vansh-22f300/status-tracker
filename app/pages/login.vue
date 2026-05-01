@@ -107,8 +107,11 @@ const handleEmailLogin = async () => {
     // <!-- navigateTo("/"); -->
     // console.log("login succesfull", userCreds.user);
   } catch (err) {
-    successMessage.value = '';
-    error.value = err.message;
+    if(err.code==='auth/invalid-credential'){
+      error.value = 'Invalid email or password.';
+    } else {
+      error.value = err.message;
+    }
     // console.error("login failed", err);
   } finally {
     isLoading.value = false;
@@ -194,8 +197,8 @@ const handleGoogleLogin = async () => {
   position: relative;
   overflow: hidden;
 }
-.gsi-material-button:hover {
-}
+/* .gsi-material-button:hover {
+} */
 .gsi-material-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
