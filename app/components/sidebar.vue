@@ -29,6 +29,9 @@
       <NuxtLink to="/" class="navigation-tile" @click="sidebarClose()">
         <span class="navigation-icon">◈</span>Today</NuxtLink
       >
+      <NuxtLink to="/reports" class="navigation-tile" @click="sidebarClose()">
+        <span class="navigation-icon">▤</span>Reports</NuxtLink
+      >
       <NuxtLink
         to="/team"
         class="navigation-tile"
