@@ -85,8 +85,10 @@ const { user } = useUser();
 const { getInitials } = useInitials();
 
 const presets = [
-  { id: 'this_week', label: 'This Week' },
-  { id: 'last_week', label: 'Last Week' }
+{ id: 'this_week', label: 'This Week' },
+{ id: 'last_week', label: 'Last Week' },
+{ id: 'this_month', label: 'This Month' },
+{ id: 'last_month', label: 'Last Month' }
 ];
 
 const selectedPreset = ref('this_week');
@@ -112,27 +114,67 @@ function startOfIsoWeek(date) {
   start.setDate(start.getDate() + shiftToMonday);
   return start;
 }
+function getPresetRange(presetId) {
+  const now = new Date()
+  if (presetId === 'this_week') {
+    const start = startOfIsoWeek(now)
 
-function getWeekRange(presetId) {
-  const now = new Date();
-  const weekStart = startOfIsoWeek(now);
+    const end = new Date(start)
+    end.setDate(end.getDate() + 4)
+    end.setHours(23, 59, 59, 999)
 
-  if (presetId === 'last_week') {
-    weekStart.setDate(weekStart.getDate() - 7);
+    return {
+      start: start.getTime(),
+      end: end.getTime()
+    }
   }
 
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekEnd.getDate() + 4);
-  weekEnd.setHours(23, 59, 59, 999);
+  if (presetId === 'last_week') {
+    const start = startOfIsoWeek(now)
+    start.setDate(start.getDate() - 7)
+
+    const end = new Date(start)
+    end.setDate(end.getDate() + 4)
+    end.setHours(23, 59, 59, 999)
+
+    return {
+      start: start.getTime(),
+      end: end.getTime()
+    }
+  }
+
+  if (presetId === 'this_month') {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1)
+
+    const end = new Date()
+    end.setHours(23, 59, 59, 999)
+
+    return {
+      start: start.getTime(),
+      end: end.getTime()
+    }
+  }
+
+  if (presetId === 'last_month') {
+    const start = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+
+    const end = new Date(now.getFullYear(), now.getMonth(), 0)
+    end.setHours(23, 59, 59, 999)
+
+    return {
+      start: start.getTime(),
+      end: end.getTime()
+    }
+  }
 
   return {
-    start: weekStart.getTime(),
-    end: weekEnd.getTime()
-  };
+    start: 0,
+    end: Date.now()
+  }
 }
 
 const filteredRecords = computed(() => {
-  const { start, end } = getWeekRange(selectedPreset.value);
+  const { start, end } = getPresetRange(selectedPreset.value);
   return allRecords.value
     .filter((item) => item.timestamp >= start && item.timestamp <= end)
     .sort((a, b) => b.timestamp - a.timestamp);
@@ -249,9 +291,13 @@ watch(
 }
 
 .preset-btn.active {
-  background: rgba(30, 155, 102, 0.18);
+  /* background: rgba(30, 155, 102, 0.18);
   border-color: rgba(30, 155, 102, 0.35);
-  color: var(--color-primary-strong);
+  color: var(--color-primary-strong); */
+  background:rgb(0, 0, 0);
+  border-color: rgba(30, 155, 102, 0.35);
+  color:var(--color-surface);
+
 }
 
 .summary-grid {
