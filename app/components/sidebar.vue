@@ -155,6 +155,9 @@ onUnmounted(() => {
   padding: 30px;
   height: 100%;
   border-right: 1px solid var(--color-sidebar-border);
+  display: flex;                /* ← add */
+  flex-direction: column;       /* ← add */
+  overflow: hidden;   
 }
 .sidebar-title {
   color: var(--color-sidebar-text);
@@ -243,6 +246,9 @@ onUnmounted(() => {
 }
 .sidebar-bottom {
   margin-top: 30px;
+  display: flex;                /* ← add */
+  flex-direction: column;       /* ← add */
+  overflow: hidden;   
 }
 
 .sidebar-bottom-title {
@@ -255,6 +261,13 @@ onUnmounted(() => {
 .sidebar-bottom-list {
   display: flex;
   flex-direction: column;
+  flex: 1;                      /* ← add */
+  overflow: hidden;             /* ← add */
+  display: flex;                /* ← add */
+  flex-direction: column;   
+}
+.sidebar-bottom-list::-webkit-scrollbar {
+  display: none;                /* ← add */
 }
 .sidebar-bottom-item {
   display: flex;
