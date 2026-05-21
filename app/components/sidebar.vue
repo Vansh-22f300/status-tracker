@@ -261,10 +261,9 @@ onUnmounted(() => {
 .sidebar-bottom-list {
   display: flex;
   flex-direction: column;
-  flex: 1;                      /* ← add */
-  overflow: hidden;             /* ← add */
-  display: flex;                /* ← add */
-  flex-direction: column;   
+  max-height: 250px;        /* ← fixed height forces scroll */
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 .sidebar-bottom-list::-webkit-scrollbar {
   display: none;                /* ← add */
