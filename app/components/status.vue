@@ -8,7 +8,6 @@
           selected_office: selectedstatus == 'wfo'
         }"
         @click="selectstatus('wfo')"
-        @touchstart.prevent="selectstatus('wfo')"
       >
         <div class="card-icon">🏢</div>
         <div class="card-name">In Office</div>
@@ -20,7 +19,6 @@
           selected_home: selectedstatus == 'wfh'
         }"
         @click="selectstatus('wfh')"
-        @touchstart.prevent="selectstatus('wfh')"
       >
         <div class="card-icon">🏠</div>
         <div class="card-name">Work From Home</div>
@@ -32,7 +30,6 @@
           selected_leave: selectedstatus == 'leave'
         }"
         @click="selectstatus('leave')"
-        @touchstart.prevent="selectstatus('leave')"
       >
         <div class="card-icon">🏝️</div>
         <div class="card-name">On Leave</div>
@@ -200,6 +197,7 @@ onUnmounted(() => {
   flex: 1;
   padding: 28px;
   cursor: pointer;
+  /* touch-action: manipulation;  */
   transition:
     border-color var(--transition-base),
     box-shadow var(--transition-base),
