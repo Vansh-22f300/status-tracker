@@ -8,6 +8,7 @@
           selected_office: selectedstatus == 'wfo'
         }"
         @click="selectstatus('wfo')"
+        @touchstart.prevent="selectstatus('wfo')"
       >
         <div class="card-icon">🏢</div>
         <div class="card-name">In Office</div>
@@ -19,6 +20,7 @@
           selected_home: selectedstatus == 'wfh'
         }"
         @click="selectstatus('wfh')"
+        @touchstart.prevent="selectstatus('wfh')"
       >
         <div class="card-icon">🏠</div>
         <div class="card-name">Work From Home</div>
@@ -30,6 +32,7 @@
           selected_leave: selectedstatus == 'leave'
         }"
         @click="selectstatus('leave')"
+        @touchstart.prevent="selectstatus('leave')"
       >
         <div class="card-icon">🏝️</div>
         <div class="card-name">On Leave</div>
@@ -60,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref,nextTick, onMounted, onUnmounted } from 'vue';
 const { user, profile } = useUser();
 const selectedstatus = ref(null);
 const time = ref('');
@@ -85,7 +88,11 @@ const message = () => {
   else if (selectedstatus.value === 'leave') return 'On Leave';
 };
 function selectstatus(status) {
-  selectedstatus.value = status;
+  if (selectedstatus.value === status) return 
+  selectedstatus.value = null;
+  nextTick(() => {
+    selectedstatus.value = status    // set after DOM clears
+  })
 }
 async function submitStatus() {
   if (!selectedstatus.value) return;
@@ -198,11 +205,11 @@ onUnmounted(() => {
     box-shadow var(--transition-base),
     background-color var(--transition-base);
 }
-.card:hover {
+/* .card:hover {
   border-color: rgba(22, 35, 52, 0.18);
   background-color: var(--color-bg-elevated);
   box-shadow: var(--shadow-md);
-}
+} */
 .card-icon {
   width: 45px;
   font-size: 32px;
@@ -267,6 +274,7 @@ onUnmounted(() => {
   .card {
     padding: var(--space-5);
     text-align: center;
+    transition:none;
   }
   .card-icon {
     margin-bottom: 10px;
