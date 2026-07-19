@@ -26,6 +26,30 @@
     </div>
 
     <div class="section">
+      <div class="header-label">Notification Webhook</div>
+      <div class="webhook-card">
+        <input
+          type="url"
+          class="webhook-input"
+          v-model="webhookInput"
+          @input="onWebhookInput"
+          placeholder="https://chat.googleapis.com/v1/spaces/..."
+        />
+        <button
+          type="button"
+          class="ui-btn ui-btn-primary"
+          :disabled="webhookSaving"
+          @click="saveWebhook"
+        >
+          {{ webhookSaving ? 'Saving...' : 'Save' }}
+        </button>
+      </div>
+      <div class="webhook-hint">
+        Check-ins and status changes for this team are sent to this Google Chat webhook.
+      </div>
+    </div>
+
+    <div class="section">
       <div class="header">
         <div class="header-label">Team Members</div>
         <div class="header-count">{{ members.length }}</div>
@@ -132,7 +156,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { db } from '../../firebase/config';
 import {
   doc,
@@ -160,6 +184,37 @@ const statusConfirm = ref(null);
 const removeMember = ref(null);
 
 const statusMap = ref({});
+
+const webhookInput = ref('');
+const webhookDirty = ref(false);
+const webhookSaving = ref(false);
+
+watch(teamsData, (val) => {
+  if (val && !webhookDirty.value) {
+    webhookInput.value = val.webhookUrl || '';
+  }
+});
+
+function onWebhookInput() {
+  webhookDirty.value = true;
+}
+
+async function saveWebhook() {
+  if (!profile.value?.teamId) return;
+  webhookSaving.value = true;
+  try {
+    await updateDoc(doc(db, 'teams', profile.value.teamId), {
+      webhookUrl: webhookInput.value.trim()
+    });
+    webhookDirty.value = false;
+    toast.success('Webhook updated');
+  } catch (err) {
+    console.error('Failed to update webhook', err);
+    toast.error('Failed to update webhook');
+  } finally {
+    webhookSaving.value = false;
+  }
+}
 
 let stopStatusListener = null;
 let stopMembersListener = null;
@@ -289,7 +344,8 @@ async function handlewebhook() {
         time: new Date().toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit'
-        })
+        }),
+        teamId: profile.value.teamId
       }
     });
     // console.log("sent to google chat space");
@@ -428,6 +484,27 @@ onUnmounted(() => {
   font-size: 13px;
   color: var(--color-text-muted);
   margin-top: 8px;
+}
+
+.webhook-card {
+  display: flex;
+  gap: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.webhook-input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  font-size: 13px;
+}
+.webhook-hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
 }
 
 .members-list {

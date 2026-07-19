@@ -131,7 +131,8 @@ async function handlewebhook() {
       body: {
         status: statusValue[selectedstatus.value],
         name: profile.value?.name || user.value?.displayName || 'Unknown User',
-        time: time.value
+        time: time.value,
+        teamId: profile.value?.teamId
       }
     });
     console.log('sent to google chat space');

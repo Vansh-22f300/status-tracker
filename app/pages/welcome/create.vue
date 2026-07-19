@@ -76,6 +76,7 @@ async function handleCreateTeam() {
       count: 1,
       managerId: user.value.uid,
       joinCode: code,
+      webhookUrl: '',
       createdAt: Date.now()
     });
 
