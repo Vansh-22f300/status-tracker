@@ -13,7 +13,7 @@
               class="copy-btn ui-btn ui-btn-secondary"
               @click="copyCode"
             >
-              {{ copied ? 'Copied!' : 'Copy' }}
+              {{ copied ? "Copied!" : "Copy" }}
             </button>
           </div>
         </div>
@@ -41,11 +41,12 @@
           :disabled="webhookSaving"
           @click="saveWebhook"
         >
-          {{ webhookSaving ? 'Saving...' : 'Save' }}
+          {{ webhookSaving ? "Saving..." : "Save" }}
         </button>
       </div>
       <div class="webhook-hint">
-        Check-ins and status changes for this team are sent to this Google Chat webhook.
+        Check-ins and status changes for this team are sent to this Google Chat
+        webhook.
       </div>
     </div>
 
@@ -57,62 +58,68 @@
 
       <div class="members-list">
         <div class="member-item" v-for="m in members" :key="m.id">
-          <div class="profile-pic ui-avatar">{{ getInitials(m?.name) }}</div>
-          <div class="member-info">
-            <div class="member-name">
-              {{ m?.name }}
-              <span v-if="m.id === user?.uid" class="self-label">You</span>
+          <div class="member-main">
+            <div class="profile-pic ui-avatar">{{ getInitials(m?.name) }}</div>
+            <div class="member-info">
+              <div class="member-name">
+                {{ m?.name }}
+                <span v-if="m.id === user?.uid" class="self-label">You</span>
+              </div>
+              <div class="member-email">{{ m?.email }}</div>
             </div>
-            <div class="member-email">{{ m?.email }}</div>
           </div>
 
-          <div
-            class="member-role"
-            :class="{
-              member: m?.role?.toLowerCase() === 'member',
-              manager: m?.role?.toLowerCase() === 'manager'
-            }"
-          >
-            {{ m?.role }}
-          </div>
-          <div
-            class="status-text ui-chip"
-            :class="{
-              'no-checkin': !m.status,
-              [`tag-${m.status}`]: !!m.status
-            }"
-          >
-            {{ m.status ? formatStatus(m.status) : 'No Check-in' }}
-          </div>
-
-          <div class="status">
-            <select
-              class="select-status"
-              :value="m.status || ''"
-              @change="handleStatusChange(m, $event.target.value)"
+          <div class="member-meta">
+            <div
+              class="member-role"
+              :class="{
+                member: m?.role?.toLowerCase() === 'member',
+                manager: m?.role?.toLowerCase() === 'manager',
+              }"
             >
-              <option value="" disabled>Select</option>
-              <option value="wfo">🏢 Office</option>
-              <option value="wfh">🏠 WFH</option>
-              <option value="leave">🏝️ Leave</option>
-            </select>
+              {{ m?.role }}
+            </div>
+            <div
+              class="status-text ui-chip"
+              :class="{
+                'no-checkin': !m.status,
+                [`tag-${m.status}`]: !!m.status,
+              }"
+            >
+              {{ m.status ? formatStatus(m.status) : "No Check-in" }}
+            </div>
           </div>
 
-          <div class="remove">
-            <span
-              v-if="m.id == user?.uid"
-              class="self-indicator"
-              title="Your account"
-              >-</span
-            >
-            <button
-              class="remove-btn"
-              v-if="m.id !== user?.uid"
-              @click="handleRemove(m)"
-              aria-label="Remove member"
-            >
-              <span aria-hidden="true">×</span>
-            </button>
+          <div class="member-actions">
+            <div class="status">
+              <select
+                class="select-status"
+                :value="m.status || ''"
+                @change="handleStatusChange(m, $event.target.value)"
+              >
+                <option value="" disabled>Select</option>
+                <option value="wfo">🏢 Office</option>
+                <option value="wfh">🏠 WFH</option>
+                <option value="leave">🏝️ Leave</option>
+              </select>
+            </div>
+
+            <div class="remove">
+              <span
+                v-if="m.id == user?.uid"
+                class="self-indicator"
+                title="Your account"
+                >-</span
+              >
+              <button
+                class="remove-btn"
+                v-if="m.id !== user?.uid"
+                @click="handleRemove(m)"
+                aria-label="Remove member"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -156,8 +163,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { db } from '../../firebase/config';
+import { ref, onMounted, watch } from "vue";
+import { db } from "../../firebase/config";
 import {
   doc,
   getDoc,
@@ -168,11 +175,11 @@ import {
   getDocs,
   updateDoc,
   increment,
-  onSnapshot
-} from 'firebase/firestore';
+  onSnapshot,
+} from "firebase/firestore";
 
-definePageMeta({ middleware: ['auth', 'manager'] });
-import { useToast } from 'vue-toastification';
+definePageMeta({ middleware: ["auth", "manager"] });
+import { useToast } from "vue-toastification";
 const toast = useToast();
 const { user, profile } = useUser();
 const { getInitials } = useInitials();
@@ -185,13 +192,13 @@ const removeMember = ref(null);
 
 const statusMap = ref({});
 
-const webhookInput = ref('');
+const webhookInput = ref("");
 const webhookDirty = ref(false);
 const webhookSaving = ref(false);
 
 watch(teamsData, (val) => {
   if (val && !webhookDirty.value) {
-    webhookInput.value = val.webhookUrl || '';
+    webhookInput.value = val.webhookUrl || "";
   }
 });
 
@@ -203,14 +210,14 @@ async function saveWebhook() {
   if (!profile.value?.teamId) return;
   webhookSaving.value = true;
   try {
-    await updateDoc(doc(db, 'teams', profile.value.teamId), {
-      webhookUrl: webhookInput.value.trim()
+    await updateDoc(doc(db, "teams", profile.value.teamId), {
+      webhookUrl: webhookInput.value.trim(),
     });
     webhookDirty.value = false;
-    toast.success('Webhook updated');
+    toast.success("Webhook updated");
   } catch (err) {
-    console.error('Failed to update webhook', err);
-    toast.error('Failed to update webhook');
+    console.error("Failed to update webhook", err);
+    toast.error("Failed to update webhook");
   } finally {
     webhookSaving.value = false;
   }
@@ -224,17 +231,17 @@ async function fetchData() {
   const teamId = profile.value.teamId;
   const today = todayKey();
 
-  stopTeamListener = onSnapshot(doc(db, 'teams', teamId), (snap) => {
+  stopTeamListener = onSnapshot(doc(db, "teams", teamId), (snap) => {
     teamsData.value = snap.data();
   });
 
   stopStatusListener = onSnapshot(
-    query(collection(db, 'status'), where('teamId', '==', teamId)),
+    query(collection(db, "status"), where("teamId", "==", teamId)),
     (snapshot) => {
       const map = {};
       snapshot.docs.forEach((d) => {
         const data = d.data();
-        const date = new Date(data.timestamp).toLocaleDateString('en-CA');
+        const date = new Date(data.timestamp).toLocaleDateString("en-CA");
         if (date === today) map[data.uid] = data.status;
       });
       statusMap.value = map;
@@ -242,21 +249,21 @@ async function fetchData() {
       if (members.value.length) {
         members.value = members.value.map((m) => ({
           ...m,
-          status: map[m.id] || null
+          status: map[m.id] || null,
         }));
       }
-    }
+    },
   );
 
   stopMembersListener = onSnapshot(
-    query(collection(db, 'profiles'), where('teamId', '==', teamId)),
+    query(collection(db, "profiles"), where("teamId", "==", teamId)),
     (snapshot) => {
       members.value = snapshot.docs.map((d) => ({
         id: d.id,
         ...d.data(),
-        status: statusMap.value[d.id] || null
+        status: statusMap.value[d.id] || null,
       }));
-    }
+    },
   );
 }
 
@@ -267,14 +274,14 @@ function handleStatusChange(member, newStatus) {
 
 async function confirmStatusChange() {
   const { member, newStatus } = statusConfirm.value;
-  const statusRef = doc(db, 'status', `${member.id}_${todayKey()}`);
+  const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
   await setDoc(statusRef, {
     uid: member.id,
     name: member.name,
     email: member.email,
     status: newStatus,
     teamId: profile.value.teamId,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
   // console.log("Status updated");
   member.status = newStatus;
@@ -293,22 +300,22 @@ function handleRemove(member) {
 
 async function confirmRemove() {
   const member = removeMember.value;
-  const statusRef = doc(db, 'status', `${member.id}_${todayKey()}`);
+  const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
 
-  await updateDoc(doc(db, 'profiles', member.id), {
+  await updateDoc(doc(db, "profiles", member.id), {
     teamId: null,
     teamName: null,
-    role: null
+    role: null,
   });
 
-  await updateDoc(doc(db, 'teams', profile.value.teamId), {
-    count: increment(-1)
+  await updateDoc(doc(db, "teams", profile.value.teamId), {
+    count: increment(-1),
   });
 
   const statusSnap = await getDoc(statusRef);
   if (statusSnap.exists()) {
     await updateDoc(statusRef, {
-      teamId: null
+      teamId: null,
     });
   }
 
@@ -318,17 +325,17 @@ async function confirmRemove() {
 }
 
 function todayKey() {
-  return new Date().toLocaleDateString('en-CA');
+  return new Date().toLocaleDateString("en-CA");
 }
 function formatStatus(status) {
-  if (status === 'wfh') return '🏠 WFH';
-  else if (status === 'wfo') return '🏢 Office';
-  return '🏝️ Leave';
+  if (status === "wfh") return "🏠 WFH";
+  else if (status === "wfo") return "🏢 Office";
+  return "🏝️ Leave";
 }
 function formatStatusflow(status) {
-  if (status === 'wfh') return 'Work From Home';
-  else if (status === 'wfo') return 'In Office';
-  return 'On Leave';
+  if (status === "wfh") return "Work From Home";
+  else if (status === "wfo") return "In Office";
+  return "On Leave";
 }
 function copyCode() {
   navigator.clipboard.writeText(teamsData.value.joinCode);
@@ -336,29 +343,29 @@ function copyCode() {
 }
 async function handlewebhook() {
   try {
-    await $fetch('/api/update', {
-      method: 'POST',
+    await $fetch("/api/update", {
+      method: "POST",
       body: {
         status: formatStatusflow(statusConfirm.value.newStatus),
         name: statusConfirm.value.member.name,
         time: new Date().toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit'
+          hour: "2-digit",
+          minute: "2-digit",
         }),
-        teamId: profile.value.teamId
-      }
+        teamId: profile.value.teamId,
+      },
     });
     // console.log("sent to google chat space");
   } catch (err) {
-    console.log('webhook failed', err);
+    console.log("webhook failed", err);
   }
 }
 onMounted(fetchData);
 
 onUnmounted(() => {
-  if (typeof stopStatusListener === 'function') stopStatusListener();
-  if (typeof stopMembersListener === 'function') stopMembersListener();
-  if (typeof stopTeamListener === 'function') stopTeamListener();
+  if (typeof stopStatusListener === "function") stopStatusListener();
+  if (typeof stopMembersListener === "function") stopMembersListener();
+  if (typeof stopTeamListener === "function") stopTeamListener();
 });
 </script>
 
@@ -434,6 +441,8 @@ onUnmounted(() => {
 }
 
 .join-code {
+  flex: 1 1 auto;
+  min-width: 0;
   background-color: var(--color-primary-soft);
   font-size: 22px;
   font-weight: bold;
@@ -444,7 +453,9 @@ onUnmounted(() => {
   letter-spacing: 4px;
 }
 .copy-btn {
+  flex: 0 0 auto;
   min-width: 86px;
+  padding-inline: 14px;
   font-size: 12px;
   font-weight: 700;
   background: var(--color-surface-soft);
@@ -524,6 +535,34 @@ onUnmounted(() => {
   padding: 14px 20px;
   border-bottom: 1px solid var(--color-border);
   transition: background-color var(--transition-base);
+}
+
+.member-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.member-info {
+  min-width: 0;
+}
+
+.member-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.member-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
 }
 .member-item:hover {
   background: var(--color-bg-elevated);
@@ -729,13 +768,27 @@ onUnmounted(() => {
     padding: 20px;
   }
 
-  .team-name {
-    font-size: 22px;
+  .code-row {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .join-code {
-    font-size: 16px;
+    width: 100%;
+    font-size: 15px;
     letter-spacing: 2px;
+  }
+
+  .copy-btn {
+    width: fit-content;
+    align-self: flex-start;
+    min-width: 0;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  .team-name {
+    font-size: 22px;
   }
 
   .card-right {
@@ -749,14 +802,77 @@ onUnmounted(() => {
     font-size: 28px;
   }
 
+  .webhook-card {
+    flex-direction: column;
+    padding: 14px;
+  }
+
+  .webhook-input,
+  .webhook-card .ui-btn {
+    width: 100%;
+  }
+
   .member-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "main main"
+      "meta actions";
+    align-items: start;
+    gap: 10px 12px;
+    padding: 12px 14px;
+  }
+
+  .member-main,
+  .member-meta,
+  .member-actions {
+    width: 100%;
+  }
+
+  .member-main {
+    grid-area: main;
+  }
+  .member-meta {
+    grid-area: meta;
+  }
+  .member-actions {
+    grid-area: actions;
+  }
+
+  .member-main,
+  .member-meta,
+  .member-actions {
+    justify-content: space-between;
+  }
+
+  .member-meta {
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px;
   }
-  .member-email {
-    display: none;
+
+  .member-main {
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--color-border);
   }
+
+  .member-role,
+  .status-text {
+    flex: 1 1 0;
+    text-align: center;
+  }
+
+  .status {
+    flex: 1 1 auto;
+  }
+
+  .select-status {
+    width: 100%;
+    min-width: 130px;
+  }
+
+  .remove {
+    width: auto;
+  }
+
   .modal-content {
     margin: 16px;
     padding: 20px;
