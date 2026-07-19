@@ -291,13 +291,10 @@ watch(
 }
 
 .preset-btn.active {
-  /* background: rgba(30, 155, 102, 0.18);
-  border-color: rgba(30, 155, 102, 0.35);
-  color: var(--color-primary-strong); */
-  background:rgb(0, 0, 0);
-  border-color: rgba(30, 155, 102, 0.35);
-  color:var(--color-surface);
-
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
 }
 
 .summary-grid {
@@ -312,19 +309,19 @@ watch(
 
 .summary-card-wfo {
   background: var(--color-wfo-bg);
-  border-color: rgba(26, 107, 64, 0.24);
+  border-color: rgba(74, 222, 128, 0.25);
   color: var(--color-wfo-text);
 }
 
 .summary-card-wfh {
   background: var(--color-wfh-bg);
-  border-color: rgba(26, 59, 122, 0.24);
+  border-color: rgba(52, 211, 153, 0.25);
   color: var(--color-wfh-text);
 }
 
 .summary-card-leave {
   background: var(--color-leave-bg);
-  border-color: rgba(122, 26, 26, 0.24);
+  border-color: rgba(248, 113, 113, 0.25);
   color: var(--color-leave-text);
 }
 

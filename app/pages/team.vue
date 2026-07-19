@@ -588,9 +588,9 @@ onUnmounted(() => {
 .self-label {
   font-size: 11px;
   font-weight: 700;
-  color: var(--color-primary-strong);
-  background: var(--color-primary-soft);
-  border: 1px solid rgba(24, 125, 83, 0.2);
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.28);
   border-radius: 999px;
   padding: 2px 8px;
 }
@@ -603,15 +603,17 @@ onUnmounted(() => {
 .member-role.member {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: var(--color-primary-soft);
-  color: var(--color-primary-strong);
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.28);
   border-radius: 999px;
 }
 .member-role.manager {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: var(--color-wfh-bg);
-  color: var(--color-wfh-text);
+  background-color: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
   border-radius: 999px;
 }
 .status {
@@ -646,11 +648,18 @@ onUnmounted(() => {
   padding: 6px 10px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-soft);
+  color: var(--color-text);
   cursor: pointer;
+  font-size: 13px;
+  transition: all var(--transition-base);
 }
 .select-status:focus-visible {
-  outline-color: rgba(30, 155, 102, 0.24);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+.select-status:hover {
+  border-color: var(--color-primary);
 }
 .remove {
   width: 32px;
@@ -674,9 +683,9 @@ onUnmounted(() => {
   cursor: default;
 }
 .remove-btn {
-  background: var(--color-danger-soft);
-  border: 1px solid rgba(200, 61, 54, 0.25);
-  color: var(--color-danger);
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #f87171;
   width: 28px;
   height: 28px;
   border-radius: 8px;
@@ -694,7 +703,8 @@ onUnmounted(() => {
   transform: translateY(-1px);
 }
 .remove-btn:hover {
-  background: #f8dddb;
+  background: rgba(248, 113, 113, 0.2);
+  border-color: #f87171;
 }
 .modal {
   position: fixed;

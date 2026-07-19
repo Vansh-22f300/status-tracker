@@ -201,8 +201,8 @@ onUnmounted(() => {
   font-size: 11px;
 }
 .profile-pic {
-  background-color: var(--color-primary-soft);
-  color: var(--color-primary-strong);
+  background-color: var(--color-sidebar-accent-soft);
+  color: var(--color-sidebar-accent-text);
 }
 .navigation {
   display: flex;
@@ -210,7 +210,7 @@ onUnmounted(() => {
   cursor: pointer;
 }
 .navigation a {
-  color: #d4e0ee;
+  color: var(--color-sidebar-muted);
   text-decoration: none;
   margin-bottom: 2px;
   border-radius: 10px;
@@ -221,12 +221,13 @@ onUnmounted(() => {
 }
 
 .navigation a:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(245, 158, 11, 0.1);
   color: var(--color-sidebar-text);
 }
 .router-link-exact-active {
-  background: rgba(30, 155, 102, 0.2);
-  color: #e9fff5;
+  background: var(--color-sidebar-active-bg);
+  color: var(--color-sidebar-accent-text);
+  border: 1px solid var(--color-sidebar-active-border);
 }
 
 .navigation-tile {
@@ -276,16 +277,16 @@ onUnmounted(() => {
   font-size: 10px;
 }
 .sidebar-bottom-status.tag-wfh {
-  background: rgba(60, 100, 200, 0.26);
-  color: #93b8ff;
+  background: var(--color-wfh-bg);
+  color: var(--color-wfh-text);
 }
 .sidebar-bottom-status.tag-office {
-  background: rgba(30, 107, 64, 0.28);
-  color: #78e5a1;
+  background: var(--color-wfo-bg);
+  color: var(--color-wfo-text);
 }
 .sidebar-bottom-status.tag-leave {
-  background: rgba(157, 53, 53, 0.25);
-  color: #f09c9c;
+  background: var(--color-leave-bg);
+  color: var(--color-leave-text);
 }
 .sidebar-bottom-name {
   color: var(--color-sidebar-text);
@@ -309,9 +310,9 @@ onUnmounted(() => {
     display: flex;
     top: 16px;
     right: 16px;
-    background-color: rgba(255, 255, 255, 0.12);
+    background-color: var(--color-sidebar-accent-soft);
     cursor: pointer;
-    color: var(--color-sidebar-text);
+    color: var(--color-sidebar-accent-text);
     font-weight: 700;
     border: none;
     padding: 4px 8px;

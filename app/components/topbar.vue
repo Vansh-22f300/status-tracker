@@ -57,10 +57,11 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--color-surface);
   backdrop-filter: blur(8px);
   padding: 14px 30px;
   border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 .topbar-left {
   color: var(--color-text);
@@ -77,11 +78,11 @@ onMounted(() => {
   font-weight: 500;
 }
 .logout {
-  background-color: var(--color-primary-soft);
-  color: var(--color-primary-strong);
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
   border-radius: 999px;
   padding: 8px 14px;
-  border: 1px solid rgba(24, 125, 83, 0.25);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -90,9 +91,10 @@ onMounted(() => {
 .logout:hover {
   background-color: var(--color-primary);
   color: white;
+  border-color: var(--color-primary);
 }
 .name {
-  color: var(--color-primary);
+  color: #fbbf24;
   font-weight: 700;
 }
 .hamburger {
