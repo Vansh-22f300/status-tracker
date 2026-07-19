@@ -275,20 +275,31 @@ function handleStatusChange(member, newStatus) {
 async function confirmStatusChange() {
   const { member, newStatus } = statusConfirm.value;
   const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
-  await setDoc(statusRef, {
-    uid: member.id,
-    name: member.name,
-    email: member.email,
-    status: newStatus,
-    teamId: profile.value.teamId,
-    timestamp: Date.now(),
-  });
-  // console.log("Status updated");
-  member.status = newStatus;
-  handlewebhook();
-  toast.success(`${member.name}'s status updated `);
 
-  statusConfirm.value = null;
+  try {
+    await setDoc(statusRef, {
+      uid: member.id,
+      name: member.name,
+      email: member.email,
+      status: newStatus,
+      teamId: profile.value.teamId,
+      timestamp: Date.now(),
+    });
+
+    member.status = newStatus;
+    await handlewebhook();
+    toast.success(`${member.name}'s status updated`);
+  } catch (err) {
+    const errMessage =
+      err?.data?.message ||
+      err?.statusMessage ||
+      err?.message ||
+      "Failed to notify the team.";
+    console.error("Failed to update status", err);
+    toast.error(errMessage);
+  } finally {
+    statusConfirm.value = null;
+  }
 }
 
 function handleRemove(member) {
@@ -355,9 +366,14 @@ async function handlewebhook() {
         teamId: profile.value.teamId,
       },
     });
-    // console.log("sent to google chat space");
   } catch (err) {
-    console.log("webhook failed", err);
+    const errMessage =
+      err?.data?.message ||
+      err?.statusMessage ||
+      err?.message ||
+      "Webhook notification failed.";
+    console.error("webhook failed", err);
+    throw new Error(errMessage);
   }
 }
 onMounted(fetchData);
