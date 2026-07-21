@@ -2,7 +2,7 @@ import { getAdminDb } from "../utils/firebaseAdmin";
 import { FieldValue } from "firebase-admin/firestore";
 
 const COOLDOWN_MS = 2 * 60 * 1000;
-const MAX_NOTIFICATIONS_PER_DAY = 10;
+const MAX_NOTIFICATIONS_PER_DAY = 5;
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
