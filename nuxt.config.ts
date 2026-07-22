@@ -31,6 +31,21 @@ export default defineNuxtConfig({
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap'
         }
+      ],
+      script: [
+        {
+          // Applies the saved theme before Vue mounts, so returning
+          // dark-mode users don't see a flash of the light theme first.
+          innerHTML: `
+            try {
+              var t = localStorage.getItem('theme');
+              var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+              if (t === 'dark' || (!t && prefersDark)) {
+                document.documentElement.classList.add('dark');
+              }
+            } catch (e) {}
+          `
+        }
       ]
     }
   }

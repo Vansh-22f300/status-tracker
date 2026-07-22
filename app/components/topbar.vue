@@ -17,6 +17,14 @@
     </div>
 
     <div class="topbar-right">
+      <button
+        type="button"
+        class="theme-toggle"
+        @click="toggleTheme"
+        :aria-label="theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+      >
+        {{ theme === 'dark' ? '☀️' : '🌙' }}
+      </button>
       <button type="button" class="logout" @click="handleLogout">Logout</button>
     </div>
   </div>
@@ -28,6 +36,7 @@ import { auth } from '../../firebase/config';
 import { signOut } from 'firebase/auth';
 const { profile, user } = useUser();
 const { toggleSidebar } = useSidebar();
+const { theme, toggleTheme } = useTheme();
 const mounted = ref(false);
 async function handleLogout() {
   try {
@@ -57,10 +66,34 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--color-topbar-bg);
   backdrop-filter: blur(8px);
   padding: 14px 30px;
   border-bottom: 1px solid var(--color-border);
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.theme-toggle {
+  background-color: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+.theme-toggle:hover {
+  background-color: var(--color-surface);
+  border-color: var(--color-border-strong);
 }
 .topbar-left {
   color: var(--color-text);
