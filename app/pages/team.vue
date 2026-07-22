@@ -364,8 +364,6 @@ async function handlewebhook() {
           minute: "2-digit",
         }),
         teamId: profile.value.teamId,
-        uid: statusConfirm.value.member.id,
-        dateKey: todayKey(),
       },
     });
   } catch (err) {

@@ -62,14 +62,21 @@
       <div class="modal-content">
         <div class="modal-title">Send another update?</div>
         <div class="modal-sub">
-          You already notified the team today. This will be update #{{
-            (alreadyNotified?.notifyCount || 0) + 1
-          }}
-          for today — send anyway?
+          You already notified the team today — send this update anyway?
         </div>
         <div class="modal-action">
-          <button class="modal-confirm" @click="doNotify">Send</button>
-          <button class="modal-cancel" @click="showRepeatConfirm = false">
+          <button
+            class="modal-confirm"
+            :disabled="isPosting"
+            @click="doNotify"
+          >
+            {{ isPosting ? "Sending..." : "Send" }}
+          </button>
+          <button
+            class="modal-cancel"
+            :disabled="isPosting"
+            @click="showRepeatConfirm = false"
+          >
             Cancel
           </button>
         </div>
@@ -84,7 +91,7 @@ const { user, profile } = useUser();
 const selectedstatus = ref(null);
 const time = ref("");
 const isPosting = ref(false);
-const alreadyNotified = ref(null); // { status, notifyCount } for today, if any
+const alreadyNotified = ref(null); // last-notified status for today, if any
 const showRepeatConfirm = ref(false);
 import { useToast } from "vue-toastification";
 const toast = useToast();
@@ -114,10 +121,7 @@ async function loadTodayStatus() {
     const snap = await getDoc(doc(db, "status", `${user.value.uid}_${todayKey()}`));
     if (snap.exists()) {
       const data = snap.data();
-      alreadyNotified.value = {
-        status: data.status,
-        notifyCount: data.notifyCount || 0
-      };
+      alreadyNotified.value = { status: data.status };
     }
   } catch (err) {
     console.error("Failed to load today's status", err);
@@ -215,12 +219,12 @@ async function notified() {
 async function doNotify() {
   isPosting.value = true;
   try {
-    await submitStatus();
+    // webhook first: if this throws (e.g. cooldown), we bail out before
+    // touching Firestore, so the stored status never gets ahead of what
+    // the team was actually told.
     await handlewebhook();
-    alreadyNotified.value = {
-      status: selectedstatus.value,
-      notifyCount: (alreadyNotified.value?.notifyCount || 0) + 1
-    };
+    await submitStatus();
+    alreadyNotified.value = { status: selectedstatus.value };
     toast.success("Status posted successfully!");
   } catch (err) {
     toast.error(err?.message || "Something went wrong. Please try again.");

@@ -1,8 +1,6 @@
 import { getAdminDb } from "../utils/firebaseAdmin";
-import { FieldValue } from "firebase-admin/firestore";
 
 const COOLDOWN_MS = 2 * 60 * 1000; // min gap between any two sends for the same person/day
-const MAX_NOTIFICATIONS_PER_DAY = 3;
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -28,7 +26,7 @@ export default defineEventHandler(async (event) => {
   const statusSnap = await statusRef.get();
   const statusData = statusSnap.exists ? statusSnap.data() : {};
 
-  // Same value already notified today -> no-op, don't spend cooldown/cap budget
+  // Same value already notified today -> no-op
   if (statusData.notifiedStatus && statusData.notifiedStatus === status) {
     return { ok: true, skipped: true, reason: 'duplicate-status' };
   }
@@ -40,15 +38,7 @@ export default defineEventHandler(async (event) => {
   ) {
     throw createError({
       statusCode: 429,
-      message: 'Please wait a bit before sending another notification.'
-    });
-  }
-
-  // Daily cap
-  if ((statusData.notifyCount || 0) >= MAX_NOTIFICATIONS_PER_DAY) {
-    throw createError({
-      statusCode: 429,
-      message: 'Daily notification limit reached for today.'
+      message: 'Please wait a two minutes before sending another notification.'
     });
   }
 
@@ -65,8 +55,7 @@ export default defineEventHandler(async (event) => {
   await statusRef.set(
     {
       notifiedStatus: status,
-      lastNotifiedAt: Date.now(),
-      notifyCount: FieldValue.increment(1)
+      lastNotifiedAt: Date.now()
     },
     { merge: true }
   );
