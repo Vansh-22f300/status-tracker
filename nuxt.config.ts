@@ -18,7 +18,11 @@ export default defineNuxtConfig({
         {
           name: 'apple-mobile-web-app-status-bar-style',
           content: 'black-translucent'
-        }
+        },
+        // Tells the browser this site handles light/dark itself, so
+        // mobile browsers (Android Chrome's "Force Dark" in particular)
+        // don't apply their own auto-dark override on top of ours.
+        { name: 'color-scheme', content: 'light dark' }
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -40,9 +44,11 @@ export default defineNuxtConfig({
             try {
               var t = localStorage.getItem('theme');
               var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-              if (t === 'dark' || (!t && prefersDark)) {
+              var isDark = t === 'dark' || (!t && prefersDark);
+              if (isDark) {
                 document.documentElement.classList.add('dark');
               }
+              document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
             } catch (e) {}
           `
         }

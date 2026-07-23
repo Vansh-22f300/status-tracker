@@ -198,7 +198,8 @@ const handleSignup = async () => {
   padding: 12px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
-  background: #ffffff;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .form-fields input::placeholder {

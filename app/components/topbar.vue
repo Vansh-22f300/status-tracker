@@ -110,22 +110,22 @@ onMounted(() => {
   font-weight: 500;
 }
 .logout {
-  background-color: var(--color-primary-soft);
-  color: var(--color-primary-strong);
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-strong);
   border-radius: 999px;
   padding: 8px 14px;
-  border: 1px solid rgba(24, 125, 83, 0.25);
+  border: 1px solid var(--color-accent);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
 }
 .logout:hover {
-  background-color: var(--color-primary);
+  background-color: var(--color-accent);
   color: white;
 }
 .name {
-  color: var(--color-primary);
+  color: var(--color-accent);
   font-weight: 700;
 }
 .hamburger {

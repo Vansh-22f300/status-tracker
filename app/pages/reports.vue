@@ -291,13 +291,9 @@ watch(
 }
 
 .preset-btn.active {
-  /* background: rgba(30, 155, 102, 0.18);
-  border-color: rgba(30, 155, 102, 0.35);
-  color: var(--color-primary-strong); */
-  background:rgb(0, 0, 0);
-  border-color: rgba(30, 155, 102, 0.35);
-  color:var(--color-surface);
-
+  background: var(--color-primary);
+  border-color: var(--color-primary-strong);
+  color: #ffffff;
 }
 
 .summary-grid {

@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --font-body: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-display: "Manrope", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -36,6 +37,15 @@
   --color-danger-soft: #fbecec;
 
   --color-topbar-bg: rgba(255, 255, 255, 0.82);
+
+  --color-accent: #b5762c;
+  --color-accent-strong: #96601f;
+  --color-accent-soft: #f7ecdd;
+
+  --color-role-manager-bg: #ece3fb;
+  --color-role-manager-text: #5b3aa0;
+  --color-role-member-bg: #e6ebf0;
+  --color-role-member-text: #4a5a6c;
 
   --radius-sm: 10px;
   --radius-md: 14px;
@@ -99,6 +109,14 @@ select,
 textarea {
   font: inherit;
   color: inherit;
+}
+
+input,
+select,
+textarea {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
 }
 
 button {
@@ -204,20 +222,27 @@ button {
 }
 
 html.dark {
-  --color-bg: #0f1620;
-  --color-bg-elevated: #141d2b;
-  --color-surface: #1a2332;
-  --color-surface-soft: #212c3d;
-  --color-border: #2c394d;
-  --color-border-strong: #3a4a62;
+  /* Curated neon-on-black palette - only 5 recurring neon hues, kept
+     consistent per role, rather than all 12 candidates at once (that many
+     saturated colors together stops reading as "accents" and starts
+     reading as noise). Body text/surfaces stay neutral on purpose -
+     neon-izing paragraph text would hurt readability, not help it. */
+  color-scheme: dark;
+  --color-bg: #0a0f16;
+  --color-bg-elevated: #0f1826;
+  --color-surface: #151f2d;
+  --color-surface-soft: #1b2635;
+  --color-border: #263244;
+  --color-border-strong: #34445c;
 
   --color-text: #e8edf4;
   --color-text-muted: #97a6ba;
   --color-text-soft: #6f8098;
 
-  --color-primary: #2bb578;
-  --color-primary-strong: #3fd393;
-  --color-primary-soft: #163b2a;
+  /* Primary: Emerald Neon - buttons, WFO */
+  --color-primary: #00ffb2;
+  --color-primary-strong: #33ffc4;
+  --color-primary-soft: #0d3d2e;
 
   --color-sidebar-bg: #0b1119;
   --color-sidebar-surface: #131c28;
@@ -225,19 +250,37 @@ html.dark {
   --color-sidebar-text: #f4f8fc;
   --color-sidebar-muted: #8ca0b8;
 
+  /* WFH: Electric Blue */
   --color-wfh-bg: #1c3055;
-  --color-wfh-text: #a9c3f0;
-  --color-wfo-bg: #163826;
-  --color-wfo-text: #8fe0b3;
-  --color-leave-bg: #402020;
-  --color-leave-text: #f0a9a9;
-  --color-none-bg: #453310;
-  --color-none-text: #f0c98f;
+  --color-wfh-text: #3b82f6;
+  /* WFO: matches primary emerald */
+  --color-wfo-bg: #0d3020;
+  --color-wfo-text: #00ffb2;
+  /* Leave: Neon Red */
+  --color-leave-bg: #3a1414;
+  --color-leave-text: #ff3131;
+  /* No check-in / warning: Neon Orange, matches accent below */
+  --color-none-bg: #3d2a10;
+  --color-none-text: #ff8c00;
 
-  --color-danger: #e05a52;
-  --color-danger-soft: #3a1e1c;
+  /* Danger: same Neon Red as leave - both read as "negative" states */
+  --color-danger: #ff3131;
+  --color-danger-soft: #3a1414;
 
-  --color-topbar-bg: rgba(19, 28, 40, 0.82);
+  --color-topbar-bg: rgba(10, 15, 22, 0.82);
+
+  /* Accent (logout, "Welcome, name"): Neon Orange - deliberately distinct
+     from the primary emerald so chrome doesn't blend into CTAs */
+  --color-accent: #ff8c00;
+  --color-accent-strong: #ffa733;
+  --color-accent-soft: #3d2a10;
+
+  /* Manager badge: Neon Purple - member badge stays neutral/muted on
+     purpose, so the manager badge is the one that visually stands out */
+  --color-role-manager-bg: #2b1d42;
+  --color-role-manager-text: #a855f7;
+  --color-role-member-bg: #1c2530;
+  --color-role-member-text: #8fa3ba;
 
   --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 18px 38px rgba(0, 0, 0, 0.45);

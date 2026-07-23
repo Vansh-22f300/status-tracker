@@ -8,6 +8,12 @@ let initialized = false;
 function applyClass(value) {
   if (typeof document === 'undefined') return;
   document.documentElement.classList.toggle('dark', value === 'dark');
+  // Explicitly tell the browser which color scheme we're using. Without
+  // this, some mobile browsers (notably Android Chrome's "Force Dark")
+  // apply their own auto-dark heuristic on top of ours after a short
+  // delay, which is what causes light mode to flash correctly for a
+  // moment and then get overridden to a flat black.
+  document.documentElement.style.colorScheme = value;
 }
 
 function initTheme() {

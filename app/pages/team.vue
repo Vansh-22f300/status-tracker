@@ -421,7 +421,7 @@ onUnmounted(() => {
 }
 
 .team-card {
-  background: linear-gradient(145deg, #ffffff 0%, #f7fbff 100%);
+  background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   padding: 28px;
@@ -479,7 +479,7 @@ onUnmounted(() => {
   transition: none !important;
 }
 .copy-btn:hover {
-  background: #e7eef6;
+  background:#32475f;
   border-color: var(--color-border-strong);
   transform: none !important;
 }
@@ -527,6 +527,8 @@ onUnmounted(() => {
   padding: 10px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: 13px;
 }
 .webhook-hint {
@@ -619,15 +621,15 @@ onUnmounted(() => {
 .member-role.member {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: var(--color-primary-soft);
-  color: var(--color-primary-strong);
+  background-color: var(--color-role-member-bg);
+  color: var(--color-role-member-text);
   border-radius: 999px;
 }
 .member-role.manager {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: var(--color-wfh-bg);
-  color: var(--color-wfh-text);
+  background-color: var(--color-role-manager-bg);
+  color: var(--color-role-manager-text);
   border-radius: 999px;
 }
 .status {
