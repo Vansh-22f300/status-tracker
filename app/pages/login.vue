@@ -168,7 +168,7 @@ const handleGoogleLogin = async () => {
   width: 60%;
   border-radius: var(--radius-sm);
   padding: 15px;
-  background: var(--color-primary);
+  background: var(--color-accent);
   color: #ffffff;
   font-size: 16px;
   font-weight: 600;
@@ -178,7 +178,7 @@ const handleGoogleLogin = async () => {
   transition: background-color var(--transition-base);
 }
 .login-btn:hover {
-  background: var(--color-primary-strong);
+  background: var(--color-accent-strong);
 }
 
 .login-btn:disabled {

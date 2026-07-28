@@ -479,7 +479,7 @@ onUnmounted(() => {
   transition: none !important;
 }
 .copy-btn:hover {
-  background:#32475f;
+  background: #e7eef6;
   border-color: var(--color-border-strong);
   transform: none !important;
 }

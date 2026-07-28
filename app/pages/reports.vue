@@ -291,8 +291,8 @@ watch(
 }
 
 .preset-btn.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary-strong);
+  background: var(--color-accent);
+  border-color: var(--color-accent-strong);
   color: #ffffff;
 }
 

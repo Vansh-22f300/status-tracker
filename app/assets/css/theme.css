@@ -251,7 +251,7 @@ html.dark {
   --color-sidebar-muted: #8ca0b8;
 
   /* WFH: Electric Blue */
-  --color-wfh-bg: #1c3055;
+  --color-wfh-bg: #16233f;
   --color-wfh-text: #3b82f6;
   /* WFO: matches primary emerald */
   --color-wfo-bg: #0d3020;
@@ -285,7 +285,7 @@ html.dark {
   --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 18px 38px rgba(0, 0, 0, 0.45);
 }
-/*  */
+
 @media (max-width: 768px) {
   body {
     font-size: 14px;
