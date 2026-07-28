@@ -56,15 +56,43 @@
         {{ isPosting ? "Notifying..." : "Notify Group ->" }}
       </button>
     </div>
+
+    <!-- shown only when this is a genuine change but not the first notify today -->
+    <div class="modal" v-if="showRepeatConfirm">
+      <div class="modal-content">
+        <div class="modal-title">Send another update?</div>
+        <div class="modal-sub">
+          You already notified the team today — send this update anyway?
+        </div>
+        <div class="modal-action">
+          <button
+            class="modal-confirm"
+            :disabled="isPosting"
+            @click="doNotify"
+          >
+            {{ isPosting ? "Sending..." : "Send" }}
+          </button>
+          <button
+            class="modal-cancel"
+            :disabled="isPosting"
+            @click="showRepeatConfirm = false"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, onUnmounted } from "vue";
+import { ref, nextTick, onMounted, onUnmounted, watch } from "vue";
 const { user, profile } = useUser();
 const selectedstatus = ref(null);
 const time = ref("");
 const isPosting = ref(false);
+const alreadyNotified = ref(null); // last-notified status for today, if any
+const showRepeatConfirm = ref(false);
 import { useToast } from "vue-toastification";
 const toast = useToast();
 let interval = null;
@@ -84,6 +112,24 @@ const message = () => {
   else if (selectedstatus.value === "wfh") return " Available WFH";
   else if (selectedstatus.value === "leave") return "On Leave";
 };
+function todayKey() {
+  return new Date().toLocaleDateString("en-CA");
+}
+async function loadTodayStatus() {
+  if (!user.value) return;
+  try {
+    const snap = await getDoc(doc(db, "status", `${user.value.uid}_${todayKey()}`));
+    if (snap.exists()) {
+      const data = snap.data();
+      alreadyNotified.value = { status: data.status };
+    }
+  } catch (err) {
+    console.error("Failed to load today's status", err);
+  }
+}
+watch(user, (u) => {
+  if (u) loadTodayStatus();
+}, { immediate: true });
 function selectstatus(status) {
   if (selectedstatus.value === status) return;
   selectedstatus.value = null;
@@ -99,8 +145,7 @@ async function submitStatus() {
   }
 
   try {
-    const today = new Date().toLocaleDateString("en-CA");
-    const docId = `${user.value.uid}_${today}`;
+    const docId = `${user.value.uid}_${todayKey()}`;
 
     await setDoc(
       doc(db, "status", docId),
@@ -133,6 +178,8 @@ async function handlewebhook() {
         name: profile.value?.name || user.value?.displayName || "Unknown User",
         time: time.value,
         teamId: profile.value?.teamId,
+        uid: user.value.uid,
+        dateKey: todayKey(),
       },
     });
     console.log("sent to google chat space");
@@ -153,17 +200,38 @@ async function notified() {
     return;
   }
   if (isPosting.value) return;
-  isPosting.value = true;
 
+  // same value already notified today -> no-op, don't even hit the server
+  if (alreadyNotified.value?.status === selectedstatus.value) {
+    toast.info(`You already notified the team you're ${message().trim()} today.`);
+    return;
+  }
+
+  // genuine change, but not the first notify today -> confirm first
+  if (alreadyNotified.value) {
+    showRepeatConfirm.value = true;
+    return;
+  }
+
+  await doNotify();
+}
+
+async function doNotify() {
+  isPosting.value = true;
   try {
-    await submitStatus();
+    // webhook first: if this throws (e.g. cooldown), we bail out before
+    // touching Firestore, so the stored status never gets ahead of what
+    // the team was actually told.
     await handlewebhook();
+    await submitStatus();
+    alreadyNotified.value = { status: selectedstatus.value };
     toast.success("Status posted successfully!");
   } catch (err) {
     toast.error(err?.message || "Something went wrong. Please try again.");
     console.error(err);
   } finally {
     isPosting.value = false;
+    showRepeatConfirm.value = false;
   }
 }
 
@@ -267,6 +335,64 @@ onUnmounted(() => {
 .selected_leave {
   border-color: rgba(122, 26, 26, 0.35);
   background-color: var(--color-leave-bg);
+}
+.modal {
+  position: fixed;
+  display: flex;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  background: rgba(14, 24, 39, 0.35);
+  backdrop-filter: blur(3px);
+}
+.modal-content {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  max-width: 480px;
+}
+.modal-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  margin-bottom: 8px;
+}
+.modal-sub {
+  font-size: 16px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+.modal-action {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.modal-confirm {
+  padding: 8px 16px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.modal-confirm:hover {
+  background-color: var(--color-primary-strong);
+}
+.modal-cancel {
+  padding: 8px 16px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.modal-cancel:hover {
+  background-color: var(--color-surface-soft);
 }
 @media (max-width: 768px) {
   .section {
