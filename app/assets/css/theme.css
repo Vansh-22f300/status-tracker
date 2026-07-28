@@ -280,7 +280,7 @@ html.dark {
   /* White text on this orange only hits ~2.3:1 contrast (WCAG needs
      3:1 minimum even for large bold text) - dark text reads properly. */
   --color-accent:#00ffb2 ;
-  --color-accent-strong: #7cffda;
+  --color-accent-strong: #33ffc4;
   --color-accent-soft: #0d3d2e;
   --color-accent-contrast: #1a1206;
 
