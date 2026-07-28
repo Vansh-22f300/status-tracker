@@ -285,7 +285,7 @@ html.dark {
   --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 18px 38px rgba(0, 0, 0, 0.45);
 }
-
+/*  */
 @media (max-width: 768px) {
   body {
     font-size: 14px;
