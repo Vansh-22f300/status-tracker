@@ -155,7 +155,7 @@ async function handleJoinTeam() {
   background-color: var(--color-primary);
   font-size: 16px;
   font-weight: 600;
-  color: white;
+  color: var(--color-primary-contrast);
   border: none;
   cursor: pointer;
   transition: background-color var(--transition-base);

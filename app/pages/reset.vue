@@ -113,7 +113,7 @@ const handleResetPassword = async () => {
   border-radius: var(--radius-sm);
   padding: 12px;
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-primary-contrast);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;

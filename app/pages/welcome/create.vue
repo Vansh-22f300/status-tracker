@@ -145,7 +145,8 @@ onMounted(() => {
   padding: 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
-  background: #ffffff;
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: 14px;
   box-sizing: border-box;
   margin-bottom: 16px;
@@ -163,7 +164,7 @@ onMounted(() => {
   background-color: var(--color-primary);
   font-size: 16px;
   font-weight: 600;
-  color: white;
+  color: var(--color-primary-contrast);
   border: none;
   cursor: pointer;
   transition: background-color var(--transition-base);

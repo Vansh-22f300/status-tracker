@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --font-body: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-display: "Manrope", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -16,6 +17,7 @@
   --color-primary: #1e9b66;
   --color-primary-strong: #187d53;
   --color-primary-soft: #e8f6ef;
+  --color-primary-contrast: #ffffff;
 
   --color-sidebar-bg: #121b28;
   --color-sidebar-surface: #1b2737;
@@ -34,6 +36,18 @@
 
   --color-danger: #c83d36;
   --color-danger-soft: #fbecec;
+
+  --color-topbar-bg: rgba(255, 255, 255, 0.82);
+
+  --color-accent: #b5762c;
+  --color-accent-strong: #96601f;
+  --color-accent-soft: #f7ecdd;
+  --color-accent-contrast: #ffffff;
+
+  --color-role-manager-bg: #ece3fb;
+  --color-role-manager-text: #5b3aa0;
+  --color-role-member-bg: #e6ebf0;
+  --color-role-member-text: #4a5a6c;
 
   --radius-sm: 10px;
   --radius-md: 14px;
@@ -99,6 +113,14 @@ textarea {
   color: inherit;
 }
 
+input,
+select,
+textarea {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
 button {
   border: none;
 }
@@ -134,7 +156,7 @@ button {
 
 .ui-btn-primary {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-primary-contrast);
 }
 
 .ui-btn-primary:hover {
@@ -199,6 +221,78 @@ button {
   line-height: 1;
   font-size: 11px;
   font-weight: 700;
+}
+
+html.dark {
+  /* Curated neon-on-black palette - only 5 recurring neon hues, kept
+     consistent per role, rather than all 12 candidates at once (that many
+     saturated colors together stops reading as "accents" and starts
+     reading as noise). Body text/surfaces stay neutral on purpose -
+     neon-izing paragraph text would hurt readability, not help it. */
+  color-scheme: dark;
+  --color-bg: #0a0f16;
+  --color-bg-elevated: #0f1826;
+  --color-surface: #151f2d;
+  --color-surface-soft: #1b2635;
+  --color-border: #263244;
+  --color-border-strong: #34445c;
+
+  --color-text: #e8edf4;
+  --color-text-muted: #97a6ba;
+  --color-text-soft: #6f8098;
+
+  /* Primary: Emerald Neon - buttons, WFO. Text on primary buttons is
+     dark, not white - #00ffb2 is bright enough that white text on it
+     has poor contrast; dark text is the standard "neon button" pattern
+     and reads far better here. */
+  --color-primary: #00ffb2;
+  --color-primary-strong: #33ffc4;
+  --color-primary-soft: #0d3d2e;
+  --color-primary-contrast: #052018;
+
+  --color-sidebar-bg: #0b1119;
+  --color-sidebar-surface: #131c28;
+  --color-sidebar-border: #202c3b;
+  --color-sidebar-text: #f4f8fc;
+  --color-sidebar-muted: #8ca0b8;
+
+  /* WFH: Electric Blue */
+  --color-wfh-bg: #1e3a8a;
+  --color-wfh-text: #00bfff;
+  /* WFO: matches primary emerald */
+  --color-wfo-bg: #0d3d2e;
+  --color-wfo-text: #00ffb2;
+  /* Leave: Neon Red */
+  --color-leave-bg: #3a1414;
+  --color-leave-text: #ff3131;
+  /* No check-in / warning: Neon Orange, matches accent below */
+  --color-none-bg: #3d2a10;
+  --color-none-text: #ff8c00;
+
+  /* Danger: same Neon Red as leave - both read as "negative" states */
+  --color-danger: #ff3131;
+  --color-danger-soft: #3a1414;
+
+  --color-topbar-bg: rgba(10, 15, 22, 0.82);
+
+  /* Accent (logout, "Welcome, name"): Neon Orange - deliberately distinct
+     from the primary emerald so chrome doesn't blend into CTAs */
+  /* White text on this orange only hits ~2.3:1 contrast (WCAG needs
+     3:1 minimum even for large bold text) - dark text reads properly. */
+  --color-accent:#00ffb2 ;
+  --color-accent-strong: #33ffc4;
+  --color-accent-soft: #0d3d2e;
+  --color-accent-contrast: #1a1206;
+
+  /* Manager badge: Neon Purple - member badge stays neutral/muted on
+     purpose, so the manager badge is the one that visually stands out */
+  --color-role-manager-bg: #2b1d42;
+  --color-role-manager-text: #a855f7;
+  --color-role-member-bg: #1c2530;
+  --color-role-member-text: #8fa3ba;
+
+  --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 18px 38px rgba(0, 0, 0, 0.45);
 }
 
 @media (max-width: 768px) {

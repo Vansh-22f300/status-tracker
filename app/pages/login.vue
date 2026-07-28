@@ -168,8 +168,8 @@ const handleGoogleLogin = async () => {
   width: 60%;
   border-radius: var(--radius-sm);
   padding: 15px;
-  background: var(--color-primary);
-  color: #ffffff;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -178,7 +178,7 @@ const handleGoogleLogin = async () => {
   transition: background-color var(--transition-base);
 }
 .login-btn:hover {
-  background: var(--color-primary-strong);
+  background: var(--color-accent-strong);
 }
 
 .login-btn:disabled {
@@ -269,7 +269,8 @@ const handleGoogleLogin = async () => {
   padding: 12px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
-  background: #ffffff;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .form-fields input::placeholder {
@@ -320,4 +321,5 @@ const handleGoogleLogin = async () => {
   color: var(--color-primary-strong);
   font-weight: 600;
 }
+
 </style>

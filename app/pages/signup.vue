@@ -198,7 +198,8 @@ const handleSignup = async () => {
   padding: 12px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
-  background: #ffffff;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .form-fields input::placeholder {
@@ -211,7 +212,7 @@ const handleSignup = async () => {
   border-radius: var(--radius-sm);
   padding: 15px;
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-primary-contrast);
   font-size: 16px;
   font-weight: 600;
   border: none;

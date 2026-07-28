@@ -187,6 +187,7 @@ const { getInitials } = useInitials();
 const teamsData = ref(null);
 const members = ref([]);
 const copied = ref(false);
+let copiedTimer;
 const statusConfirm = ref(null);
 const removeMember = ref(null);
 
@@ -351,6 +352,10 @@ function formatStatusflow(status) {
 function copyCode() {
   navigator.clipboard.writeText(teamsData.value.joinCode);
   copied.value = true;
+  clearTimeout(copiedTimer);
+  copiedTimer = setTimeout(() => {
+    copied.value = false;
+  }, 2000);
 }
 async function handlewebhook() {
   try {
@@ -379,6 +384,7 @@ async function handlewebhook() {
 onMounted(fetchData);
 
 onUnmounted(() => {
+  clearTimeout(copiedTimer);
   if (typeof stopStatusListener === "function") stopStatusListener();
   if (typeof stopMembersListener === "function") stopMembersListener();
   if (typeof stopTeamListener === "function") stopTeamListener();
@@ -421,7 +427,7 @@ onUnmounted(() => {
 }
 
 .team-card {
-  background: linear-gradient(145deg, #ffffff 0%, #f7fbff 100%);
+  background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   padding: 28px;
@@ -479,8 +485,9 @@ onUnmounted(() => {
   transition: none !important;
 }
 .copy-btn:hover {
-  background: #e7eef6;
-  border-color: var(--color-border-strong);
+  background: var(--color-primary-strong);
+  border-color: var(--color-primary-strong);
+  color: var(--color-primary-contrast);
   transform: none !important;
 }
 .copy-btn:focus-visible {
@@ -527,6 +534,8 @@ onUnmounted(() => {
   padding: 10px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: 13px;
 }
 .webhook-hint {
@@ -619,15 +628,15 @@ onUnmounted(() => {
 .member-role.member {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: var(--color-primary-soft);
-  color: var(--color-primary-strong);
+  background-color: var(--color-role-member-bg);
+  color: var(--color-role-member-text);
   border-radius: 999px;
 }
 .member-role.manager {
   font-size: 12px;
   padding: 8px 10px;
-  background-color: var(--color-wfh-bg);
-  color: var(--color-wfh-text);
+  background-color: var(--color-role-manager-bg);
+  color: var(--color-role-manager-text);
   border-radius: 999px;
 }
 .status {
@@ -752,7 +761,7 @@ onUnmounted(() => {
 .modal-confirm {
   padding: 8px 16px;
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-primary-contrast);
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
