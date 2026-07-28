@@ -376,7 +376,7 @@ onUnmounted(() => {
 .modal-confirm {
   padding: 8px 16px;
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-primary-contrast);
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
@@ -439,6 +439,19 @@ onUnmounted(() => {
   }
   .notify-btn.disabled {
     opacity: 0.4;
+  }
+
+  .modal-content {
+    margin: 16px;
+    padding: 20px;
+  }
+
+  .modal-title {
+    font-size: 22px;
+  }
+
+  .modal-sub {
+    font-size: 14px;
   }
 }
 </style>
