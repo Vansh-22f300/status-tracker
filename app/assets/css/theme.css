@@ -257,10 +257,10 @@ html.dark {
   --color-sidebar-muted: #8ca0b8;
 
   /* WFH: Electric Blue */
-  --color-wfh-bg: #16233f;
-  --color-wfh-text: #3b82f6;
+  --color-wfh-bg: #1e3a8a;
+  --color-wfh-text: #00bfff;
   /* WFO: matches primary emerald */
-  --color-wfo-bg: #0d3020;
+  --color-wfo-bg: #0d3d2e;
   --color-wfo-text: #00ffb2;
   /* Leave: Neon Red */
   --color-leave-bg: #3a1414;
