@@ -212,7 +212,7 @@ const handleSignup = async () => {
   border-radius: var(--radius-sm);
   padding: 15px;
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-primary-contrast);
   font-size: 16px;
   font-weight: 600;
   border: none;

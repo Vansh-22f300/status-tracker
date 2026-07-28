@@ -187,6 +187,7 @@ const { getInitials } = useInitials();
 const teamsData = ref(null);
 const members = ref([]);
 const copied = ref(false);
+let copiedTimer;
 const statusConfirm = ref(null);
 const removeMember = ref(null);
 
@@ -351,6 +352,10 @@ function formatStatusflow(status) {
 function copyCode() {
   navigator.clipboard.writeText(teamsData.value.joinCode);
   copied.value = true;
+  clearTimeout(copiedTimer);
+  copiedTimer = setTimeout(() => {
+    copied.value = false;
+  }, 2000);
 }
 async function handlewebhook() {
   try {
@@ -379,6 +384,7 @@ async function handlewebhook() {
 onMounted(fetchData);
 
 onUnmounted(() => {
+  clearTimeout(copiedTimer);
   if (typeof stopStatusListener === "function") stopStatusListener();
   if (typeof stopMembersListener === "function") stopMembersListener();
   if (typeof stopTeamListener === "function") stopTeamListener();
@@ -479,8 +485,9 @@ onUnmounted(() => {
   transition: none !important;
 }
 .copy-btn:hover {
-  background: #e7eef6;
-  border-color: var(--color-border-strong);
+  background: var(--color-primary-strong);
+  border-color: var(--color-primary-strong);
+  color: var(--color-primary-contrast);
   transform: none !important;
 }
 .copy-btn:focus-visible {
@@ -754,7 +761,7 @@ onUnmounted(() => {
 .modal-confirm {
   padding: 8px 16px;
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-primary-contrast);
   border-radius: var(--radius-sm);
   cursor: pointer;
 }

@@ -169,7 +169,7 @@ const handleGoogleLogin = async () => {
   border-radius: var(--radius-sm);
   padding: 15px;
   background: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-accent-contrast);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -321,4 +321,5 @@ const handleGoogleLogin = async () => {
   color: var(--color-primary-strong);
   font-weight: 600;
 }
+
 </style>

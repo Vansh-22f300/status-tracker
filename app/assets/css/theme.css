@@ -17,6 +17,7 @@
   --color-primary: #1e9b66;
   --color-primary-strong: #187d53;
   --color-primary-soft: #e8f6ef;
+  --color-primary-contrast: #ffffff;
 
   --color-sidebar-bg: #121b28;
   --color-sidebar-surface: #1b2737;
@@ -41,6 +42,7 @@
   --color-accent: #b5762c;
   --color-accent-strong: #96601f;
   --color-accent-soft: #f7ecdd;
+  --color-accent-contrast: #ffffff;
 
   --color-role-manager-bg: #ece3fb;
   --color-role-manager-text: #5b3aa0;
@@ -154,7 +156,7 @@ button {
 
 .ui-btn-primary {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-primary-contrast);
 }
 
 .ui-btn-primary:hover {
@@ -239,10 +241,14 @@ html.dark {
   --color-text-muted: #97a6ba;
   --color-text-soft: #6f8098;
 
-  /* Primary: Emerald Neon - buttons, WFO */
+  /* Primary: Emerald Neon - buttons, WFO. Text on primary buttons is
+     dark, not white - #00ffb2 is bright enough that white text on it
+     has poor contrast; dark text is the standard "neon button" pattern
+     and reads far better here. */
   --color-primary: #00ffb2;
   --color-primary-strong: #33ffc4;
   --color-primary-soft: #0d3d2e;
+  --color-primary-contrast: #052018;
 
   --color-sidebar-bg: #0b1119;
   --color-sidebar-surface: #131c28;
@@ -271,9 +277,12 @@ html.dark {
 
   /* Accent (logout, "Welcome, name"): Neon Orange - deliberately distinct
      from the primary emerald so chrome doesn't blend into CTAs */
-  --color-accent: #ff8c00;
-  --color-accent-strong: #ffa733;
-  --color-accent-soft: #3d2a10;
+  /* White text on this orange only hits ~2.3:1 contrast (WCAG needs
+     3:1 minimum even for large bold text) - dark text reads properly. */
+  --color-accent:#00ffb2 ;
+  --color-accent-strong: #7cffda;
+  --color-accent-soft: #0d3d2e;
+  --color-accent-contrast: #1a1206;
 
   /* Manager badge: Neon Purple - member badge stays neutral/muted on
      purpose, so the manager badge is the one that visually stands out */

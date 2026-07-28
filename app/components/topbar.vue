@@ -122,7 +122,7 @@ onMounted(() => {
 }
 .logout:hover {
   background-color: var(--color-accent);
-  color: white;
+  color: var(--color-accent-contrast);
 }
 .name {
   color: var(--color-accent);
@@ -157,6 +157,15 @@ onMounted(() => {
   }
   .topbar-left-date {
     font-size: 11px;
+  }
+  .logout {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .theme-toggle {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
   }
 }
 </style>

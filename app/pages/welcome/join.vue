@@ -12,7 +12,7 @@
       />
       <p v-if="error" class="error">{{ error }}</p>
       <button @click="handleJoinTeam" class="join-btn" :disabled="isLoading">
-        {{ isLoading ? "Joining..." : "Join Team" }}
+        {{ isLoading ? 'Joining...' : 'Join Team' }}
       </button>
     </div>
   </div>
@@ -20,10 +20,10 @@
 
 <script setup>
 definePageMeta({
-  layout: "welcome",
+  layout: 'welcome'
 });
-import { ref, onMounted } from "vue";
-import { db } from "../../../firebase/config";
+import { ref, onMounted } from 'vue';
+import { db } from '../../../firebase/config';
 import {
   collection,
   query,
@@ -32,68 +32,68 @@ import {
   updateDoc,
   setDoc,
   doc,
-  increment,
-} from "firebase/firestore";
+  increment
+} from 'firebase/firestore';
 
-import { useToast } from "vue-toastification";
+import { useToast } from 'vue-toastification';
 const toast = useToast();
 const { user, profile } = useUser();
 
-const teamName = ref("");
-const error = ref("");
+const teamName = ref('');
+const error = ref('');
 const isLoading = ref(false);
-const joinCode = ref("");
+const joinCode = ref('');
 onMounted(() => {
   if (profile.value?.teamId) {
-    navigateTo("/");
+    navigateTo('/');
   }
 });
 async function handleJoinTeam() {
-  error.value = "";
+  error.value = '';
   if (!joinCode.value.trim()) {
-    error.value = "Enter Join Code";
+    error.value = 'Enter Join Code';
     return;
   }
   isLoading.value = true;
 
   try {
     const q = query(
-      collection(db, "teams"),
-      where("joinCode", "==", joinCode.value.trim()),
+      collection(db, 'teams'),
+      where('joinCode', '==', joinCode.value.trim())
     );
 
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
       // error.value = "Invalid Join Code";
-      toast.error("Invalid Join Code");
+      toast.error('Invalid Join Code');
       isLoading.value = false;
       return;
     }
     const teamId = snapshot.docs[0].id;
     const teamName = snapshot.docs[0].data().name;
-    await updateDoc(doc(db, "profiles", user.value.uid), {
-      role: "Member",
+    await updateDoc(doc(db, 'profiles', user.value.uid), {
+      role: 'Member',
       updatedAt: Date.now(),
       teamId: teamId,
-      teamName: teamName,
+      teamName: teamName
     });
 
-    await updateDoc(doc(db, "teams", teamId), {
-      count: increment(1),
+    await updateDoc(doc(db, 'teams', teamId), {
+      count: increment(1)
     });
     profile.value = {
       ...profile.value,
-      role: "Member",
+      role: 'Member',
       teamId: teamId,
-      teamName: teamName,
+      teamName: teamName
     };
     toast.success(`Joined team ${teamName} successfully`);
-    navigateTo("/");
+    navigateTo('/');
   } catch (err) {
     // console.error("fail to join team", err);
     error.value = err.message;
-    toast.error("Failed to join team. Please try again.");
+    toast.error('Failed to join team. Please try again.');
   } finally {
     isLoading.value = false;
   }
@@ -134,8 +134,7 @@ async function handleJoinTeam() {
   padding: 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
-  background: var(--color-surface);
-  color: var(--color-text);
+  background: #ffffff;
   font-size: 14px;
   box-sizing: border-box;
   margin-bottom: 16px;
@@ -156,7 +155,7 @@ async function handleJoinTeam() {
   background-color: var(--color-primary);
   font-size: 16px;
   font-weight: 600;
-  color: white;
+  color: var(--color-primary-contrast);
   border: none;
   cursor: pointer;
   transition: background-color var(--transition-base);

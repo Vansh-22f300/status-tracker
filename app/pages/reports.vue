@@ -291,9 +291,9 @@ watch(
 }
 
 .preset-btn.active {
-  background: var(--color-accent);
-  border-color: var(--color-accent-strong);
-  color: #ffffff;
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
 }
 
 .summary-grid {
