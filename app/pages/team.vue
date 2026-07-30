@@ -394,8 +394,8 @@ async function handlewebhook() {
       body: {
         status: formatStatusflow(statusConfirm.value.newStatus),
         name: statusConfirm.value.member.name,
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
+        time: new Date().toLocaleTimeString("en-IN", {
+          hour: "numeric",
           minute: "2-digit",
         }),
         teamId: profile.value.teamId,
