@@ -52,13 +52,19 @@
           required
         />
         <label for="form-pass" class="field-label">Password</label>
-        <input
-          id="form-pass"
-          v-model="password"
-          type="password"
-          placeholder="Enter your Password..."
-          required
-        />
+        <div class="password-wrapper">
+          <input
+            id="form-pass"
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            placeholder="Enter your Password..."
+            required
+          />
+          <button type="button" class="eye-btn" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+            <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
         <div class="reset-row">
           <NuxtLink to="/reset" class="reset-pass">Reset Password</NuxtLink>
         </div>
@@ -88,6 +94,7 @@ import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 const email = ref('');
 const password = ref('');
+const showPassword = ref(false);
 const error = ref('');
 const successMessage = ref('');
 const isLoading = ref(false);
@@ -265,12 +272,41 @@ const handleGoogleLogin = async () => {
   margin-bottom: -8px;
 }
 
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  flex: 1;
+  padding-right: 42px;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.eye-btn:hover {
+  color: var(--color-text);
+}
+
 .form-fields input {
   padding: 12px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
   background: var(--color-surface);
   color: var(--color-text);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-fields input::placeholder {
