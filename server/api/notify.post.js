@@ -7,28 +7,34 @@ export default defineEventHandler(async (event) => {
   const { name, status, time, teamId, uid, dateKey } = body;
 
   if (!teamId) {
-    throw createError({ statusCode: 400, message: 'teamId is required' });
+    throw createError({ statusCode: 400, message: "teamId is required" });
   }
   if (!uid || !dateKey) {
-    throw createError({ statusCode: 400, message: 'uid and dateKey are required' });
+    throw createError({
+      statusCode: 400,
+      message: "uid and dateKey are required",
+    });
   }
 
-  const teamSnap = await getAdminDb().collection('teams').doc(teamId).get();
+  const teamSnap = await getAdminDb().collection("teams").doc(teamId).get();
   if (!teamSnap.exists) {
-    throw createError({ statusCode: 404, message: 'Team not found' });
+    throw createError({ statusCode: 404, message: "Team not found" });
   }
   const webhookUrl = teamSnap.data()?.webhookUrl;
   if (!webhookUrl) {
-    throw createError({ statusCode: 500, message: 'Webhook URL not configured for this team' });
+    throw createError({
+      statusCode: 500,
+      message: "Webhook URL not configured for this team",
+    });
   }
 
-  const statusRef = getAdminDb().collection('status').doc(`${uid}_${dateKey}`);
+  const statusRef = getAdminDb().collection("status").doc(`${uid}_${dateKey}`);
   const statusSnap = await statusRef.get();
   const statusData = statusSnap.exists ? statusSnap.data() : {};
 
   // Same value already notified today -> no-op
   if (statusData.notifiedStatus && statusData.notifiedStatus === status) {
-    return { ok: true, skipped: true, reason: 'duplicate-status' };
+    return { ok: true, skipped: true, reason: "duplicate-status" };
   }
 
   // Minimum gap between sends
@@ -36,9 +42,11 @@ export default defineEventHandler(async (event) => {
     statusData.lastNotifiedAt &&
     Date.now() - statusData.lastNotifiedAt < COOLDOWN_MS
   ) {
+    const retryAfterMs = COOLDOWN_MS - (Date.now() - statusData.lastNotifiedAt);
     throw createError({
       statusCode: 429,
-      message: 'Please wait a minute before sending another notification.',
+      message: "Please wait a minute before sending another notification.",
+      data: { retryAfterMs },
     });
   }
 
@@ -55,9 +63,9 @@ export default defineEventHandler(async (event) => {
   await statusRef.set(
     {
       notifiedStatus: status,
-      lastNotifiedAt: Date.now()
+      lastNotifiedAt: Date.now(),
     },
-    { merge: true }
+    { merge: true },
   );
 
   return { ok: true };
