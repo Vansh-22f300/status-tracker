@@ -40,7 +40,10 @@ const { sidebarOpen, sidebarClose } = useSidebar();
     position: fixed;
     left: 0;
     top: 0;
-    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     /* max-width: 85%; */
     z-index: 999;
     transform: translateX(-100%);

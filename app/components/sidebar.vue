@@ -154,6 +154,8 @@ onUnmounted(() => {
   background: linear-gradient(180deg, #121b28 0%, #172235 100%);
   padding: 30px;
   height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   border-right: 1px solid var(--color-sidebar-border);
 }
 .sidebar-title {
@@ -321,7 +323,9 @@ onUnmounted(() => {
     position: relative;
     width: 84vw;
     max-width: 292px;
-    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding-bottom: 20px;
   }
   .sidebar-top {
     margin-top: 40px;
