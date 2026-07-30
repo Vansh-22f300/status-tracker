@@ -67,26 +67,32 @@
     </div>
 
     <!-- shown only when this is a genuine change but not the first notify today -->
-    <div class="modal" v-if="showRepeatConfirm">
-      <div class="modal-content">
-        <div class="modal-title">Send another update?</div>
-        <div class="modal-sub">
-          You already notified the team today — send this update anyway?
-        </div>
-        <div class="modal-action">
-          <button class="modal-confirm" :disabled="isPosting" @click="doNotify">
-            {{ isPosting ? "Sending..." : "Send" }}
-          </button>
-          <button
-            class="modal-cancel"
-            :disabled="isPosting"
-            @click="showRepeatConfirm = false"
-          >
-            Cancel
-          </button>
+    <Teleport to="body">
+      <div class="modal" v-if="showRepeatConfirm">
+        <div class="modal-content">
+          <div class="modal-title">Send another update?</div>
+          <div class="modal-sub">
+            You already notified the team today — send this update anyway?
+          </div>
+          <div class="modal-action">
+            <button
+              class="modal-confirm"
+              :disabled="isPosting"
+              @click="doNotify"
+            >
+              {{ isPosting ? "Sending..." : "Send" }}
+            </button>
+            <button
+              class="modal-cancel"
+              :disabled="isPosting"
+              @click="showRepeatConfirm = false"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -418,6 +424,9 @@ onUnmounted(() => {
   position: fixed;
   display: flex;
   inset: 0;
+  min-height: 100dvh;
+  padding: 16px;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   z-index: 100;
@@ -425,6 +434,7 @@ onUnmounted(() => {
   backdrop-filter: blur(3px);
 }
 .modal-content {
+  margin: auto;
   background-color: var(--color-surface);
   border-radius: var(--radius-md);
   padding: 24px;
