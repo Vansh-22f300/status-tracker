@@ -168,7 +168,9 @@
             They will lose access to this team and need a new code to rejoin.
           </div>
           <div class="modal-action">
-            <button class="modal-confirm" @click="confirmRemove">Confirm</button>
+            <button class="modal-confirm" @click="confirmRemove">
+              Confirm
+            </button>
             <button class="modal-cancel" @click="removeMember = null">
               Cancel
             </button>
