@@ -22,14 +22,9 @@ Managers get an extra console to manage members, override anyone's status, and c
 12. [Environment Variables](#environment-variables)
 13. [Available Scripts](#available-scripts)
 14. [Deployment](#deployment)
-15. [Security Notes (Read Before Production)](#security-notes-read-before-production)
-16. [Troubleshooting](#troubleshooting)
-17. [Conventions & Gotchas](#conventions--gotchas)
-18. [Roadmap](#roadmap)
-19. [Author](#author)
-20. [Acknowledgements](#acknowledgements)
-21. [License](#license)
-
+15. [Roadmap](#roadmap)
+16. [Author](#author)
+17. [Acknowledgements](#acknowledgements)
 ---
 
 ## Feature Overview
