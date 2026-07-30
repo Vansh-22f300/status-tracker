@@ -1,6 +1,6 @@
 import { getAdminDb } from "../utils/firebaseAdmin";
 
-const COOLDOWN_MS = 2 * 60 * 1000; // min gap between any two sends for the same person/day
+const COOLDOWN_MS = 1 * 60 * 1000; // min gap between any two sends for the same person/day
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
   ) {
     throw createError({
       statusCode: 429,
-      message: 'Please wait a two minutes before sending another notification.'
+      message: 'Please wait a minute before sending another notification.',
     });
   }
 

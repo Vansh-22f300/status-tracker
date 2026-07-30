@@ -65,11 +65,7 @@
           You already notified the team today — send this update anyway?
         </div>
         <div class="modal-action">
-          <button
-            class="modal-confirm"
-            :disabled="isPosting"
-            @click="doNotify"
-          >
+          <button class="modal-confirm" :disabled="isPosting" @click="doNotify">
             {{ isPosting ? "Sending..." : "Send" }}
           </button>
           <button
@@ -118,18 +114,29 @@ function todayKey() {
 async function loadTodayStatus() {
   if (!user.value) return;
   try {
-    const snap = await getDoc(doc(db, "status", `${user.value.uid}_${todayKey()}`));
+    const snap = await getDoc(
+      doc(db, "status", `${user.value.uid}_${todayKey()}`),
+    );
     if (snap.exists()) {
       const data = snap.data();
-      alreadyNotified.value = { status: data.status };
+      alreadyNotified.value = {
+        // Prefer the explicit webhook-tracking field; keep fallback for old docs.
+        status: data.notifiedStatus ?? data.status ?? null,
+      };
+    } else {
+      alreadyNotified.value = null;
     }
   } catch (err) {
     console.error("Failed to load today's status", err);
   }
 }
-watch(user, (u) => {
-  if (u) loadTodayStatus();
-}, { immediate: true });
+watch(
+  user,
+  (u) => {
+    if (u) loadTodayStatus();
+  },
+  { immediate: true },
+);
 function selectstatus(status) {
   if (selectedstatus.value === status) return;
   selectedstatus.value = null;
@@ -203,7 +210,9 @@ async function notified() {
 
   // same value already notified today -> no-op, don't even hit the server
   if (alreadyNotified.value?.status === selectedstatus.value) {
-    toast.info(`You already notified the team you're ${message().trim()} today.`);
+    toast.info(
+      `You already notified the team you're ${message().trim()} today.`,
+    );
     return;
   }
 

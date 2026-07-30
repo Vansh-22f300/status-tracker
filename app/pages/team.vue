@@ -278,14 +278,20 @@ async function confirmStatusChange() {
   const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
 
   try {
-    await setDoc(statusRef, {
-      uid: member.id,
-      name: member.name,
-      email: member.email,
-      status: newStatus,
-      teamId: profile.value.teamId,
-      timestamp: Date.now(),
-    });
+    // Merge so manager edits do not wipe webhook-tracking fields
+    // like notifiedStatus/lastNotifiedAt on the same day document.
+    await setDoc(
+      statusRef,
+      {
+        uid: member.id,
+        name: member.name,
+        email: member.email,
+        status: newStatus,
+        teamId: profile.value.teamId,
+        timestamp: Date.now(),
+      },
+      { merge: true },
+    );
 
     member.status = newStatus;
     await handlewebhook();
