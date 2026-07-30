@@ -126,52 +126,56 @@
     </div>
 
     <!-- confirm status modal -->
-    <div class="modal" v-if="statusConfirm">
-      <div class="modal-content">
-        <div class="modal-title">Change status?</div>
-        <div class="modal-sub">
-          Change {{ statusConfirm.member.name }}'s status to
-          {{ formatStatus(statusConfirm.newStatus) }}?
-        </div>
-        <div class="modal-action">
-          <button
-            class="modal-confirm"
-            :disabled="isStatusUpdating"
-            @click="confirmStatusChange"
-          >
-            <span
-              v-if="isStatusUpdating"
-              class="btn-spinner"
-              aria-hidden="true"
-            />
-            {{ isStatusUpdating ? "Updating..." : "Confirm" }}
-          </button>
-          <button
-            class="modal-cancel"
-            :disabled="isStatusUpdating"
-            @click="statusConfirm = null"
-          >
-            Cancel
-          </button>
+    <Teleport to="body">
+      <div class="modal" v-if="statusConfirm">
+        <div class="modal-content">
+          <div class="modal-title">Change status?</div>
+          <div class="modal-sub">
+            Change {{ statusConfirm.member.name }}'s status to
+            {{ formatStatus(statusConfirm.newStatus) }}?
+          </div>
+          <div class="modal-action">
+            <button
+              class="modal-confirm"
+              :disabled="isStatusUpdating"
+              @click="confirmStatusChange"
+            >
+              <span
+                v-if="isStatusUpdating"
+                class="btn-spinner"
+                aria-hidden="true"
+              />
+              {{ isStatusUpdating ? "Updating..." : "Confirm" }}
+            </button>
+            <button
+              class="modal-cancel"
+              :disabled="isStatusUpdating"
+              @click="statusConfirm = null"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Remove confirm modal -->
-    <div class="modal" v-if="removeMember">
-      <div class="modal-content">
-        <div class="modal-title">Remove {{ removeMember.name }}?</div>
-        <div class="modal-sub">
-          They will lose access to this team and need a new code to rejoin.
-        </div>
-        <div class="modal-action">
-          <button class="modal-confirm" @click="confirmRemove">Confirm</button>
-          <button class="modal-cancel" @click="removeMember = null">
-            Cancel
-          </button>
+    <Teleport to="body">
+      <div class="modal" v-if="removeMember">
+        <div class="modal-content">
+          <div class="modal-title">Remove {{ removeMember.name }}?</div>
+          <div class="modal-sub">
+            They will lose access to this team and need a new code to rejoin.
+          </div>
+          <div class="modal-action">
+            <button class="modal-confirm" @click="confirmRemove">Confirm</button>
+            <button class="modal-cancel" @click="removeMember = null">
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -753,6 +757,9 @@ onUnmounted(() => {
   position: fixed;
   display: flex;
   inset: 0;
+  min-height: 100dvh;
+  padding: 16px;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   z-index: 100;
@@ -760,6 +767,7 @@ onUnmounted(() => {
   backdrop-filter: blur(3px);
 }
 .modal-content {
+  margin: auto;
   background-color: var(--color-surface);
   border-radius: var(--radius-md);
   padding: 24px;
