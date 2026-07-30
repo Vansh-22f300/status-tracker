@@ -98,12 +98,7 @@ const toast = useToast();
 let interval = null;
 import { db } from "../../firebase/config";
 import {
-  collection,
-  addDoc,
-  query,
-  where,
   getDoc,
-  updateDoc,
   setDoc,
   doc,
 } from "firebase/firestore";
@@ -121,7 +116,9 @@ async function loadTodayStatus() {
     const snap = await getDoc(doc(db, "status", `${user.value.uid}_${todayKey()}`));
     if (snap.exists()) {
       const data = snap.data();
-      alreadyNotified.value = { status: data.status };
+      alreadyNotified.value = data.notifiedStatus
+        ? { status: data.status }
+        : null;
     }
   } catch (err) {
     console.error("Failed to load today's status", err);
@@ -161,6 +158,7 @@ async function submitStatus() {
     );
   } catch (err) {
     console.error("Error:", err);
+    throw err;
   }
 }
 
