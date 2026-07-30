@@ -126,39 +126,58 @@
     </div>
 
     <!-- confirm status modal -->
-    <div class="modal" v-if="statusConfirm">
-      <div class="modal-content">
-        <div class="modal-title">Change status?</div>
-        <div class="modal-sub">
-          Change {{ statusConfirm.member.name }}'s status to
-          {{ formatStatus(statusConfirm.newStatus) }}?
-        </div>
-        <div class="modal-action">
-          <button class="modal-confirm" @click="confirmStatusChange">
-            Confirm
-          </button>
-          <button class="modal-cancel" @click="statusConfirm = null">
-            Cancel
-          </button>
+    <Teleport to="body">
+      <div class="modal" v-if="statusConfirm">
+        <div class="modal-content">
+          <div class="modal-title">Change status?</div>
+          <div class="modal-sub">
+            Change {{ statusConfirm.member.name }}'s status to
+            {{ formatStatus(statusConfirm.newStatus) }}?
+          </div>
+          <div class="modal-action">
+            <button
+              class="modal-confirm"
+              :disabled="isStatusUpdating"
+              @click="confirmStatusChange"
+            >
+              <span
+                v-if="isStatusUpdating"
+                class="btn-spinner"
+                aria-hidden="true"
+              />
+              {{ isStatusUpdating ? "Updating..." : "Confirm" }}
+            </button>
+            <button
+              class="modal-cancel"
+              :disabled="isStatusUpdating"
+              @click="statusConfirm = null"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Remove confirm modal -->
-    <div class="modal" v-if="removeMember">
-      <div class="modal-content">
-        <div class="modal-title">Remove {{ removeMember.name }}?</div>
-        <div class="modal-sub">
-          They will lose access to this team and need a new code to rejoin.
-        </div>
-        <div class="modal-action">
-          <button class="modal-confirm" @click="confirmRemove">Confirm</button>
-          <button class="modal-cancel" @click="removeMember = null">
-            Cancel
-          </button>
+    <Teleport to="body">
+      <div class="modal" v-if="removeMember">
+        <div class="modal-content">
+          <div class="modal-title">Remove {{ removeMember.name }}?</div>
+          <div class="modal-sub">
+            They will lose access to this team and need a new code to rejoin.
+          </div>
+          <div class="modal-action">
+            <button class="modal-confirm" @click="confirmRemove">
+              Confirm
+            </button>
+            <button class="modal-cancel" @click="removeMember = null">
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -190,6 +209,7 @@ const copied = ref(false);
 let copiedTimer;
 const statusConfirm = ref(null);
 const removeMember = ref(null);
+const isStatusUpdating = ref(false);
 
 const statusMap = ref({});
 
@@ -274,18 +294,27 @@ function handleStatusChange(member, newStatus) {
 }
 
 async function confirmStatusChange() {
+  if (!statusConfirm.value || isStatusUpdating.value) return;
+
   const { member, newStatus } = statusConfirm.value;
   const statusRef = doc(db, "status", `${member.id}_${todayKey()}`);
 
+  isStatusUpdating.value = true;
   try {
-    await setDoc(statusRef, {
-      uid: member.id,
-      name: member.name,
-      email: member.email,
-      status: newStatus,
-      teamId: profile.value.teamId,
-      timestamp: Date.now(),
-    });
+    // Merge so manager edits do not wipe webhook-tracking fields
+    // like notifiedStatus/lastNotifiedAt on the same day document.
+    await setDoc(
+      statusRef,
+      {
+        uid: member.id,
+        name: member.name,
+        email: member.email,
+        status: newStatus,
+        teamId: profile.value.teamId,
+        timestamp: Date.now(),
+      },
+      { merge: true },
+    );
 
     member.status = newStatus;
     await handlewebhook();
@@ -299,6 +328,7 @@ async function confirmStatusChange() {
     console.error("Failed to update status", err);
     toast.error(errMessage);
   } finally {
+    isStatusUpdating.value = false;
     statusConfirm.value = null;
   }
 }
@@ -364,8 +394,8 @@ async function handlewebhook() {
       body: {
         status: formatStatusflow(statusConfirm.value.newStatus),
         name: statusConfirm.value.member.name,
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
+        time: new Date().toLocaleTimeString("en-IN", {
+          hour: "numeric",
           minute: "2-digit",
         }),
         teamId: profile.value.teamId,
@@ -427,7 +457,11 @@ onUnmounted(() => {
 }
 
 .team-card {
-  background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
+  background: linear-gradient(
+    145deg,
+    var(--color-surface) 0%,
+    var(--color-bg-elevated) 100%
+  );
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   padding: 28px;
@@ -725,6 +759,9 @@ onUnmounted(() => {
   position: fixed;
   display: flex;
   inset: 0;
+  min-height: 100dvh;
+  padding: 16px;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   z-index: 100;
@@ -732,6 +769,7 @@ onUnmounted(() => {
   backdrop-filter: blur(3px);
 }
 .modal-content {
+  margin: auto;
   background-color: var(--color-surface);
   border-radius: var(--radius-md);
   padding: 24px;
@@ -763,10 +801,26 @@ onUnmounted(() => {
   background-color: var(--color-primary);
   color: var(--color-primary-contrast);
   border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   cursor: pointer;
 }
 .modal-confirm:hover {
   background-color: var(--color-primary-strong);
+}
+.modal-confirm:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+.btn-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid var(--color-primary);
+  border-top-color: var(--color-primary-contrast);
+  animation: spin 0.75s linear infinite;
 }
 .modal-cancel {
   padding: 8px 16px;
@@ -778,6 +832,12 @@ onUnmounted(() => {
 }
 .modal-cancel:hover {
   background-color: var(--color-surface-soft);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {

@@ -44,58 +44,72 @@
         <div class="submit-time" v-if="selectedstatus !== 'leave'">
           Posting at {{ time }}
         </div>
+        <div class="cooldown-text" v-if="cooldownRemainingMs > 0">
+          You can send another update in {{ cooldownLabel }}
+        </div>
       </div>
 
       <button
         type="button"
         class="notify-btn ui-btn ui-btn-primary"
         @click="notified"
-        :disabled="isPosting"
-        :class="{ disabled: isPosting }"
+        :disabled="isPosting || cooldownRemainingMs > 0"
+        :class="{ disabled: isPosting || cooldownRemainingMs > 0 }"
       >
-        {{ isPosting ? "Notifying..." : "Notify Group ->" }}
+        {{
+          isPosting
+            ? "Notifying..."
+            : cooldownRemainingMs > 0
+              ? `Wait ${cooldownLabel}`
+              : "Notify Group ->"
+        }}
       </button>
     </div>
 
     <!-- shown only when this is a genuine change but not the first notify today -->
-    <div class="modal" v-if="showRepeatConfirm">
-      <div class="modal-content">
-        <div class="modal-title">Send another update?</div>
-        <div class="modal-sub">
-          You already notified the team today — send this update anyway?
-        </div>
-        <div class="modal-action">
-          <button
-            class="modal-confirm"
-            :disabled="isPosting"
-            @click="doNotify"
-          >
-            {{ isPosting ? "Sending..." : "Send" }}
-          </button>
-          <button
-            class="modal-cancel"
-            :disabled="isPosting"
-            @click="showRepeatConfirm = false"
-          >
-            Cancel
-          </button>
+    <Teleport to="body">
+      <div class="modal" v-if="showRepeatConfirm">
+        <div class="modal-content">
+          <div class="modal-title">Send another update?</div>
+          <div class="modal-sub">
+            You already notified the team today — send this update anyway?
+          </div>
+          <div class="modal-action">
+            <button
+              class="modal-confirm"
+              :disabled="isPosting"
+              @click="doNotify"
+            >
+              {{ isPosting ? "Sending..." : "Send" }}
+            </button>
+            <button
+              class="modal-cancel"
+              :disabled="isPosting"
+              @click="showRepeatConfirm = false"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, onUnmounted, watch } from "vue";
+import { ref, nextTick, onMounted, onUnmounted, watch, computed } from "vue";
 const { user, profile } = useUser();
+const COOLDOWN_MS = 1 * 60 * 1000;
 const selectedstatus = ref(null);
 const time = ref("");
 const isPosting = ref(false);
+const cooldownRemainingMs = ref(0);
 const alreadyNotified = ref(null); // last-notified status for today, if any
 const showRepeatConfirm = ref(false);
 import { useToast } from "vue-toastification";
 const toast = useToast();
 let interval = null;
+let cooldownInterval = null;
 import { db } from "../../firebase/config";
 import {
   collection,
@@ -112,24 +126,69 @@ const message = () => {
   else if (selectedstatus.value === "wfh") return " Available WFH";
   else if (selectedstatus.value === "leave") return "On Leave";
 };
+const cooldownLabel = computed(() => {
+  const totalSeconds = Math.ceil(cooldownRemainingMs.value / 1000);
+  const minutes = Math.floor(totalSeconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
+});
+
+function startCooldown(ms = 0) {
+  const duration = Math.max(0, Number(ms) || 0);
+  cooldownRemainingMs.value = duration;
+
+  if (cooldownInterval) clearInterval(cooldownInterval);
+  if (!duration) return;
+
+  cooldownInterval = setInterval(() => {
+    cooldownRemainingMs.value = Math.max(0, cooldownRemainingMs.value - 1000);
+    if (cooldownRemainingMs.value <= 0 && cooldownInterval) {
+      clearInterval(cooldownInterval);
+      cooldownInterval = null;
+    }
+  }, 1000);
+}
 function todayKey() {
   return new Date().toLocaleDateString("en-CA");
 }
 async function loadTodayStatus() {
   if (!user.value) return;
   try {
-    const snap = await getDoc(doc(db, "status", `${user.value.uid}_${todayKey()}`));
+    const snap = await getDoc(
+      doc(db, "status", `${user.value.uid}_${todayKey()}`),
+    );
     if (snap.exists()) {
       const data = snap.data();
-      alreadyNotified.value = { status: data.status };
+      alreadyNotified.value = {
+        // Prefer the explicit webhook-tracking field; keep fallback for old docs.
+        status: data.notifiedStatus ?? data.status ?? null,
+      };
+
+      // If a notify happened recently, restore cooldown on page refresh/reopen.
+      const lastNotifiedAt = Number(data.lastNotifiedAt || 0);
+      if (lastNotifiedAt) {
+        const remaining = COOLDOWN_MS - (Date.now() - lastNotifiedAt);
+        startCooldown(remaining);
+      } else {
+        startCooldown(0);
+      }
+    } else {
+      alreadyNotified.value = null;
+      startCooldown(0);
     }
   } catch (err) {
     console.error("Failed to load today's status", err);
   }
 }
-watch(user, (u) => {
-  if (u) loadTodayStatus();
-}, { immediate: true });
+watch(
+  user,
+  (u) => {
+    if (u) loadTodayStatus();
+  },
+  { immediate: true },
+);
 function selectstatus(status) {
   if (selectedstatus.value === status) return;
   selectedstatus.value = null;
@@ -184,13 +243,23 @@ async function handlewebhook() {
     });
     console.log("sent to google chat space");
   } catch (err) {
+    const retryAfterMs =
+      err?.data?.retryAfterMs ||
+      err?.data?.data?.retryAfterMs ||
+      err?.response?._data?.retryAfterMs ||
+      err?.response?._data?.data?.retryAfterMs ||
+      (err?.status === 429 || err?.response?.status === 429 ? COOLDOWN_MS : 0);
     const errMessage =
       err?.data?.message ||
+      err?.data?.data?.message ||
+      err?.response?._data?.message ||
       err?.statusMessage ||
       err?.message ||
       "Webhook notification failed.";
     console.error("webhook failed", err);
-    throw new Error(errMessage);
+    const wrapped = new Error(errMessage);
+    wrapped.retryAfterMs = retryAfterMs;
+    throw wrapped;
   }
 }
 
@@ -200,10 +269,16 @@ async function notified() {
     return;
   }
   if (isPosting.value) return;
+  if (cooldownRemainingMs.value > 0) {
+    toast.info(`Please wait ${cooldownLabel.value} before sending again.`);
+    return;
+  }
 
   // same value already notified today -> no-op, don't even hit the server
   if (alreadyNotified.value?.status === selectedstatus.value) {
-    toast.info(`You already notified the team you're ${message().trim()} today.`);
+    toast.info(
+      `You already notified the team you're ${message().trim()} today.`,
+    );
     return;
   }
 
@@ -227,6 +302,9 @@ async function doNotify() {
     alreadyNotified.value = { status: selectedstatus.value };
     toast.success("Status posted successfully!");
   } catch (err) {
+    if (err?.retryAfterMs) {
+      startCooldown(err.retryAfterMs);
+    }
     toast.error(err?.message || "Something went wrong. Please try again.");
     console.error(err);
   } finally {
@@ -249,6 +327,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearInterval(interval);
+  clearInterval(cooldownInterval);
 });
 </script>
 
@@ -314,6 +393,11 @@ onUnmounted(() => {
   font-size: 12px;
   font-weight: 500;
 }
+.cooldown-text {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
 .notify-btn {
   min-width: 160px;
 }
@@ -340,6 +424,9 @@ onUnmounted(() => {
   position: fixed;
   display: flex;
   inset: 0;
+  min-height: 100dvh;
+  padding: 16px;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   z-index: 100;
@@ -347,6 +434,7 @@ onUnmounted(() => {
   backdrop-filter: blur(3px);
 }
 .modal-content {
+  margin: auto;
   background-color: var(--color-surface);
   border-radius: var(--radius-md);
   padding: 24px;
